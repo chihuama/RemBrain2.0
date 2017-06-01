@@ -43,3 +43,10 @@ div
 
     /*background-color: white;*/
 }
+
+.axisTooltipCircle,
+.centerTooltipCircle
+{
+    fill: lightgray;
+    stroke: lightgray;
+}
