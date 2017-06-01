@@ -32,8 +32,9 @@ let KiviatSummaryView = function(targetID) {
         self.attributes = App.models.networkMetrics.getMetricsAttributes();
 
         for (let attribute of self.attributes) {
+            let attributeExtent = d3.extent(Object.values(networkMetrics), d => d[attribute]);
             self.attributeScales[attribute] = d3.scaleLinear()
-                .domain([0, 1])
+                .domain(attributeExtent)
                 .range([5, 35]);
         }
 
@@ -49,7 +50,8 @@ let KiviatSummaryView = function(targetID) {
         self.colorScale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
             .domain(extent)
-            .range(["#78b4d7", "#003a5c"]);
+            // .range(["#78b4d7", "#003a5c"]);
+            .range(["#d18161", "#70a4c2"]);
 
         for (let network of Object.keys(networkMetrics)) {
             let networkInd = App.runs.indexOf(network);
@@ -165,12 +167,13 @@ let KiviatSummaryView = function(targetID) {
                 return d.attr + ": " + d.val;
             });
 
-        // self.centerTip = d3.tip()
-        //     .attr("class", "d3-tip")
-        //     .direction("e")
-        //     .html(function(d) {
-        //         return "ID: " + d.ID + "<br>Age: " + d.AgeAtTx + "<br>5y Sur. Pb.: " + d["Probability of Survival"];
-        //     });
+        self.centerTip = d3.tip()
+            .attr("class", "d3-tip")
+            .direction("e")
+            .html(function(d) {
+                return d.attr + ": " + d.val;
+                // return "ID: " + d.ID + "<br>Age: " + d.AgeAtTx + "<br>5y Sur. Pb.: " + d["Probability of Survival"];
+            });
     }
 
 
