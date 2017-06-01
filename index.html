@@ -6,14 +6,19 @@
 
     <link rel="stylesheet" href="lib/css/bootstrap.min.css">
 
+    <link rel="stylesheet" href="src/css/main.css">
+
     <script src="lib/js/d3.v4.min.js" charset="utf-8"></script>
     <script src="lib/js/jquery.min.js" charset="utf-8"></script>
     <script src="lib/js/bootstrap.min.js" charset="utf-8"></script>
     <script src="lib/js/lodash.min.js" charset="utf-8"></script>
     <script src="lib/js/d3-tip.js" charset="utf-8"></script>
 
-
+    <!-- models -->
     <script src="src/js/model/networkMetricsModel.js" charset="utf-8"></script>
+
+    <!-- views -->
+    <script src="src/js/view/kiviatSummaryView.js" charset="utf-8"></script>
 
     <script src="src/js/main.js" charset="utf-8"></script>
 
@@ -25,8 +30,10 @@
         </div>
 
         <div class="row" id="allContent">
-          <div class="contentDiv">
-          </div>
+            <div class="contentDiv">
+                <div id="kiviatSummary">
+                </div>
+            </div>
         </div>
     </div>
 </body>

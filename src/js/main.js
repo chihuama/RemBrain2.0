@@ -19,6 +19,9 @@ var App = App || {};
         // create models
         App.models.networkMetrics = new NetworkMetricsModel();
 
+        // create views
+        App.views.kiviatSummary = new KiviatSummaryView("#kiviatSummary");
+
         // load network metrics from all runs
         App.models.networkMetrics.loadNetworkMetrics()
             .then(function(data) {

@@ -63,9 +63,14 @@ let NetworkMetricsModel = function() {
         return self.networkMetrics;
     }
 
+    function getMetricsAttributes() {
+        return self.attributes;
+    }
+
 
     return {
         loadNetworkMetrics,
-        getNetworkMetrics
+        getNetworkMetrics,
+        getMetricsAttributes
     };
 };
