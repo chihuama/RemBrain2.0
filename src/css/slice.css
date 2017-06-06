@@ -1,0 +1,20 @@
+.sliceDiv
+{
+    box-sizing: border-box;
+    height: 100%;
+}
+
+#sliceLeft
+{
+    height: 100%;
+}
+
+#sliceRight
+{
+    height: 100%;
+}
+
+#sliceControl
+{
+    height: 100%;
+}

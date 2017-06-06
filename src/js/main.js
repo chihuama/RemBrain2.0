@@ -15,6 +15,15 @@ var App = App || {};
         "Young40_a1", "Young40_a2", "Young40_a3", "Young40_a4"
     ];
 
+    App.runs2 = {
+
+        "Old38": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"],
+        "Old41": ["a1", "a2", "a3"],
+        "Young34": ["a1", "a2", "a3", "a4", "a5", "a6"],
+        "Young40": ["a1", "a2", "a3", "a4"],
+        "Old36": ["a1", "a2"]
+    }
+
     App.init = function() {
         // create models
         App.models.networkMetrics = new NetworkMetricsModel();
@@ -27,7 +36,7 @@ var App = App || {};
             .then(function(data) {
                 console.log("Promise Finished", data);
 
-                App.views.kiviatSummary.update(data);
+                // App.views.kiviatSummary.update(data);
             })
             .catch(function(err) {
                 console.log("Promise Error", err);

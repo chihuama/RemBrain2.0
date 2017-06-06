@@ -1,0 +1,17 @@
+.pcaDiv
+{
+    box-sizing: border-box;
+    height: 100%;
+}
+
+#pcaHeader
+{
+    height: 20%;
+}
+
+#pca
+{
+    height: 80%;
+
+    background-color: white;
+}

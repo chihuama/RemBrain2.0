@@ -1,0 +1,24 @@
+.kiviatSummaryDiv
+{
+    box-sizing: border-box;
+    height: 100%;
+}
+
+#kiviatSummaryHeader
+{
+    height: 20%;
+}
+
+#kiviatSummary
+{
+    height: 80%;
+
+    background-color: white;
+}
+
+.axisTooltipCircle,
+.centerTooltipCircle
+{
+    fill: lightgray;
+    stroke: lightgray;
+}

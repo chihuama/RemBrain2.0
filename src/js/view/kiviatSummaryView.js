@@ -33,24 +33,17 @@ let KiviatSummaryView = function(targetID) {
 
         for (let attribute of self.attributes) {
             let attributeExtent = d3.extent(Object.values(networkMetrics), d => d[attribute]);
+
             self.attributeScales[attribute] = d3.scaleLinear()
                 .domain(attributeExtent)
                 .range([5, 35]);
         }
 
-        // let minSize = Inf;
-        // let maxSize = 0;
         let extent = d3.extent(Object.values(networkMetrics), d => d.size);
-
-        // for (let network of Object.keys(networkMetrics)) {
-        //     minSize = Math.min(minSize, networkMetrics[network].size);
-        //     maxSize = Math.max(maxSize, networkMetrics[network].size);
-        // }
 
         self.colorScale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
             .domain(extent)
-            // .range(["#78b4d7", "#003a5c"]);
             .range(["#d18161", "#70a4c2"]);
 
         for (let network of Object.keys(networkMetrics)) {
