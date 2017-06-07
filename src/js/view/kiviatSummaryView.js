@@ -28,6 +28,10 @@ let KiviatSummaryView = function(targetID) {
     }
 
     function update(networkMetrics) {
+      /* networkMetrics data structure:
+        {"Old36": {"a1": {}, "a2": {}, ..., "runAvg": {}, "runMin": {}, "runMax": {}},
+         "Old38": {}, ..., "Young40": {}} */
+
         // get attributes from networkMetricsModel
         self.attributes = App.models.networkMetrics.getMetricsAttributes();
 
@@ -40,6 +44,7 @@ let KiviatSummaryView = function(targetID) {
                 .range([5, 35]);
         }
 
+        // draw the mean kiviat diagram for each animal
         // let extent = d3.extent(Object.values(networkMetrics), d => d.size);
         let extent = d3.extent(Object.values(networkMetrics), d => d.runAvg.size);
 
@@ -64,6 +69,7 @@ let KiviatSummaryView = function(targetID) {
         // self.targetSvg.call(self.centerTip);
 
         let translateGroup = self.targetSvg.append("g")
+            .attr("id", "kiviat-" + Ind)
             .attr("transform", "translate(" + (50 + 100 * (Ind % 5)) + "," + (50 + 100 * Math.floor(Ind / 5)) + ")")
             .attr("class", "translateGroup");
 
@@ -90,7 +96,7 @@ let KiviatSummaryView = function(targetID) {
             axesGroup.append("text")
                 .attr("x", axisEndpoint.x)
                 .attr("y", axisEndpoint.y + 2)
-                .style("font-size", 6)
+                .style("font-size", "6px")
                 .style("text-anchor", "middle")
                 .text(i);
 
@@ -120,9 +126,9 @@ let KiviatSummaryView = function(targetID) {
             .attr("class", "networkInd")
             .attr("x", -48)
             .attr("y", -42)
-            .style("font-size", 6)
+            .style("font-size", "6px")
             // .text(App.runs[Ind]);
-            .text(Object.keys(App.runs2).sort()[Ind]);
+            .text(Object.keys(App.runs).sort()[Ind]);
 
     }
 

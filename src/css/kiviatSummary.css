@@ -7,6 +7,15 @@
 #kiviatSummaryHeader
 {
     height: 20%;
+
+    background-color: white;
+}
+
+.attribute-dropdown-wrapper
+{
+    padding: 5px;
+
+    text-align: center;
 }
 
 #kiviatSummary

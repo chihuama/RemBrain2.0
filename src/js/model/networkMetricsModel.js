@@ -18,8 +18,8 @@ let NetworkMetricsModel = function() {
             //     dataLoadQueue.defer(d3.csv, "data/" + App.runs[runInd] + "/network_metrics.csv");
             // }
 
-            for (let animal of Object.keys(App.runs2).sort()) {
-                for (let activation of App.runs2[animal]) {
+            for (let animal of Object.keys(App.runs).sort()) {
+                for (let activation of App.runs[animal]) {
                     dataLoadQueue.defer(d3.csv, "data/" + animal + "/" + activation + "/network_metrics.csv");
                 }
             }
@@ -37,38 +37,16 @@ let NetworkMetricsModel = function() {
                 self.attributes = allRuns[0].columns;
                 self.attributes.shift();
 
-                // for (let runInd in allRuns) {
-                //     self.networkMetrics[App.runs[runInd]] = {};
-                //
-                //     let size = allRuns[runInd].length;
-                //
-                //     // create a zero filled array
-                //     let sumVals = Array.apply(null, Array(self.attributes.length)).map(Number.prototype.valueOf, 0);
-                //
-                //     _.forEach(allRuns[runInd], (d, i) => {
-                //         for (let i = 0; i < self.attributes.length; i++) {
-                //             sumVals[i] += +d[self.attributes[i]];
-                //         }
-                //     });
-                //
-                //     // self.networkMetrics[App.runs[runInd]]["Individual"] = id;
-                //     for (let i = 0; i < self.attributes.length; i++) {
-                //         self.networkMetrics[App.runs[runInd]][self.attributes[i]] = sumVals[i] / size;
-                //     }
-                //     self.networkMetrics[App.runs[runInd]].size = size;
-                // }
-
                 /* data structure:
-                  {"Old36": {"a1": {}, "a2": {}, ...},
-                   "Old38": {}, ...,
-                   "Young40": {}} */
+                  {"Old36": {"a1": {}, "a2": {}, ..., "runAvg": {}, "runMin": {}, "runMax": {}},
+                   "Old38": {}, ..., "Young40": {}} */
                 let runInd = 0;
 
-                for (let animal of Object.keys(App.runs2).sort()) {
+                for (let animal of Object.keys(App.runs).sort()) {
                     self.networkMetrics[animal] = {};
 
                     // summarize each activation
-                    for (let activation of App.runs2[animal]) {
+                    for (let activation of App.runs[animal]) {
                         self.networkMetrics[animal][activation] = {};
 
                         // create a zero filled array
@@ -90,25 +68,18 @@ let NetworkMetricsModel = function() {
                         runInd++;
                     }
 
-                    // calculate avg of all runs for the same mouse
+                    // calculate the Avg of all runs for the same mouse
                     self.networkMetrics[animal]["runAvg"] = {};
+                    calculateMean(animal);
 
-                    // create a zero filled array
-                    let avgSumVals = Array.apply(null, Array(self.attributes.length)).map(Number.prototype.valueOf, 0);
+                    // calculate the Min of all runs for the same mouse
+                    self.networkMetrics[animal]["runMin"] = {};
+                    calculateMin(animal);
 
-                    for (let i = 0; i < self.attributes.length; i++) {
-                        for (let activation of App.runs2[animal]) {
-                            avgSumVals[i] += self.networkMetrics[animal][activation][self.attributes[i]];
-                        }
-                        self.networkMetrics[animal]["runAvg"][self.attributes[i]] = avgSumVals[i] / App.runs2[animal].length;
-                    }
+                    // calculate the Max of all runs for the same mouse
+                    self.networkMetrics[animal]["runMax"] = {};
+                    calculateMax(animal);
 
-                    // get the avg size for each animal
-                    self.networkMetrics[animal]["runAvg"].size = 0;
-                    for (let activation of App.runs2[animal]) {
-                        self.networkMetrics[animal]["runAvg"].size += self.networkMetrics[animal][activation].size;
-                    }
-                    self.networkMetrics[animal]["runAvg"].size = self.networkMetrics[animal]["runAvg"].size / App.runs2[animal].length;
                 }
 
                 // resolve within await callback after data finished processing
@@ -117,6 +88,35 @@ let NetworkMetricsModel = function() {
 
         });
     }
+    
+
+    function calculateMean(animal) {
+        // create a zero filled array
+        let avgSumVals = Array.apply(null, Array(self.attributes.length)).map(Number.prototype.valueOf, 0);
+
+        for (let i = 0; i < self.attributes.length; i++) {
+            for (let activation of App.runs[animal]) {
+                avgSumVals[i] += self.networkMetrics[animal][activation][self.attributes[i]];
+            }
+            self.networkMetrics[animal]["runAvg"][self.attributes[i]] = avgSumVals[i] / App.runs[animal].length;
+        }
+
+        // get the avg size for each animal
+        self.networkMetrics[animal]["runAvg"].size = 0;
+        for (let activation of App.runs[animal]) {
+            self.networkMetrics[animal]["runAvg"].size += self.networkMetrics[animal][activation].size;
+        }
+        self.networkMetrics[animal]["runAvg"].size = self.networkMetrics[animal]["runAvg"].size / App.runs[animal].length;
+    }
+
+    function calculateMin(animal) {
+
+    }
+
+    function calculateMax(animal) {
+
+    }
+
 
     function getNetworkMetrics() {
         return self.networkMetrics;

@@ -24,6 +24,9 @@
     <!-- views -->
     <script src="src/js/view/kiviatSummaryView.js" charset="utf-8"></script>
 
+    <!-- controllers -->
+    <script src="src/js/controller/kiviatSortingController.js" charset="utf-8"></script>
+
     <script src="src/js/main.js" charset="utf-8"></script>
 
 </head>
@@ -51,7 +54,7 @@
 
         <div class="row" id="allContent">
             <div class="row" id="top">
-                <div class="col-md-6 contentWrapper pcaDiv">
+                <div class="col-md-5 contentWrapper pcaDiv">
                     <div class="contentDiv">
                         <div id="pcaHeader">
                             <div class="row viewTitleDiv">
@@ -63,11 +66,20 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 contentWrapper kiviatSummaryDiv">
+                <div class="col-md-7 contentWrapper kiviatSummaryDiv">
                     <div class="contentDiv">
                         <div id="kiviatSummaryHeader">
                             <div class="row viewTitleDiv">
-                                kiviat Summary View
+                                Kiviat Summary View
+                            </div>
+                            <div class="row attribute-dropdown-wrapper">
+                                <div class="form-inline">
+                                    <div class="form-group">
+                                        <label for="kiviatSorting">Sort By:</label>
+                                        <select class="attribute-dropdown form-control input-sm" id="kiviatSorting">
+                                  </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div id="kiviatSummary">
