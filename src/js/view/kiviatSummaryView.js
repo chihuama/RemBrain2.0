@@ -7,9 +7,12 @@ let KiviatSummaryView = function(targetID) {
     let self = {
         targetElement: null,
         targetSvg: null,
+
         attributes: [],
         attributeScales: {},
         colorScale: {},
+        sortInd: {},
+
         axisTip: null,
         centerTip: null
     };
@@ -28,9 +31,9 @@ let KiviatSummaryView = function(targetID) {
     }
 
     function update(networkMetrics) {
-      /* networkMetrics data structure:
-        {"Old36": {"a1": {}, "a2": {}, ..., "runAvg": {}, "runMin": {}, "runMax": {}},
-         "Old38": {}, ..., "Young40": {}} */
+        /* networkMetrics data structure:
+          {"Old36": {"a1": {}, "a2": {}, ..., "runAvg": {}, "runMin": {}, "runMax": {}},
+           "Old38": {}, ..., "Young40": {}} */
 
         // get attributes from networkMetricsModel
         self.attributes = App.models.networkMetrics.getMetricsAttributes();
@@ -56,6 +59,8 @@ let KiviatSummaryView = function(targetID) {
         for (let network of Object.keys(networkMetrics).sort()) {
             // let networkInd = App.runs.indexOf(network);
             let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
+
+            self.sortInd[networkInd] = networkInd;
 
             createKiviatDiagram(networkInd, networkMetrics[network].runAvg);
         }
@@ -179,9 +184,15 @@ let KiviatSummaryView = function(targetID) {
             });
     }
 
+    function sortBy(sortInd) {
+        self.sortInd = sortInd;
+        console.log(self.sortInd);
+    }
+
 
     return {
-        update
+        update,
+        sortBy
     };
 
 }

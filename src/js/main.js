@@ -26,6 +26,7 @@ var App = App || {};
     App.init = function() {
         // create models
         App.models.networkMetrics = new NetworkMetricsModel();
+        App.models.applicationState = new ApplicationStateModel();
 
         // create views
         App.views.kiviatSummary = new KiviatSummaryView("#kiviatSummary");

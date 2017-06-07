@@ -33,7 +33,12 @@ let KiviatSortingController = function() {
 
     /* update views based on the current selected attribute */
     function updateSelectedAttribute() {
-        console.log(self.currentAttribute);
+        // console.log(self.currentAttribute);
+        // get sortInd from networkMetrics models
+        let sortInd = App.models.networkMetrics.calculateSortIndBy(self.currentAttribute);
+
+        // update views
+        App.views.kiviatSummary.sortBy(sortInd);
     }
 
 

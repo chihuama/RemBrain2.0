@@ -88,7 +88,7 @@ let NetworkMetricsModel = function() {
 
         });
     }
-    
+
 
     function calculateMean(animal) {
         // create a zero filled array
@@ -117,7 +117,6 @@ let NetworkMetricsModel = function() {
 
     }
 
-
     function getNetworkMetrics() {
         return self.networkMetrics;
     }
@@ -126,10 +125,25 @@ let NetworkMetricsModel = function() {
         return self.attributes;
     }
 
+    function calculateSortIndBy(attr) {
+        let sortInd = {};
+
+        for (let animal of Object.keys(App.runs).sort()) {
+            let animalInd = Object.keys(App.runs).sort().indexOf(animal);
+            if (attr === "Animal Name") {
+                sortInd[animalInd] = animalInd;
+            } else {
+
+            }
+        }
+
+    }
+
 
     return {
         loadNetworkMetrics,
         getNetworkMetrics,
-        getMetricsAttributes
+        getMetricsAttributes,
+        calculateSortIndBy
     };
 };
