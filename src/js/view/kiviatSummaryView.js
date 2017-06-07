@@ -22,7 +22,7 @@ let KiviatSummaryView = function(targetID) {
         self.targetSvg = self.targetElement.append("svg")
             .attr("width", self.targetElement.node().clientWidth)
             .attr("height", self.targetElement.node().clientHeight)
-            .attr("viewBox", "0 0 600 400")
+            .attr("viewBox", "0 0 500 200")
             .attr("preserveAspectRatio", "xMidYMid")
         // .style("background", "pink");
     }
@@ -32,24 +32,27 @@ let KiviatSummaryView = function(targetID) {
         self.attributes = App.models.networkMetrics.getMetricsAttributes();
 
         for (let attribute of self.attributes) {
-            let attributeExtent = d3.extent(Object.values(networkMetrics), d => d[attribute]);
+            // let attributeExtent = d3.extent(Object.values(networkMetrics), d => d[attribute]);
+            let attributeExtent = d3.extent(Object.values(networkMetrics), d => d.runAvg[attribute]);
 
             self.attributeScales[attribute] = d3.scaleLinear()
                 .domain(attributeExtent)
                 .range([5, 35]);
         }
 
-        let extent = d3.extent(Object.values(networkMetrics), d => d.size);
+        // let extent = d3.extent(Object.values(networkMetrics), d => d.size);
+        let extent = d3.extent(Object.values(networkMetrics), d => d.runAvg.size);
 
         self.colorScale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
             .domain(extent)
             .range(["#d18161", "#70a4c2"]);
 
-        for (let network of Object.keys(networkMetrics)) {
-            let networkInd = App.runs.indexOf(network);
+        for (let network of Object.keys(networkMetrics).sort()) {
+            // let networkInd = App.runs.indexOf(network);
+            let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
 
-            createKiviatDiagram(networkInd, networkMetrics[network]);
+            createKiviatDiagram(networkInd, networkMetrics[network].runAvg);
         }
     }
 
@@ -61,7 +64,7 @@ let KiviatSummaryView = function(targetID) {
         // self.targetSvg.call(self.centerTip);
 
         let translateGroup = self.targetSvg.append("g")
-            .attr("transform", "translate(" + (50 + 100 * (Ind % 6)) + "," + (50 + 100 * Math.floor(Ind / 6)) + ")")
+            .attr("transform", "translate(" + (50 + 100 * (Ind % 5)) + "," + (50 + 100 * Math.floor(Ind / 5)) + ")")
             .attr("class", "translateGroup");
 
         let axesGroup = translateGroup.append("g")
@@ -118,7 +121,8 @@ let KiviatSummaryView = function(targetID) {
             .attr("x", -48)
             .attr("y", -42)
             .style("font-size", 6)
-            .text(App.runs[Ind]);
+            // .text(App.runs[Ind]);
+            .text(Object.keys(App.runs2).sort()[Ind]);
 
     }
 

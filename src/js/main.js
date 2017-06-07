@@ -40,7 +40,7 @@ var App = App || {};
             .then(function(data) {
                 console.log("Promise Finished", data);
 
-                // App.views.kiviatSummary.update(data);
+                App.views.kiviatSummary.update(data);
             })
             .catch(function(err) {
                 console.log("Promise Error", err);
