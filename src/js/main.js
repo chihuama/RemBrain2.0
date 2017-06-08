@@ -27,7 +27,9 @@ less.pageLoadFinished
     "Young40": ["a1", "a2", "a3", "a4"],
   }
 
-  App.sortingAttributes = ["Animal Name", "observed"];
+  App.sortingAttributes = ["animal.id", "observed", "time.span", "switching",
+    "absence", "visiting", "homing", "avg.group.size", "avg.comm.size", "avg.stay", "max.stay"
+  ];
 
   App.init = function() {
     // create models

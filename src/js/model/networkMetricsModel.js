@@ -132,7 +132,7 @@ let NetworkMetricsModel = function() {
 
     for (let animal of Object.keys(App.runs).sort()) {
       let animalInd = Object.keys(App.runs).sort().indexOf(animal);
-      if (attr === "Animal Name") {
+      if (attr === "animal.id") {
         sortInd[animalInd] = animalInd;
       } else {
         if (animalInd < 5) {

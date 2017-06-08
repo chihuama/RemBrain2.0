@@ -11,7 +11,6 @@ let KiviatSummaryView = function(targetID) {
     attributes: [],
     attributeScales: {},
     colorScale: {},
-    sortInd: {},
 
     axisTip: null,
     centerTip: null
@@ -59,8 +58,6 @@ let KiviatSummaryView = function(targetID) {
     for (let network of Object.keys(networkMetrics).sort()) {
       // let networkInd = App.runs.indexOf(network);
       let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
-
-      self.sortInd[networkInd] = networkInd;
 
       createKiviatDiagram(networkInd, networkMetrics[network].runAvg);
     }
@@ -185,9 +182,7 @@ let KiviatSummaryView = function(targetID) {
   }
 
   function sortBy(sortInd) {
-    self.sortInd = sortInd;
-    console.log(self.sortInd);
-
+    console.log(sortInd);
     _.forEach(sortInd, function(value, key) {
       d3.select("#kiviat-" + key)
         .attr("transform", "translate(" + (50 + 100 * (value % 5)) + "," + (50 + 100 * Math.floor(value / 5)) + ")")

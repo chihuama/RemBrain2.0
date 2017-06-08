@@ -6,7 +6,7 @@ let KiviatSortingController = function() {
 
     let self = {
         attributeDropDown: null,
-        currentAttribute: "Animal Name"
+        currentAttribute: "animal.id"
     };
 
     /* display the drop down list of attributes for sorting kiviat diagrams */
