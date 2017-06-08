@@ -17,7 +17,7 @@ let KiviatSummaryView = function(targetID) {
 
     sortInd: {},
     selection: {},
-    allSortInd: {},
+    animalSortInd: {},
 
     mode: "avg" // or "all"
   };
@@ -227,15 +227,15 @@ let KiviatSummaryView = function(targetID) {
   }
 
   /* update sortInd */
-  function updateSortInd(sortInd) {
-    self.sortInd = sortInd;
+  function updateSortInd(avgSortInd, animalSortInd) {
+    self.sortInd = avgSortInd;
+    self.animalSortInd = animalSortInd;
 
     sortAvgKiviats();
   }
 
   /* sort kiviats */
   function sortAvgKiviats() {
-    console.log(self.sortInd);
     _.forEach(self.sortInd, function(value, key) {
       d3.select("#kiviatAvg-" + key)
         .attr("transform", "translate(" + (50 + 100 * (value % 5)) + "," + (50 + 100 * Math.floor(value / 5)) + ")")
@@ -244,12 +244,22 @@ let KiviatSummaryView = function(targetID) {
     // check the mode
     if (self.mode === "all") {
       shrinkAvgKiviats();
-      // sortAllKiviatsOf();
+      sortAllKiviatsOf();
     }
   }
 
   function sortAllKiviatsOf() {
-
+    _.forEach(self.animalSortInd, function(value, key) {
+      if (Object.keys(self.animalSortInd).length <= 10) { // 2 rows
+        d3.select("#kiviatAll-" + key)
+          .attr("transform", "translate(" + (140 + 80 * (value % 5)) + "," +
+            (40 + 80 * Math.floor(value / 5)) + ") scale(0.8, 0.8)");
+      } else { // 3 rows
+        d3.select("#kiviatAll-" + key)
+          .attr("transform", "translate(" + (140 + 80 * (value % 5)) + "," +
+            (30 + 60 * Math.floor(value / 5)) + ") scale(0.8, 0.6)");
+      }
+    });
   }
 
   /* shrink kiviats */
@@ -275,7 +285,6 @@ let KiviatSummaryView = function(targetID) {
   /* update kiviats from the same animal */
   function updateAnimal(animal) {
     // animal Object includes all runs of that animal
-
     let runs = _.filter(Object.keys(animal), function(o) {
       return (o != "runAvg" && o != "runMin" && o != "runMax");
     });

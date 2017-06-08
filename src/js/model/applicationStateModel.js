@@ -6,8 +6,8 @@ let ApplicationStateModel = function() {
 
   let self = {
     attributesForPCA: [],
-    attributeForSorting: "Animal Name", // default by name
-    selectedAnimal: null
+    attributeForSorting: "animal.id", // default by name
+    selectedAnimal: null  // objec includes all runs
   };
 
   function setAttributesForPCA(attrs) {

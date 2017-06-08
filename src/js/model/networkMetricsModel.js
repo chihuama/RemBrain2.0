@@ -5,7 +5,10 @@ var App = App || {};
 let NetworkMetricsModel = function() {
   let self = {
     networkMetrics: {},
-    attributes: []
+    attributes: [],
+
+    avgSortInd: {},
+    animalSortInd: {}
   };
 
   function loadNetworkMetrics() {
@@ -13,10 +16,6 @@ let NetworkMetricsModel = function() {
     return new Promise(function(resolve, reject) {
       // load data using d3 queue
       let dataLoadQueue = d3.queue();
-
-      // for (let runInd in App.runs) {
-      //     dataLoadQueue.defer(d3.csv, "data/" + App.runs[runInd] + "/network_metrics.csv");
-      // }
 
       for (let animal of Object.keys(App.runs).sort()) {
         for (let activation of App.runs[animal]) {
@@ -157,16 +156,26 @@ let NetworkMetricsModel = function() {
     return d3.extent(sizeValues);
   }
 
+  /* get the sortInd for runAvg based on the selected attribute */
+  function getAvgSortInd() {
+    // get the current selected attribute for sorting kiviats
+    let attr = App.models.applicationState.getAttributeForSorting();
+
+    calculateAvgSortIndBy(attr);
+
+    return self.avgSortInd;
+  }
+
   /* calculate the sortInd for runAvg based on the selected attribute */
-  function calculateSortIndBy(attr) {
-    let sortInd = {};
+  function calculateAvgSortIndBy(attr) {
     let oldNetworkMetrics = {};
     let youngNetworkMetrics = {};
 
     for (let animal of Object.keys(App.runs).sort()) {
       let animalInd = Object.keys(App.runs).sort().indexOf(animal);
+      
       if (attr === "animal.id") {
-        sortInd[animalInd] = animalInd;
+        self.avgSortInd[animalInd] = animalInd;
       } else {
         if (animalInd < 5) {
           oldNetworkMetrics[animal] = self.networkMetrics[animal].runAvg;
@@ -186,14 +195,53 @@ let NetworkMetricsModel = function() {
     }));
 
     _.forEach(sortedOldNetworks, function(value, i) {
-      sortInd[value.animalInd] = i;
+      self.avgSortInd[value.animalInd] = i;
     });
 
     _.forEach(sortedYoungNetworks, function(value, i) {
-      sortInd[value.animalInd] = i + 5;
+      self.avgSortInd[value.animalInd] = i + 5;
     });
 
-    return sortInd;
+  }
+
+  /* calculate the sortInd for current animal based on the selected attribute */
+  function getAnimalSortInd() {
+    // get the current selected attribute and animal for sorting kiviats
+    let attr = App.models.applicationState.getAttributeForSorting();
+    let animal = App.models.applicationState.getSelectedAnimal();
+
+    calculateAnimalSortIndBy(attr, animal);
+
+    return self.animalSortInd;
+  }
+
+  function calculateAnimalSortIndBy(attr, animal) {
+    let animalNetworkMetrics = {};
+
+    let runs = _.filter(Object.keys(animal), function(o) {
+      return (o != "runAvg" && o != "runMin" && o != "runMax");
+    });
+
+    for (let run of runs) {
+      let runInd = runs.indexOf(run);
+
+      if (attr === "animal.id") {
+        self.animalSortInd[runInd] = runInd;
+      } else {
+        // animal[run].runInd = runInd;
+        animalNetworkMetrics[run] = animal[run];
+        animalNetworkMetrics[run].runInd = runInd;
+      }
+    }
+
+    let sortedRuns = _.reverse(_.sortBy(animalNetworkMetrics, function(o) {
+      return o[attr];
+    }));
+
+    _.forEach(sortedRuns, function(value, i) {
+      self.animalSortInd[value.runInd] = i;
+    });
+
   }
 
 
@@ -201,9 +249,10 @@ let NetworkMetricsModel = function() {
     loadNetworkMetrics,
     getNetworkMetrics,
     getMetricsAttributes,
-    calculateSortIndBy,
     getAttributesRange,
-    getNetworksSizeRange
+    getNetworksSizeRange,
+    getAvgSortInd,
+    getAnimalSortInd
   };
 
 }
