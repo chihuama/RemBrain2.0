@@ -41,6 +41,8 @@ less.pageLoadFinished
 
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();
+    App.controllers.kiviatSelector = new KiviatSelectorController();
+
 
     // load network metrics from all runs
     App.models.networkMetrics.loadNetworkMetrics()
@@ -49,7 +51,7 @@ less.pageLoadFinished
 
         App.controllers.kiviatSorting.attachToSelect(".attribute-dropdown");
 
-        App.views.kiviatSummary.update(data);
+        App.views.kiviatSummary.create(data);
       })
       .catch(function(err) {
         console.log("Promise Error", err);

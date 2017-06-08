@@ -72,13 +72,13 @@ let NetworkMetricsModel = function() {
           self.networkMetrics[animal]["runAvg"] = {};
           calculateMean(animal);
 
-          // calculate the Min of all runs for the same mouse
-          self.networkMetrics[animal]["runMin"] = {};
-          calculateMin(animal);
-
-          // calculate the Max of all runs for the same mouse
-          self.networkMetrics[animal]["runMax"] = {};
-          calculateMax(animal);
+          // // calculate the Min of all runs for the same mouse
+          // self.networkMetrics[animal]["runMin"] = {};
+          // calculateMin(animal);
+          //
+          // // calculate the Max of all runs for the same mouse
+          // self.networkMetrics[animal]["runMax"] = {};
+          // calculateMax(animal);
 
         }
 
@@ -89,7 +89,7 @@ let NetworkMetricsModel = function() {
     });
   }
 
-
+  /* calculate the avgerage of an animal */
   function calculateMean(animal) {
     // create a zero filled array
     let avgSumVals = Array.apply(null, Array(self.attributes.length)).map(Number.prototype.valueOf, 0);
@@ -125,6 +125,39 @@ let NetworkMetricsModel = function() {
     return self.attributes;
   }
 
+  /* get the range of metrics attributes of all runs */
+  function getAttributesRange() {
+    let attributesRange = {};
+
+    for (let attribute of self.attributes) {
+      let attributeValues = [];
+
+      _.forEach(Object.values(self.networkMetrics), function(value, key) {
+        _.forEach(Object.values(value), function(d) {
+          attributeValues.push(d[attribute]);
+        });
+      });
+
+      attributesRange[attribute] = d3.extent(attributeValues);
+    }
+
+    return attributesRange;
+  }
+
+  /* get the range of networks size of all runs */
+  function getNetworksSizeRange() {
+    let sizeValues = [];
+
+    _.forEach(Object.values(self.networkMetrics), function(value, key) {
+      _.forEach(Object.values(value), function(d) {
+        sizeValues.push(d.size);
+      });
+    });
+
+    return d3.extent(sizeValues);
+  }
+
+  /* calculate the sortInd for runAvg based on the selected attribute */
   function calculateSortIndBy(attr) {
     let sortInd = {};
     let oldNetworkMetrics = {};
@@ -148,15 +181,15 @@ let NetworkMetricsModel = function() {
     let sortedOldNetworks = _.reverse(_.sortBy(oldNetworkMetrics, function(o) {
       return o[attr];
     }));
-    let sortedYoungNetworks = _.reverse(_.sortBy(youngNetworkMetrics, function(o){
+    let sortedYoungNetworks = _.reverse(_.sortBy(youngNetworkMetrics, function(o) {
       return o[attr];
     }));
 
-    _.forEach(sortedOldNetworks, function(value, i){
+    _.forEach(sortedOldNetworks, function(value, i) {
       sortInd[value.animalInd] = i;
     });
 
-    _.forEach(sortedYoungNetworks, function(value, i){
+    _.forEach(sortedYoungNetworks, function(value, i) {
       sortInd[value.animalInd] = i + 5;
     });
 
@@ -168,6 +201,9 @@ let NetworkMetricsModel = function() {
     loadNetworkMetrics,
     getNetworkMetrics,
     getMetricsAttributes,
-    calculateSortIndBy
+    calculateSortIndBy,
+    getAttributesRange,
+    getNetworksSizeRange
   };
-};
+
+}

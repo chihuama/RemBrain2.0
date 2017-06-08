@@ -4,32 +4,43 @@ var App = App || {};
 
 let ApplicationStateModel = function() {
 
-    let self = {
-        attributesForPCA: null,
-        attributeForSorting: "Animal Name" // default by name
-    };
+  let self = {
+    attributesForPCA: [],
+    attributeForSorting: "Animal Name", // default by name
+    selectedAnimal: null
+  };
 
-    function setAttributesForPCA(attrs) {
-        self.attributesForPCA = attrs;
-    }
+  function setAttributesForPCA(attrs) {
+    self.attributesForPCA = attrs;
+  }
 
-    function getAttributesForPCA() {
-        return self.attributesForPCA;
-    }
+  function getAttributesForPCA() {
+    return self.attributesForPCA;
+  }
 
-    function setAttributeForSorting(attr) {
-        self.attributeForSorting = attr;
-    }
+  function setAttributeForSorting(attr) {
+    self.attributeForSorting = attr;
+  }
 
-    function getAttributeForSorting() {
-        return self.attributeForSorting;
-    }
+  function getAttributeForSorting() {
+    return self.attributeForSorting;
+  }
 
-    return {
-        setAttributesForPCA,
-        getAttributesForPCA,
-        setAttributeForSorting,
-        getAttributeForSorting
-    };
+  function setSelectedAnimal(animal) {
+    self.selectedAnimal = animal;
+  }
+
+  function getSelectedAnimal() {
+    return self.selectedAnimal;
+  }
+
+  return {
+    setAttributesForPCA,
+    getAttributesForPCA,
+    setAttributeForSorting,
+    getAttributeForSorting,
+    setSelectedAnimal,
+    getSelectedAnimal
+  };
 
 }
