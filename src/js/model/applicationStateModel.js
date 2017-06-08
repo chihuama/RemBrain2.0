@@ -9,7 +9,7 @@ let ApplicationStateModel = function() {
         attributeForSorting: "Animal Name" // default by name
     };
 
-    function AttributesForPCA(attrs) {
+    function setAttributesForPCA(attrs) {
         self.attributesForPCA = attrs;
     }
 
