@@ -38,7 +38,7 @@ let KiviatSortingController = function() {
         let sortInd = App.models.networkMetrics.calculateSortIndBy(self.currentAttribute);
 
         // update views
-        App.views.kiviatSummary.sortBy(sortInd);
+        App.views.kiviatSummary.setSortInd(sortInd);
     }
 
 
