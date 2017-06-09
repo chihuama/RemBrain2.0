@@ -41,9 +41,9 @@ let KiviatSummaryView = function(targetID) {
        "Old38": {}, ..., "Young40": {}} */
 
     // get attributes from networkMetricsModel
-    // self.attributes = App.models.networkMetrics.getMetricsAttributes();
-    self.attributes = App.sortingAttributes;
-    self.attributes.shift();
+    self.attributes = App.models.networkMetrics.getMetricsAttributes();
+    // self.attributes = App.sortingAttributes;
+    // self.attributes.shift();
 
     for (let attribute of self.attributes) {
       let attributeExtent = App.models.networkMetrics.getAttributesRange()[attribute];
@@ -117,6 +117,7 @@ let KiviatSummaryView = function(targetID) {
       // tool tip circle for each axis
       axesGroup.append("circle")
         .attr("class", "axisTooltipCircle")
+        .attr("id", "attributeInd-" + i)
         .attr("cx", axisEndpoint.x)
         .attr("cy", axisEndpoint.y)
         .attr("r", 4)
@@ -306,12 +307,24 @@ let KiviatSummaryView = function(targetID) {
 
   }
 
+  /* highlight the axis of the selected attribute */
+  function highlightAxis(attr) {
+    _.forEach(self.attributes, function(value, i) {
+      d3.selectAll("#attributeInd-" + i).style("fill", "lightgray");
+    });
+
+    let attrInd = self.attributes.indexOf(attr);
+
+    d3.selectAll("#attributeInd-" + attrInd).style("fill", "red");
+  }
+
 
   return {
     create,
     update,
     updateSortInd,
-    updateAnimal
+    updateAnimal,
+    highlightAxis
   };
 
 }
