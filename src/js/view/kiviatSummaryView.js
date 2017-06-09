@@ -8,6 +8,9 @@ let KiviatSummaryView = function(targetID) {
     targetElement: null,
     targetSvg: null,
 
+    legendElement: null,
+    legendSvg: null,
+
     attributes: [],
     attributeScales: {},
     colorScale: {},
@@ -26,13 +29,20 @@ let KiviatSummaryView = function(targetID) {
 
   function init() {
     self.targetElement = d3.select(targetID);
+    self.legendElement = d3.select(targetID + "-colorLegend");
 
     self.targetSvg = self.targetElement.append("svg")
       .attr("width", self.targetElement.node().clientWidth)
       .attr("height", self.targetElement.node().clientHeight)
       .attr("viewBox", "0 0 500 200")
-      .attr("preserveAspectRatio", "xMidYMid")
-    // .style("background", "pink");
+      .attr("preserveAspectRatio", "xMidYMid");
+
+    self.legendSvg = self.legendElement.append("svg")
+      .attr("width", self.legendElement.node().clientWidth)
+      .attr("height", self.legendElement.node().clientHeight)
+      .attr("viewBox", "0 0 600 60")
+      .attr("preserveAspectRatio", "xMaxYMid");
+      // .style("background", "pink");
   }
 
   function create(networkMetrics) {
@@ -61,6 +71,8 @@ let KiviatSummaryView = function(targetID) {
       .domain(extent)
       .range(["#d18161", "#70a4c2"]);
 
+    drawLegend(extent);
+
     // draw kiviats for each animal
     for (let network of Object.keys(networkMetrics).sort()) {
       let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
@@ -72,6 +84,57 @@ let KiviatSummaryView = function(targetID) {
       // draw the kiviat diagram of the run avg of this animal
       update("kiviatAvg", networkInd, network, networkMetrics[network].runAvg);
     }
+  }
+
+  function drawLegend(domain) {
+    // create the svg:defs element and the main gradient definition
+    let svgDefs = self.legendSvg.append("defs");
+    let legendGradient = svgDefs.append("linearGradient")
+      .attr("id", "legendGradient");
+
+    // create the stops of the main gradient
+    legendGradient.append("stop")
+      .attr("class", "stop-left")
+      .attr("offset", "0");
+
+    legendGradient.append("stop")
+      .attr("class", "stop-middle")
+      .attr("offset", "0.5");
+
+    legendGradient.append("stop")
+      .attr("class", "stop-right")
+      .attr("offset", "1");
+
+    // horizontal gradient
+    legendGradient
+      .attr("x1", "0%")
+      .attr("y1", "0%")
+      .attr("x2", "100%")
+      .attr("y2", "0%");
+
+    self.legendSvg.append("rect")
+      .classed("filled", true)
+      .attr("x", 100)
+      .attr("y", 20)
+      .attr("width", 400)
+      .attr("height", 30)
+      .style("opacity", 0.75);
+
+    for (let i = 0; i < domain.length; i++) {
+      self.legendSvg.append("text")
+        .attr("x", 95 + 450 * i)
+        .attr("y", 40)
+        .style("font-size", "18px")
+        .style("text-anchor", "end")
+        .text(domain[i]);
+    }
+
+    self.legendSvg.append("text")
+      .attr("x", 300)
+      .attr("y", 15)
+      .style("font-size", "20px")
+      .style("text-anchor", "middle")
+      .text("# of active pixels");
   }
 
   function update(type, Ind, label, networkMetricsAtInd) {
