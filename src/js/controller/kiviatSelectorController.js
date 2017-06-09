@@ -20,6 +20,9 @@ let KiviatSelectorController = function() {
 
     // update the kiviat summary view
     App.views.kiviatSummary.updateAnimal(self.currentAnimal);
+
+    // update controllers
+    App.controllers.kiviatSorting.updateSelectedAttribute();
   }
 
   return {

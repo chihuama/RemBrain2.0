@@ -48,7 +48,8 @@ let KiviatSortingController = function() {
 
     return {
         attachToSelect,
-        populateAttributeDropDown
+        populateAttributeDropDown,
+        updateSelectedAttribute
     };
 
 }
