@@ -61,6 +61,7 @@ let KiviatSummaryView = function(targetID) {
       .domain(extent)
       .range(["#d18161", "#70a4c2"]);
 
+    // draw kiviats for each animal
     for (let network of Object.keys(networkMetrics).sort()) {
       let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
 
@@ -78,7 +79,7 @@ let KiviatSummaryView = function(targetID) {
     creatToolTips();
 
     self.targetSvg.call(self.axisTip);
-    // self.targetSvg.call(self.centerTip);
+    self.targetSvg.call(self.centerTip);
 
     let translateGroup = self.targetSvg.append("g")
       // .attr("class", type)
@@ -92,6 +93,19 @@ let KiviatSummaryView = function(targetID) {
     let pathGroup = translateGroup.append("path")
       .attr("class", "kiviatPath");
 
+    // tool tip circle in the center to show the network size
+    translateGroup.append("circle")
+      .attr("class", "centerTooltipCircle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 8)
+      .style("opacity", 0.05)
+      .datum({
+        "attr": "# of active pixels",
+        "val": (networkMetricsAtInd.size).toFixed(0)
+      })
+      .on('mouseover', self.centerTip.show)
+      .on('mouseout', self.centerTip.hide);
 
     // draw axes
     for (let i = 0; i < self.attributes.length; i++) {
@@ -120,7 +134,7 @@ let KiviatSummaryView = function(targetID) {
         .attr("id", "attributeInd-" + i)
         .attr("cx", axisEndpoint.x)
         .attr("cy", axisEndpoint.y)
-        .attr("r", 4)
+        .attr("r", 5)
         .style("opacity", 0.25)
         .datum({
           "attr": self.attributes[i],
@@ -213,14 +227,14 @@ let KiviatSummaryView = function(targetID) {
   function creatToolTips() {
     self.axisTip = d3.tip()
       .attr("class", "d3-tip")
-      .direction("e")
+      .direction("n")
       .html(function(d) {
         return d.attr + ": " + d.val;
       });
 
     self.centerTip = d3.tip()
       .attr("class", "d3-tip")
-      .direction("e")
+      .direction("n")
       .html(function(d) {
         return d.attr + ": " + d.val;
         // return "ID: " + d.ID + "<br>Age: " + d.AgeAtTx + "<br>5y Sur. Pb.: " + d["Probability of Survival"];
@@ -257,8 +271,8 @@ let KiviatSummaryView = function(targetID) {
             (40 + 80 * Math.floor(value / 5)) + ") scale(0.8, 0.8)");
       } else { // 3 rows
         d3.select("#kiviatAll-" + key)
-          .attr("transform", "translate(" + (140 + 80 * (value % 5)) + "," +
-            (30 + 60 * Math.floor(value / 5)) + ") scale(0.8, 0.6)");
+          .attr("transform", "translate(" + (140 + 66 * (value % 5)) + "," +
+            (33 + 66 * Math.floor(value / 5)) + ") scale(0.66, 0.66)");
       }
     });
   }
@@ -300,8 +314,8 @@ let KiviatSummaryView = function(targetID) {
             (40 + 80 * Math.floor(runInd / 5)) + ") scale(0.8, 0.8)");
       } else { // 3 rows
         d3.select("#kiviatAll-" + runInd)
-          .attr("transform", "translate(" + (140 + 80 * (runInd % 5)) + "," +
-            (30 + 60 * Math.floor(runInd / 5)) + ") scale(0.8, 0.6)");
+          .attr("transform", "translate(" + (140 + 66 * (runInd % 5)) + "," +
+            (33 + 66 * Math.floor(runInd / 5)) + ") scale(0.66, 0.66)");
       }
     }
 

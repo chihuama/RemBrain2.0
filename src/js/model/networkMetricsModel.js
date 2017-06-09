@@ -173,7 +173,7 @@ let NetworkMetricsModel = function() {
 
     for (let animal of Object.keys(App.runs).sort()) {
       let animalInd = Object.keys(App.runs).sort().indexOf(animal);
-      
+
       if (attr === "animal.id") {
         self.avgSortInd[animalInd] = animalInd;
       } else {
@@ -216,6 +216,7 @@ let NetworkMetricsModel = function() {
   }
 
   function calculateAnimalSortIndBy(attr, animal) {
+    self.animalSortInd = {};
     let animalNetworkMetrics = {};
 
     let runs = _.filter(Object.keys(animal), function(o) {
