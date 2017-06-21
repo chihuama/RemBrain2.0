@@ -35,6 +35,7 @@ less.pageLoadFinished
     // create models
     App.models.networkMetrics = new NetworkMetricsModel();
     App.models.applicationState = new ApplicationStateModel();
+    App.models.pca = new PcaModel();
 
     // create views
     App.views.kiviatSummary = new KiviatSummaryView("#kiviatSummary");
@@ -52,6 +53,10 @@ less.pageLoadFinished
         App.controllers.kiviatSorting.attachToSelect(".attribute-dropdown");
 
         App.views.kiviatSummary.create(data);
+
+        // test PCA
+        App.models.pca.getPCA(data, 2);
+        
       })
       .catch(function(err) {
         console.log("Promise Error", err);
