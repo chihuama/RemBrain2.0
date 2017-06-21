@@ -59,28 +59,12 @@ let PcaView = function(targetID) {
       .domain([0.5, -0.6])
       .range([5, 120]);
 
-    let xAxis = self.targetSvg.append("line")
-      .attr("x1", 10)
-      .attr("y1", 120)
-      .attr("x2", 180)
-      .attr("y2", 120)
-      .style("stroke", "black")
-      .style("stroke-width", 1)
-      .style("opacity", "0.7");
-
-    let yAxis = self.targetSvg.append("line")
-      .attr("x1", 10)
-      .attr("y1", 5)
-      .attr("x2", 10)
-      .attr("y2", 120)
-      .style("stroke", "black")
-      .style("stroke-width", 1)
-      .style("opacity", "0.7");
 
     // tool tips
     creatToolTips();
-
     self.targetSvg.call(self.pcaDotTip);
+    self.targetSvg.call(self.pcaAxesLabelTip);
+
 
     let dots = self.targetSvg.selectAll("circle")
       .data(pcaData)
@@ -111,6 +95,7 @@ let PcaView = function(targetID) {
       .style("stroke-width", 1)
       .style("opacity", 0.5);
 
+    // axis label
     let pcaAxesLabel = self.targetSvg.selectAll("text")
       .data(projectedAxes)
       .enter()
@@ -118,11 +103,93 @@ let PcaView = function(targetID) {
       .attr("x", (d) => xScale(d[0]))
       .attr("y", (d) => yScale(d[1]))
       .style("fill", "black")
-      .style("font-size", "8px")
+      .style("font-size", "6px")
       .style("text-anchor", "middle")
       .text(function(d, i) {
-        return i;
+        // return i;
+        return App.sortingAttributes[i + 1];
       });
+
+    // tool tip circle for each axis
+    self.targetSvg.selectAll("circle")
+      .data(projectedAxes)
+      .enter()
+      .append("circle")
+      .attr("cx", (d) => xScale(d[0]))
+      .attr("cy", (d) => yScale(d[1]))
+      .attr("r", 10)
+      .style("fill", "lightgray")
+      .style("opacity", 0.2)
+      .on("mouseover", self.pcaAxesLabelTip.show)
+      .on("mouseout", self.pcaAxesLabelTip.hide);
+
+    // x/y axis
+    let xAxis = self.targetSvg.append("line")
+      .attr("x1", 10)
+      .attr("y1", 120)
+      .attr("x2", 180)
+      .attr("y2", 120)
+      .style("stroke", "black")
+      .style("stroke-width", 1)
+      .style("opacity", "0.7");
+
+    let yAxis = self.targetSvg.append("line")
+      .attr("x1", 10)
+      .attr("y1", 5)
+      .attr("x2", 10)
+      .attr("y2", 120)
+      .style("stroke", "black")
+      .style("stroke-width", 1)
+      .style("opacity", "0.7");
+
+    // label
+    self.targetSvg.append("text")
+      .attr("x", 10)
+      .attr("y", 126)
+      .style("fill", "black")
+      .style("text-anchor", "start")
+      .style("font-size", "6px")
+      .text("-1.4");
+
+    self.targetSvg.append("text")
+      .attr("x", 180)
+      .attr("y", 126)
+      .style("fill", "black")
+      .style("text-anchor", "end")
+      .style("font-size", "6px")
+      .text("0.2");
+
+    self.targetSvg.append("text")
+      .attr("x", 95)
+      .attr("y", 126)
+      .style("fill", "black")
+      .style("text-anchor", "middle")
+      .style("font-size", "6px")
+      .text("PC1");
+
+    self.targetSvg.append("text")
+      .attr("x", 8)
+      .attr("y", 10)
+      .style("fill", "black")
+      .style("text-anchor", "end")
+      .style("font-size", "6px")
+      .text("0.5");
+
+    self.targetSvg.append("text")
+      .attr("x", 8)
+      .attr("y", 120)
+      .style("fill", "black")
+      .style("text-anchor", "end")
+      .style("font-size", "6px")
+      .text("-0.6");
+
+    self.targetSvg.append("text")
+      .attr("x", 8)
+      .attr("y", 65)
+      .style("fill", "black")
+      .style("text-anchor", "end")
+      .style("font-size", "6px")
+      .text("PC2");
   }
 
 
@@ -133,6 +200,13 @@ let PcaView = function(targetID) {
       .html(function(d, i) {
         return Object.keys(App.runs)[i];
       })
+
+    self.pcaAxesLabelTip = d3.tip()
+      .attr("class", "d3-tip")
+      .direction("n")
+      .html(function(d, i) {
+        return App.sortingAttributes[i + 1];
+      });
   }
 
 
