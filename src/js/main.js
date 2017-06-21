@@ -2,11 +2,21 @@
 
 var App = App || {};
 
-less.pageLoadFinished
-  .then(function() {
+let bodyLoadPromise = new Promise(function(resolve, reject) {
+  $(document).ready(function() {
+    console.log("ready");
+    resolve();
+  });
+});
+
+Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
     console.log("less.js Page Load Finished!");
     App.init();
+  })
+  .catch(function(err) {
+    console.log(err);
   });
+  
 
 (function() {
   App.models = {};
@@ -33,11 +43,12 @@ less.pageLoadFinished
 
   App.init = function() {
     // create models
+    App.models.pca = new PcaModel();
     App.models.networkMetrics = new NetworkMetricsModel();
     App.models.applicationState = new ApplicationStateModel();
-    App.models.pca = new PcaModel();
 
     // create views
+    App.views.pca = new PcaView("#pca");
     App.views.kiviatSummary = new KiviatSummaryView("#kiviatSummary");
 
     // create controllers
@@ -55,8 +66,9 @@ less.pageLoadFinished
         App.views.kiviatSummary.create(data);
 
         // test PCA
-        App.models.pca.getPCA(data, 2);
-        
+        let pcaData = App.models.pca.getPCA(data, 2);
+        App.views.pca.pcaPlot(pcaData);
+
       })
       .catch(function(err) {
         console.log("Promise Error", err);

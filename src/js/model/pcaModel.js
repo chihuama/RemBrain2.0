@@ -5,6 +5,11 @@ var App = App || {};
 let PcaModel = function() {
   // codes from http://jsfiddle.net/b7g9c/
 
+  let self = {
+    pcaProjection: [],
+    Umatrix: null
+  };
+
   /* return a matrix of all principle components as column vectors */
   function pca(X) {
     let m = X.length;
@@ -48,13 +53,21 @@ let PcaModel = function() {
 
     console.log(svd);
 
-    let Ureduce = pcaReduce(U, k);
-    console.log(pcaProject(X, Ureduce));
+    let Ureduce  = self.Umatrix = pcaReduce(U, k);
+
+    self.pcaProjection = pcaProject(X, Ureduce);
+    console.log(self.pcaProjection);
+
     return pcaProject(X, Ureduce);
   }
 
+  function applyExistingPCA(data) {
+    return pcaProject(data, self.Umatrix);
+  }
+
   return {
-    getPCA
+    getPCA,
+    applyExistingPCA
   };
 
 }
