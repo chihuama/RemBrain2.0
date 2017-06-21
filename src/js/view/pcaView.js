@@ -80,7 +80,7 @@ let PcaView = function(targetID) {
     // tool tips
     creatToolTips();
 
-    self.targetSvg.call(pcaDotTip);
+    self.targetSvg.call(self.pcaDotTip);
 
     let dots = self.targetSvg.selectAll("circle")
       .data(pcaData)
