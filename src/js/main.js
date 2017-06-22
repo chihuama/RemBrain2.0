@@ -83,9 +83,9 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
         App.models.allPCA = new ProjectionModel(allActivationsMatrix);
 
         // set a projecction mode for averate or all points
-        
-        let projectionMode = "averagePCA"; // or "allPCA"
-        // let projectionMode = "allPCA"; // or "averagePCA"
+
+        // let projectionMode = "averagePCA"; // or "allPCA"
+        let projectionMode = "allPCA"; // or "averagePCA"
         App.views.pca.pcaPlot(data, App.models[projectionMode].pcaProject);
 
       })

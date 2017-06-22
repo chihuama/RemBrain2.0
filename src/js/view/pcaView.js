@@ -34,7 +34,8 @@ let PcaView = function(targetID) {
     let avgActivationsMatrix = _.map(avgActivations, App.activationPropertiesToVector);
     let allActivationsMatrix = _.map(allActivations, App.activationPropertiesToVector);
 
-    let allProjectedPoints = projector(_.concat(avgActivationsMatrix, allActivationsMatrix));
+    // let allProjectedPoints = projector(_.concat(avgActivationsMatrix, allActivationsMatrix));
+    let allProjectedPoints = projector(avgActivationsMatrix);
 
     // calculate the domains of the two principle coordinates
     let pc1Range = d3.extent(allProjectedPoints, tuple => tuple[0]);
@@ -56,10 +57,12 @@ let PcaView = function(targetID) {
 
     let xScale = d3.scaleLinear()
       .domain([-1.4, 0.2])
+      // .domain(pc1Range)
       .range([10, 180]);
 
     let yScale = d3.scaleLinear()
       .domain([0.5, -0.6])
+      // .domain(pc2Range)
       .range([5, 120]);
 
 
@@ -121,7 +124,7 @@ let PcaView = function(targetID) {
               let projectedPoint = projector(App.activationPropertiesToVector(data[mouse].activations[activation]));
               return yScale(projectedPoint[1]);
             });
-            
+
         } else {
           d3.selectAll(".avgActivation")
             .classed("fadedAvgActiv", false);
