@@ -42,12 +42,12 @@ let KiviatSummaryView = function(targetID) {
       .attr("height", self.legendElement.node().clientHeight)
       .attr("viewBox", "0 0 600 60")
       .attr("preserveAspectRatio", "xMaxYMid");
-      // .style("background", "pink");
+    // .style("background", "pink");
   }
 
   function create(networkMetrics) {
     /* networkMetrics data structure:
-      {"Old36": {"a1": {}, "a2": {}, ..., "runAvg": {}, "runMin": {}, "runMax": {}},
+      {"Old36": { activations: {"a1": {}, "a2": {}, ...,}, "average": {}, "runMin": {}, "runMax": {}},
        "Old38": {}, ..., "Young40": {}} */
 
     // get attributes from networkMetricsModel
@@ -82,7 +82,7 @@ let KiviatSummaryView = function(targetID) {
       self.selection[networkInd] = false;
 
       // draw the kiviat diagram of the run avg of this animal
-      update("kiviatAvg", networkInd, network, networkMetrics[network].runAvg);
+      update("kiviatAvg", networkInd, network, networkMetrics[network].average);
     }
   }
 
@@ -120,15 +120,23 @@ let KiviatSummaryView = function(targetID) {
       .attr("height", 30)
       .style("opacity", 0.75);
 
-    for (let i = 0; i < domain.length; i++) {
-      self.legendSvg.append("text")
-        .attr("x", 95 + 450 * i)
-        .attr("y", 40)
-        .style("font-size", "18px")
-        .style("text-anchor", "end")
-        .text(domain[i]);
-    }
+    // min value
+    self.legendSvg.append("text")
+      .attr("x", 95)
+      .attr("y", 40)
+      .style("font-size", "18px")
+      .style("text-anchor", "end")
+      .text(domain[0].toFixed(2));
 
+      // max value
+    self.legendSvg.append("text")
+      .attr("x", 505)
+      .attr("y", 40)
+      .style("font-size", "18px")
+      .style("text-anchor", "start")
+      .text(domain[1].toFixed(2));
+
+    // title
     self.legendSvg.append("text")
       .attr("x", 300)
       .attr("y", 15)
@@ -363,12 +371,13 @@ let KiviatSummaryView = function(targetID) {
   /* update kiviats from the same animal */
   function updateAnimal(animal) {
     // animal Object includes all runs of that animal
-    let runs = _.filter(Object.keys(animal), function(o) {
-      return (o != "runAvg" && o != "runMin" && o != "runMax");
-    });
+    let runs = Object.keys(animal.activations);
+    // let runs = _.filter(Object.keys(animal), function(o) {
+    //   return (o != "runAvg" && o != "runMin" && o != "runMax");
+    // });
 
     for (let runInd in runs) {
-      update("kiviatAll", runInd, runs[runInd], animal[runs[runInd]]);
+      update("kiviatAll", runInd, runs[runInd], animal.activations[runs[runInd]]);
 
       // translate and scale
       if (runs.length <= 10) { // 2 rows

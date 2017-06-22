@@ -16,7 +16,7 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
   .catch(function(err) {
     console.log(err);
   });
-  
+
 
 (function() {
   App.models = {};
@@ -43,6 +43,9 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
 
   App.init = function() {
     // create models
+    App.models.averagePCA = null;
+    App.models.singularPCA = null;
+
     App.models.pca = new PcaModel();
     App.models.networkMetrics = new NetworkMetricsModel();
     App.models.applicationState = new ApplicationStateModel();
@@ -65,14 +68,38 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
 
         App.views.kiviatSummary.create(data);
 
-        // test PCA
-        let pcaData = App.models.pca.getPCA(data, 2);
-        App.views.pca.pcaPlot(pcaData);
+        // get flattened arrays of activations as objects
+        let avgActivations = _.map(Object.values(data), mouse => mouse.average);
+        let allActivations = _.flatten(
+          _.map(Object.values(data), mouse => Object.values(mouse.activations))
+        );
+
+        // convert these arrays of objects into vector form
+        let avgActivationsMatrix = _.map(avgActivations, App.activationPropertiesToVector);
+        let allActivationsMatrix = _.map(allActivations, App.activationPropertiesToVector);
+
+        // create a projection based on each set of vectors
+        App.models.averagePCA = new ProjectionModel(avgActivationsMatrix);
+        App.models.allPCA = new ProjectionModel(allActivationsMatrix);
+
+        // set a projecction mode for averate or all points
+        
+        let projectionMode = "averagePCA"; // or "allPCA"
+        // let projectionMode = "allPCA"; // or "averagePCA"
+        App.views.pca.pcaPlot(data, App.models[projectionMode].pcaProject);
 
       })
       .catch(function(err) {
         console.log("Promise Error", err);
       });
   };
+
+  // global utility function
+  App.activationPropertiesToVector = function(activation) {
+    return _.map(
+      _.filter(Object.keys(activation), key => key !== 'size'),
+      attr => activation[attr]
+    );
+  }
 
 })();

@@ -25,16 +25,20 @@ let PcaView = function(targetID) {
 
   /* get pca data from pca model, and draw pca plot
      will modify this later */
-  function pcaPlot(pcaData) {
-    let pc1 = pcaData.map(function(tuple) {
-      return tuple[0];
-    });
-    let pc2 = pcaData.map(function(tuple) {
-      return tuple[1];
-    });
+  function pcaPlot(data, projector) {
+    let avgActivations = _.map(Object.values(data), mouse => mouse.average);
+    let allActivations = _.flatten(
+      _.map(Object.values(data), mouse => Object.values(mouse.activations))
+    );
 
-    let pc1Range = d3.extent(pc1);
-    let pc2Range = d3.extent(pc2);
+    let avgActivationsMatrix = _.map(avgActivations, App.activationPropertiesToVector);
+    let allActivationsMatrix = _.map(allActivations, App.activationPropertiesToVector);
+
+    let allProjectedPoints = projector(_.concat(avgActivationsMatrix, allActivationsMatrix));
+
+    // calculate the domains of the two principle coordinates
+    let pc1Range = d3.extent(allProjectedPoints, tuple => tuple[0]);
+    let pc2Range = d3.extent(allProjectedPoints, tuple => tuple[1])
     console.log(pc1Range);
     console.log(pc2Range);
     /******************************/
@@ -48,8 +52,7 @@ let PcaView = function(targetID) {
 
     console.log(xformAxes);
 
-    let projectedAxes = App.models.pca.applyExistingPCA(xformAxes);
-    console.log(projectedAxes);
+    let projectedAxes = App.models.averagePCA.pcaProject(xformAxes);
 
     let xScale = d3.scaleLinear()
       .domain([-1.4, 0.2])
@@ -66,22 +69,73 @@ let PcaView = function(targetID) {
     self.targetSvg.call(self.pcaAxesLabelTip);
 
 
-    let dots = self.targetSvg.selectAll("circle")
-      .data(pcaData)
+    let dots = self.targetSvg.selectAll(".avgActivation")
+      .data(Object.keys(data))
       .enter()
       .append("circle")
-      .attr("cx", (d) => xScale(d[0]))
-      .attr("cy", (d) => yScale(d[1]))
+      .attr("class", "avgActivation")
+      .each(function(d) {
+        // project point from data into the PCA space
+        let projectedPoint = projector(App.activationPropertiesToVector(data[d].average));
+
+        d3.select(this)
+          .attr("cx", () => xScale(projectedPoint[0]))
+          .attr("cy", () => yScale(projectedPoint[1]));
+      })
       .attr("r", 2)
-      .style("fill", function(d, i) {
-        if (i < 5) {
-          return "pink"; // aged
-        } else {
-          return "lightblue"; // young
-        }
+      .style("fill", function(d) {
+        return _.includes(d, "Old") ? "pink" : "lightblue";
       })
       .on("mouseover", self.pcaDotTip.show)
-      .on("mouseout", self.pcaDotTip.hide);
+      .on("mouseout", self.pcaDotTip.hide)
+      .on("click", function(mouse) {
+        let selected = !d3.select(this).classed("selectedAvgActiv");
+
+        d3.selectAll(".avgActivation")
+          .classed("selectedAvgActiv", false);
+
+        d3.select(this).classed("selectedAvgActiv", selected);
+
+        let _this = this;
+
+        if (selected) {
+          d3.selectAll(".avgActivation")
+            .classed("fadedAvgActiv", true);
+
+          self.targetSvg.selectAll(".singleActivation").remove();
+
+          self.targetSvg.selectAll(".singleActivation")
+            .data(Object.keys(data[mouse].activations))
+            .enter()
+            .select(function() {
+              return _this.parentNode.appendChild(_this.cloneNode(true));
+            })
+            .attr("r", 1)
+            .attr("class", "singleActivation")
+            .transition().duration(500)
+            .attr("cx", (activation) => {
+              let projectedPoint = projector(App.activationPropertiesToVector(data[mouse].activations[activation]));
+              return xScale(projectedPoint[0]);
+            })
+            .attr("cy", (activation) => {
+              let projectedPoint = projector(App.activationPropertiesToVector(data[mouse].activations[activation]));
+              return yScale(projectedPoint[1]);
+            });
+            
+        } else {
+          d3.selectAll(".avgActivation")
+            .classed("fadedAvgActiv", false);
+
+          let avgLocation = projector(App.activationPropertiesToVector(data[mouse].average));
+
+          d3.selectAll(".singleActivation")
+            .transition().duration(500)
+            .attr("cx", () => xScale(avgLocation[0]))
+            .attr("cy", () => yScale(avgLocation[1]))
+            .transition().delay(500)
+            .remove();
+        }
+      });
 
     let pcaAxes = self.targetSvg.selectAll("line")
       .data(projectedAxes)
@@ -111,10 +165,11 @@ let PcaView = function(targetID) {
       });
 
     // tool tip circle for each axis
-    self.targetSvg.selectAll("circle")
+    self.targetSvg.selectAll(".axisTooltip")
       .data(projectedAxes)
       .enter()
       .append("circle")
+      .attr("class", "axisTooltip")
       .attr("cx", (d) => xScale(d[0]))
       .attr("cy", (d) => yScale(d[1]))
       .attr("r", 10)
@@ -198,7 +253,7 @@ let PcaView = function(targetID) {
       .attr("class", "d3-tip")
       .direction("n")
       .html(function(d, i) {
-        return Object.keys(App.runs)[i];
+        return d;
       })
 
     self.pcaAxesLabelTip = d3.tip()
