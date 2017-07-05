@@ -136,7 +136,7 @@ let NetworkMetricsModel = function() {
       let attributeValues = [];
 
       _.forEach(Object.values(self.networkMetrics), function(value, key) {
-        _.forEach(Object.values(value), function(d) {
+        _.forEach(Object.values(value.activations), function(d) {
           attributeValues.push(d[attribute]);
         });
       });
@@ -223,9 +223,10 @@ let NetworkMetricsModel = function() {
     self.animalSortInd = {};
     let animalNetworkMetrics = {};
 
-    let runs = _.filter(Object.keys(animal), function(o) {
-      return (o != "runAvg" && o != "runMin" && o != "runMax");
-    });
+    // let runs = _.filter(Object.keys(animal), function(o) {
+    //   return (o != "runAvg" && o != "runMin" && o != "runMax");
+    // });
+    let runs = Object.keys(animal.activations);
 
     for (let run of runs) {
       let runInd = runs.indexOf(run);
@@ -234,10 +235,13 @@ let NetworkMetricsModel = function() {
         self.animalSortInd[runInd] = runInd;
       } else {
         // animal[run].runInd = runInd;
-        animalNetworkMetrics[run] = animal[run];
+        // animalNetworkMetrics[run] = animal[run];
+        animalNetworkMetrics[run] = animal.activations[run];
         animalNetworkMetrics[run].runInd = runInd;
       }
     }
+
+    console.log(animalNetworkMetrics);
 
     let sortedRuns = _.reverse(_.sortBy(animalNetworkMetrics, function(o) {
       return o[attr];

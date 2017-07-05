@@ -57,6 +57,7 @@ let KiviatSummaryView = function(targetID) {
 
     for (let attribute of self.attributes) {
       let attributeExtent = App.models.networkMetrics.getAttributesRange()[attribute];
+      console.log(attributeExtent);
 
       self.attributeScales[attribute] = d3.scaleLinear()
         .domain(attributeExtent)
@@ -156,7 +157,8 @@ let KiviatSummaryView = function(targetID) {
       // .attr("class", type)
       .attr("id", type + "-" + Ind)
       .attr("transform", "translate(" + (50 + 100 * (Ind % 5)) + "," + (50 + 100 * Math.floor(Ind / 5)) + ")")
-      .attr("class", type + "-translateGroup");
+      .attr("class", type + "-translateGroup")
+      .style("opacity", 0);
 
     let axesGroup = translateGroup.append("g")
       .attr("calss", "axesGroup");
@@ -229,6 +231,8 @@ let KiviatSummaryView = function(targetID) {
       .style("font-size", "6px")
       .text(label);
 
+    translateGroup.transition().delay(500)
+      .style("opacity", 1);
 
     /* click on an animal to display all runs of that animal */
     if (type == "kiviatAvg") {
@@ -237,28 +241,36 @@ let KiviatSummaryView = function(targetID) {
         self.selection[Ind] = !self.selection[Ind];
 
         d3.select(".highlight").remove();
-        d3.selectAll(".kiviatAll-translateGroup").remove();
 
-        if (self.selection[Ind]) {
-          self.mode = "all";
-          highlightKiviat(Ind);
-          shrinkAvgKiviats();
 
-          // update kiviat selector controller
-          App.controllers.kiviatSelector.update(Ind);
+        d3.selectAll(".kiviatAll-translateGroup")
+        // .transition().duration(500)
+        //   .style("opacity", 0)
+        //   .transition().delay(500)
+          .remove();
 
-          // set rest selections to false
-          _.forEach(self.selection, function(value, key) {
-            if (key != Ind) {
-              self.selection[key] = false;
-            }
-          });
-        } else {
-          self.mode = "avg";
+        setTimeout(function() {
+          if (self.selection[Ind]) {
+            self.mode = "all";
+            highlightKiviat(Ind);
+            shrinkAvgKiviats();
 
-          // reset to origianl views
-          sortAvgKiviats();
-        }
+            // update kiviat selector controller
+            App.controllers.kiviatSelector.update(Ind);
+
+            // set rest selections to false
+            _.forEach(self.selection, function(value, key) {
+              if (key != Ind) {
+                self.selection[key] = false;
+              }
+            });
+          } else {
+            self.mode = "avg";
+
+            // reset to origianl views
+            sortAvgKiviats();
+          }
+        }, 0)
       });
     }
 
@@ -323,7 +335,7 @@ let KiviatSummaryView = function(targetID) {
   /* sort kiviats */
   function sortAvgKiviats() {
     _.forEach(self.sortInd, function(value, key) {
-      d3.select("#kiviatAvg-" + key)
+      d3.select("#kiviatAvg-" + key).transition().duration(500)
         .attr("transform", "translate(" + (50 + 100 * (value % 5)) + "," + (50 + 100 * Math.floor(value / 5)) + ")")
     });
 
@@ -351,7 +363,7 @@ let KiviatSummaryView = function(targetID) {
   /* shrink kiviats */
   function shrinkAvgKiviats() {
     _.forEach(self.sortInd, function(value, key) {
-      d3.select("#kiviatAvg-" + key)
+      d3.select("#kiviatAvg-" + key).transition().duration(500)
         .attr("transform", "translate(" + (20 + 40 * Math.floor(value / 5)) + "," +
           (20 + 40 * (value % 5)) + ") scale(0.4, 0.4)");
     });
