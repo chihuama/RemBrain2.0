@@ -41,12 +41,20 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
     "absence", "visiting", "homing", "avg.group.size", "avg.comm.size", "avg.stay", "max.stay"
   ];
 
+  // initialize the attributes for computing PCA (all as default)
+  App.pcaAttributes = {};
+  for (let attr of App.sortingAttributes) {
+    if (attr != "animal.id") {
+      App.pcaAttributes[attr] = true;
+    }
+  }
+  // console.log(App.pcaAttributes);
+
   App.init = function() {
     // create models
     App.models.averagePCA = null;
     App.models.singularPCA = null;
 
-    App.models.pca = new PcaModel();
     App.models.networkMetrics = new NetworkMetricsModel();
     App.models.applicationState = new ApplicationStateModel();
 
@@ -57,6 +65,7 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();
     App.controllers.kiviatSelector = new KiviatSelectorController();
+    App.controllers.pcaAttrSelector = new PcaAttrSelectorController("#pcaAttributesSelector");
 
 
     // load network metrics from all runs
@@ -97,9 +106,11 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
   // global utility function
   App.activationPropertiesToVector = function(activation) {
     return _.map(
-      _.filter(Object.keys(activation), key => key !== 'size'),
+      // _.filter(Object.keys(activation), key => key !== 'size'),
+      _.filter(Object.keys(activation), key => (key !== 'size' && App.pcaAttributes[key])),
       attr => activation[attr]
     );
   }
+
 
 })();

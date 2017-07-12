@@ -2,131 +2,142 @@
 <html>
 
 <head>
-    <title> RemBrain 2.0 </title>
+  <title> RemBrain 2.0 </title>
 
-    <link rel="stylesheet" href="lib/css/bootstrap.min.css">
-    <link rel="stylesheet" href="lib/css/d3-tip.css">
+  <link rel="stylesheet" href="lib/css/bootstrap.min.css">
+  <link rel="stylesheet" href="lib/css/d3-tip.css">
 
-    <link rel="stylesheet/less" href="src/css/main.less">
-    <link rel="stylesheet/less" href="src/css/pca.less">
-    <link rel="stylesheet/less" href="src/css/slice.less">
-    <link rel="stylesheet/less" href="src/css/kiviatSummary.less">
+  <link rel="stylesheet/less" href="src/css/main.less">
+  <link rel="stylesheet/less" href="src/css/pca.less">
+  <link rel="stylesheet/less" href="src/css/slice.less">
+  <link rel="stylesheet/less" href="src/css/kiviatSummary.less">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.7.2/less.min.js" charset="utf-8"></script>
 
-    <script src="lib/js/d3.v4.min.js" charset="utf-8"></script>
-    <script src="lib/js/jquery.min.js" charset="utf-8"></script>
-    <script src="lib/js/bootstrap.min.js" charset="utf-8"></script>
-    <script src="lib/js/lodash.min.js" charset="utf-8"></script>
-    <script src="lib/js/d3-tip.js" charset="utf-8"></script>
-    <script src="lib/js/numeric-1.2.6.min.js" charset="utf-8"></script>
+  <script src="lib/js/d3.v4.min.js" charset="utf-8"></script>
+  <script src="lib/js/jquery.min.js" charset="utf-8"></script>
+  <script src="lib/js/bootstrap.min.js" charset="utf-8"></script>
+  <script src="lib/js/lodash.min.js" charset="utf-8"></script>
+  <script src="lib/js/d3-tip.js" charset="utf-8"></script>
+  <script src="lib/js/numeric-1.2.6.min.js" charset="utf-8"></script>
 
-    <!-- models -->
-    <script src="src/js/model/pcaModel.js" charset="utf-8"></script>
-    <script src="src/js/model/projectionModel.js" charset="utf-8"></script>
-    <script src="src/js/model/networkMetricsModel.js" charset="utf-8"></script>
-    <script src="src/js/model/applicationStateModel.js" charset="utf-8"></script>
+  <!-- models -->
+  <script src="src/js/model/projectionModel.js" charset="utf-8"></script>
+  <script src="src/js/model/networkMetricsModel.js" charset="utf-8"></script>
+  <script src="src/js/model/applicationStateModel.js" charset="utf-8"></script>
 
-    <!-- views -->
-    <script src="src/js/view/pcaView.js" charset="utf-8"></script>
-    <script src="src/js/view/kiviatSummaryView.js" charset="utf-8"></script>
+  <!-- views -->
+  <script src="src/js/view/pcaView.js" charset="utf-8"></script>
+  <script src="src/js/view/kiviatSummaryView.js" charset="utf-8"></script>
 
-    <!-- controllers -->
-    <script src="src/js/controller/kiviatSortingController.js" charset="utf-8"></script>
-    <script src="src/js/controller/kiviatSelectorController.js" charset="utf-8"></script>
+  <!-- controllers -->
+  <script src="src/js/controller/kiviatSortingController.js" charset="utf-8"></script>
+  <script src="src/js/controller/kiviatSelectorController.js" charset="utf-8"></script>
+  <script src="src/js/controller/pcaAttrSelectorController.js" charset="utf-8"></script>
 
-    <script src="src/js/main.js" charset="utf-8"></script>
+  <script src="src/js/main.js" charset="utf-8"></script>
 
 </head>
 
 <body>
-    <div class="container-fluid">
-        <div class="row" id="title">
-            <nav class="navbar navbar-inverse">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" herf="#"> RemBrain 2.0 </a>
-                    </div>
+  <div class="container-fluid">
+    <div class="row" id="title">
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" herf="#"> RemBrain 2.0 </a>
+          </div>
 
-                    <ul class="nav navbar-nav navbar-right">
-                        <button class="btn btn-link  navbar-btn" data-toggle="modal" data-target="#aboutModal">
+          <ul class="nav navbar-nav navbar-right">
+            <button class="btn btn-link  navbar-btn" data-toggle="modal" data-target="#aboutModal">
                             <span class="glyphicon glyphicon-info-sign"></span> About
                             </button>
-                        <button class="btn btn-link navbar-btn">
+            <button class="btn btn-link navbar-btn">
                               <span class="glyphicon glyphicon-question-sign"></span> Help
                             </button>
-                    </ul>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="row" id="allContent">
+      <div class="row" id="top">
+        <div class="col-md-5 contentWrapper pcaDiv">
+          <div class="contentDiv">
+            <div id="pcaHeader">
+              <div class="row viewTitleDiv">
+                PCA View
+              </div>
+              <div class="row attribute-dropdown-wrapper">
+                <div class="col-md-4" id="pcaLegend">
                 </div>
-            </nav>
+                <div class="dropdown col-md-4">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Attributes
+  <span class="caret"></span></button>
+                  <ul class="dropdown-menu" id="pcaAttributesSelector">
+                    <!-- populating list in controller -->
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div id="pca">
+            </div>
+          </div>
         </div>
 
-        <div class="row" id="allContent">
-            <div class="row" id="top">
-                <div class="col-md-5 contentWrapper pcaDiv">
-                    <div class="contentDiv">
-                        <div id="pcaHeader">
-                            <div class="row viewTitleDiv">
-                                PCA View
-                            </div>
-                        </div>
-                        <div id="pca">
-                        </div>
-                    </div>
+        <div class="col-md-7 contentWrapper kiviatSummaryDiv">
+          <div class="contentDiv">
+            <div id="kiviatSummaryHeader">
+              <div class="row viewTitleDiv">
+                Kiviat Summary View
+              </div>
+              <div class="row attribute-dropdown-wrapper">
+                <div class="col-md-4" id="kiviatSummary-colorLegend">
                 </div>
-
-                <div class="col-md-7 contentWrapper kiviatSummaryDiv">
-                    <div class="contentDiv">
-                        <div id="kiviatSummaryHeader">
-                            <div class="row viewTitleDiv">
-                                Kiviat Summary View
-                            </div>
-                            <div class="row attribute-dropdown-wrapper">
-                                <div class="col-md-4" id="kiviatSummary-colorLegend">
-                                </div>
-                                <div class="col-md-4 form-inline">
-                                    <div class="form-group">
-                                        <label for="kiviatSorting">Sort By:</label>
-                                        <select class="attribute-dropdown form-control input-sm" id="kiviatSorting">
+                <div class="col-md-4 form-inline">
+                  <div class="form-group">
+                    <label for="kiviatSorting">Sort By:</label>
+                    <select class="attribute-dropdown form-control input-sm" id="kiviatSorting">
                                   </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="kiviatSummary">
-                        </div>
-                    </div>
+                  </div>
                 </div>
+              </div>
             </div>
-
-            <div class="row" id="bottom">
-                <div class="row viewTitleDiv" id="bottom-header">
-                    Brain Slice View
-                </div>
-                <div class="row" id="bottom-content">
-                    <div class="col-md-5 contentWrapper sliceDiv">
-                        <div class="contentDiv">
-                            <div id="sliceLeft">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2 contentWrapper sliceDiv">
-                        <div class="contentDiv">
-                            <div id="sliceControl">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5 contentWrapper sliceDiv">
-                        <div class="contentDiv">
-                            <div id="sliceRight">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="kiviatSummary">
             </div>
-
+          </div>
         </div>
+      </div>
+
+      <div class="row" id="bottom">
+        <div class="row viewTitleDiv" id="bottom-header">
+          Brain Slice View
+        </div>
+        <div class="row" id="bottom-content">
+          <div class="col-md-5 contentWrapper sliceDiv">
+            <div class="contentDiv">
+              <div id="sliceLeft">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 contentWrapper sliceDiv">
+            <div class="contentDiv">
+              <div id="sliceControl">
+              </div>
+            </div>
+          </div>
+          <div class="col-md-5 contentWrapper sliceDiv">
+            <div class="contentDiv">
+              <div id="sliceRight">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
+
+  </div>
 </body>
 
 </html>

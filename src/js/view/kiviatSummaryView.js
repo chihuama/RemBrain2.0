@@ -57,7 +57,6 @@ let KiviatSummaryView = function(targetID) {
 
     for (let attribute of self.attributes) {
       let attributeExtent = App.models.networkMetrics.getAttributesRange()[attribute];
-      console.log(attributeExtent);
 
       self.attributeScales[attribute] = d3.scaleLinear()
         .domain(attributeExtent)
