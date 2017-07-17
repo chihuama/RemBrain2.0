@@ -63,18 +63,24 @@ let PcaView = function(targetID) {
     let axisRangePC1 = d3.extent(projectedAxes, tuple => tuple[0]);
     let axisRangePC2 = d3.extent(projectedAxes, tuple => tuple[1]);
 
-    console.log(axisRangePC1[0]);
+
+    let pc1Min = Math.min(-1.4, axisRangePC1[0].toFixed(2));
+    let pc1Max = Math.max(0.2, axisRangePC1[1].toFixed(2));
+    let pc2Min = Math.max(0.5, axisRangePC2[1].toFixed(2));
+    let pc2Max = Math.min(-0.6, axisRangePC2[0].toFixed(2));
+
+    console.log([pc2Min, pc2Max]);
 
 
     let xScale = d3.scaleLinear()
       // .domain([-1.4, 0.2])
-      .domain([Math.min(-1.4, axisRangePC1[0]), Math.max(0.2, axisRangePC1[1])])
+      .domain([pc1Min, pc1Max])
       // .domain(pc1Range)
       .range([10, 180]);
 
     let yScale = d3.scaleLinear()
       // .domain([0.5, -0.6])
-      .domain([Math.max(0.5, axisRangePC2[1]), Math.min(-0.6, axisRangePC2[0])])
+      .domain([pc2Min, pc2Max])
       // .domain(pc2Range)
       .range([5, 120]);
 
@@ -234,7 +240,7 @@ let PcaView = function(targetID) {
       .style("fill", "black")
       .style("text-anchor", "start")
       .style("font-size", "6px")
-      .text("-1.4");
+      .text(pc1Min);
 
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
@@ -243,7 +249,7 @@ let PcaView = function(targetID) {
       .style("fill", "black")
       .style("text-anchor", "end")
       .style("font-size", "6px")
-      .text("0.2");
+      .text(pc1Max);
 
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
@@ -261,7 +267,7 @@ let PcaView = function(targetID) {
       .style("fill", "black")
       .style("text-anchor", "end")
       .style("font-size", "6px")
-      .text("0.5");
+      .text(pc2Max);
 
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
@@ -270,7 +276,7 @@ let PcaView = function(targetID) {
       .style("fill", "black")
       .style("text-anchor", "end")
       .style("font-size", "6px")
-      .text("-0.6");
+      .text(pc2Min);
 
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
