@@ -128,7 +128,7 @@ let KiviatSummaryView = function(targetID) {
       .style("text-anchor", "end")
       .text(domain[0].toFixed(2));
 
-      // max value
+    // max value
     self.legendSvg.append("text")
       .attr("x", 505)
       .attr("y", 40)
@@ -236,43 +236,40 @@ let KiviatSummaryView = function(targetID) {
     /* click on an animal to display all runs of that animal */
     if (type == "kiviatAvg") {
       translateGroup.on("click", function() {
-
-        self.selection[Ind] = !self.selection[Ind];
-
-        d3.select(".highlight").remove();
-
-
-        d3.selectAll(".kiviatAll-translateGroup")
-        // .transition().duration(500)
-        //   .style("opacity", 0)
-        //   .transition().delay(500)
-          .remove();
-
-        setTimeout(function() {
-          if (self.selection[Ind]) {
-            self.mode = "all";
-            highlightKiviat(Ind);
-            shrinkAvgKiviats();
-
-            // update kiviat selector controller
-            App.controllers.kiviatSelector.update(Ind);
-
-            // set rest selections to false
-            _.forEach(self.selection, function(value, key) {
-              if (key != Ind) {
-                self.selection[key] = false;
-              }
-            });
-          } else {
-            self.mode = "avg";
-
-            // reset to origianl views
-            sortAvgKiviats();
-          }
-        }, 0)
+        selectAnimal(Ind);
       });
     }
 
+  }
+
+  function selectAnimal(Ind) {
+    self.selection[Ind] = !self.selection[Ind];
+
+    d3.select(".highlight").remove();
+    d3.selectAll(".kiviatAll-translateGroup").remove();
+
+    setTimeout(function() {
+      if (self.selection[Ind]) {
+        self.mode = "all";
+        highlightKiviat(Ind);
+        shrinkAvgKiviats();
+
+        // update kiviat selector controller
+        App.controllers.kiviatSelector.update(Ind);
+
+        // set rest selections to false
+        _.forEach(self.selection, function(value, key) {
+          if (key != Ind) {
+            self.selection[key] = false;
+          }
+        });
+      } else {
+        self.mode = "avg";
+
+        // reset to origianl views
+        sortAvgKiviats();
+      }
+    }, 0)
   }
 
   /* calculate the path */
@@ -421,7 +418,8 @@ let KiviatSummaryView = function(targetID) {
     update,
     updateSortInd,
     updateAnimal,
-    highlightAxis
+    highlightAxis,
+    selectAnimal
   };
 
 }

@@ -8,24 +8,73 @@ let PcaView = function(targetID) {
     targetElement: null,
     targetSvg: null,
 
+    legendElement: null,
+    legendSvg: null,
+
     pcaDotTip: null,
-    pcaAxesLabelTip: null
+    pcaAxesLabelTip: null,
+
+    data: null,
+    projector: null
   };
 
   init();
 
   function init() {
     self.targetElement = d3.select(targetID);
+    self.legendElement = d3.select(targetID + "-legend");
+
     self.targetSvg = self.targetElement.append("svg")
       .attr("width", self.targetElement.node().clientWidth)
       .attr("height", self.targetElement.node().clientHeight)
       .attr("viewBox", "0 0 180 130")
       .attr("preserveAspectRatio", "xMidYMid");
+
+    self.legendSvg = self.legendElement.append("svg")
+      .attr("width", self.legendElement.node().clientWidth)
+      .attr("height", self.legendElement.node().clientHeight)
+      .attr("viewBox", "0 0 250 50")
+      .attr("preserveAspectRatio", "xMaxYMid");
+
+    drawLegend();
+  }
+
+  function drawLegend() {
+    self.legendSvg.append("circle")
+      .attr("r", 15)
+      .attr("cx", 30)
+      .attr("cy", 25)
+      .style("fill", "pink");
+
+    self.legendSvg.append("text")
+      .attr("x", 50)
+      .attr("y", 35)
+      .style("fill", "black")
+      .style("text-anchor", "start")
+      .style("font-size", "28px")
+      .text("Old");
+
+    self.legendSvg.append("circle")
+      .attr("r", 15)
+      .attr("cx", 130)
+      .attr("cy", 25)
+      .style("fill", "lightblue");
+
+    self.legendSvg.append("text")
+      .attr("x", 150)
+      .attr("y", 35)
+      .style("fill", "black")
+      .style("text-anchor", "start")
+      .style("font-size", "28px")
+      .text("Young");
   }
 
   /* get pca data from pca model, and draw pca plot
      will modify this later */
   function pcaPlot(data, projector) {
+    self.data = data;
+    self.projector = projector;
+
     let avgActivations = _.map(Object.values(data), mouse => mouse.average);
     let allActivations = _.flatten(
       _.map(Object.values(data), mouse => Object.values(mouse.activations))
@@ -71,7 +120,6 @@ let PcaView = function(targetID) {
 
     console.log([pc2Min, pc2Max]);
 
-
     let xScale = d3.scaleLinear()
       // .domain([-1.4, 0.2])
       .domain([pc1Min, pc1Max])
@@ -103,6 +151,7 @@ let PcaView = function(targetID) {
       .enter()
       .append("circle")
       .attr("class", "avgActivation")
+      .attr("id", (d) => d)
       .each(function(d) {
         // project point from data into the PCA space
         let projectedPoint = projector(App.activationPropertiesToVector(data[d].average));
@@ -111,13 +160,15 @@ let PcaView = function(targetID) {
           .attr("cx", () => xScale(projectedPoint[0]))
           .attr("cy", () => yScale(projectedPoint[1]));
       })
-      .attr("r", 2)
+      .attr("r", 3)
       .style("fill", function(d) {
         return _.includes(d, "Old") ? "pink" : "lightblue";
       })
       .on("mouseover", self.pcaDotTip.show)
       .on("mouseout", self.pcaDotTip.hide)
       .on("click", function(mouse) {
+        // let that = this;
+        // selectAnimal(that, mouse);
         let selected = !d3.select(this).classed("selectedAvgActiv");
 
         d3.selectAll(".avgActivation")
@@ -139,7 +190,7 @@ let PcaView = function(targetID) {
             .select(function() {
               return _this.parentNode.appendChild(_this.cloneNode(true));
             })
-            .attr("r", 1)
+            .attr("r", 1.5)
             .attr("class", "singleActivation")
             .transition().duration(500)
             .attr("cx", (activation) => {
@@ -164,6 +215,10 @@ let PcaView = function(targetID) {
             .transition().delay(500)
             .remove();
         }
+
+        let Ind = _.indexOf(Object.keys(App.runs).sort(), mouse);
+        // App.controllers.kiviatSelector.update(Ind);
+        App.views.kiviatSummary.selectAnimal(Ind);
       });
 
     let pcaAxes = self.targetSvg.selectAll("line")
@@ -193,7 +248,7 @@ let PcaView = function(targetID) {
       .style("text-anchor", "middle")
       .text(function(d, i) {
         // return i;
-        ind = _.indexOf(Object.values(App.pcaAttributes), true, ind+1);
+        ind = _.indexOf(Object.values(App.pcaAttributes), true, ind + 1);
         return App.sortingAttributes[ind + 1];
       });
 
@@ -288,6 +343,56 @@ let PcaView = function(targetID) {
       .text("PC2");
   }
 
+  function selectAnimal(that, mouse) {
+    console.log(that);
+    let selected = !d3.select(that).classed("selectedAvgActiv");
+
+    d3.selectAll(".avgActivation")
+      .classed("selectedAvgActiv", false);
+
+    d3.select(that).classed("selectedAvgActiv", selected);
+
+    let _this = that;
+
+    if (selected) {
+      d3.selectAll(".avgActivation")
+        .classed("fadedAvgActiv", true);
+
+      self.targetSvg.selectAll(".singleActivation").remove();
+
+      self.targetSvg.selectAll(".singleActivation")
+        .data(Object.keys(self.data[mouse].activations))
+        .enter()
+        .select(function() {
+          return _this.parentNode.appendChild(_this.cloneNode(true));
+        })
+        .attr("r", 1.5)
+        .attr("class", "singleActivation")
+        .transition().duration(500)
+        .attr("cx", (activation) => {
+          let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
+          return xScale(projectedPoint[0]);
+        })
+        .attr("cy", (activation) => {
+          let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
+          return yScale(projectedPoint[1]);
+        });
+
+    } else {
+      d3.selectAll(".avgActivation")
+        .classed("fadedAvgActiv", false);
+
+      let avgLocation = projector(App.activationPropertiesToVector(self.data[mouse].average));
+
+      d3.selectAll(".singleActivation")
+        .transition().duration(500)
+        .attr("cx", () => xScale(avgLocation[0]))
+        .attr("cy", () => yScale(avgLocation[1]))
+        .transition().delay(500)
+        .remove();
+    }
+  }
+
 
   function creatToolTips() {
     self.pcaDotTip = d3.tip()
@@ -302,7 +407,7 @@ let PcaView = function(targetID) {
       .attr("class", "d3-tip")
       .direction("n")
       .html(function(d, i) {
-        ind = _.indexOf(Object.values(App.pcaAttributes), true, ind+1);
+        ind = _.indexOf(Object.values(App.pcaAttributes), true, ind + 1);
         return App.sortingAttributes[ind + 1];
       });
   }
