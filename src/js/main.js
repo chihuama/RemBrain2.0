@@ -65,6 +65,7 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();
     App.controllers.kiviatSelector = new KiviatSelectorController();
+    App.controllers.animalSelector = new AnimalSelectorController();
     App.controllers.pcaAttrSelector = new PcaAttrSelectorController("#pcaAttributesSelector");
 
 

@@ -15,7 +15,10 @@ let PcaView = function(targetID) {
     pcaAxesLabelTip: null,
 
     data: null,
-    projector: null
+    projector: null,
+
+    xScale: null,
+    yScale: null
   };
 
   init();
@@ -112,21 +115,20 @@ let PcaView = function(targetID) {
     let axisRangePC1 = d3.extent(projectedAxes, tuple => tuple[0]);
     let axisRangePC2 = d3.extent(projectedAxes, tuple => tuple[1]);
 
-
     let pc1Min = Math.min(-1.4, axisRangePC1[0].toFixed(2));
     let pc1Max = Math.max(0.2, axisRangePC1[1].toFixed(2));
     let pc2Min = Math.max(0.5, axisRangePC2[1].toFixed(2));
     let pc2Max = Math.min(-0.6, axisRangePC2[0].toFixed(2));
-
     console.log([pc2Min, pc2Max]);
 
-    let xScale = d3.scaleLinear()
+
+    self.xScale = d3.scaleLinear()
       // .domain([-1.4, 0.2])
       .domain([pc1Min, pc1Max])
       // .domain(pc1Range)
       .range([10, 180]);
 
-    let yScale = d3.scaleLinear()
+    self.yScale = d3.scaleLinear()
       // .domain([0.5, -0.6])
       .domain([pc2Min, pc2Max])
       // .domain(pc2Range)
@@ -157,8 +159,8 @@ let PcaView = function(targetID) {
         let projectedPoint = projector(App.activationPropertiesToVector(data[d].average));
 
         d3.select(this)
-          .attr("cx", () => xScale(projectedPoint[0]))
-          .attr("cy", () => yScale(projectedPoint[1]));
+          .attr("cx", () => self.xScale(projectedPoint[0]))
+          .attr("cy", () => self.yScale(projectedPoint[1]));
       })
       .attr("r", 3)
       .style("fill", function(d) {
@@ -167,58 +169,7 @@ let PcaView = function(targetID) {
       .on("mouseover", self.pcaDotTip.show)
       .on("mouseout", self.pcaDotTip.hide)
       .on("click", function(mouse) {
-        // let that = this;
-        // selectAnimal(that, mouse);
-        let selected = !d3.select(this).classed("selectedAvgActiv");
-
-        d3.selectAll(".avgActivation")
-          .classed("selectedAvgActiv", false);
-
-        d3.select(this).classed("selectedAvgActiv", selected);
-
-        let _this = this;
-
-        if (selected) {
-          d3.selectAll(".avgActivation")
-            .classed("fadedAvgActiv", true);
-
-          self.targetSvg.selectAll(".singleActivation").remove();
-
-          self.targetSvg.selectAll(".singleActivation")
-            .data(Object.keys(data[mouse].activations))
-            .enter()
-            .select(function() {
-              return _this.parentNode.appendChild(_this.cloneNode(true));
-            })
-            .attr("r", 1.5)
-            .attr("class", "singleActivation")
-            .transition().duration(500)
-            .attr("cx", (activation) => {
-              let projectedPoint = projector(App.activationPropertiesToVector(data[mouse].activations[activation]));
-              return xScale(projectedPoint[0]);
-            })
-            .attr("cy", (activation) => {
-              let projectedPoint = projector(App.activationPropertiesToVector(data[mouse].activations[activation]));
-              return yScale(projectedPoint[1]);
-            });
-
-        } else {
-          d3.selectAll(".avgActivation")
-            .classed("fadedAvgActiv", false);
-
-          let avgLocation = projector(App.activationPropertiesToVector(data[mouse].average));
-
-          d3.selectAll(".singleActivation")
-            .transition().duration(500)
-            .attr("cx", () => xScale(avgLocation[0]))
-            .attr("cy", () => yScale(avgLocation[1]))
-            .transition().delay(500)
-            .remove();
-        }
-
-        let Ind = _.indexOf(Object.keys(App.runs).sort(), mouse);
-        // App.controllers.kiviatSelector.update(Ind);
-        App.views.kiviatSummary.selectAnimal(Ind);
+        App.controllers.animalSelector.updateFromPCA(mouse);
       });
 
     let pcaAxes = self.targetSvg.selectAll("line")
@@ -226,10 +177,10 @@ let PcaView = function(targetID) {
       .enter()
       .append("line")
       .attr("class", "pcaAxis")
-      .attr("x1", xScale(0))
-      .attr("y1", yScale(0))
-      .attr('x2', (d) => xScale(d[0]))
-      .attr("y2", (d) => yScale(d[1]))
+      .attr("x1", self.xScale(0))
+      .attr("y1", self.yScale(0))
+      .attr('x2', (d) => self.xScale(d[0]))
+      .attr("y2", (d) => self.yScale(d[1]))
       .style("stroke", "gray")
       .style("stroke-width", 1)
       .style("opacity", 0.5);
@@ -241,8 +192,8 @@ let PcaView = function(targetID) {
       .enter()
       .append("text")
       .attr("class", "pcaAxislabel")
-      .attr("x", (d) => xScale(d[0]))
-      .attr("y", (d) => yScale(d[1]))
+      .attr("x", (d) => self.xScale(d[0]))
+      .attr("y", (d) => self.yScale(d[1]))
       .style("fill", "black")
       .style("font-size", "6px")
       .style("text-anchor", "middle")
@@ -258,8 +209,8 @@ let PcaView = function(targetID) {
       .enter()
       .append("circle")
       .attr("class", "axisTooltip")
-      .attr("cx", (d) => xScale(d[0]))
-      .attr("cy", (d) => yScale(d[1]))
+      .attr("cx", (d) => self.xScale(d[0]))
+      .attr("cy", (d) => self.yScale(d[1]))
       .attr("r", 5)
       .style("fill", "lightgray")
       .style("opacity", 0.2)
@@ -267,6 +218,65 @@ let PcaView = function(targetID) {
       .on("mouseout", self.pcaAxesLabelTip.hide);
 
     // x/y axis
+    xyAxis();
+    // x/y axis labels
+    xyAxisLabels(pc1Min, pc1Max, pc2Min, pc2Max);
+  }
+
+  function selectAnimal(id) {
+
+    let mouse = id;
+
+    let selected = !d3.select("#"+id).classed("selectedAvgActiv");
+
+    d3.selectAll(".avgActivation")
+      .classed("selectedAvgActiv", false);
+
+    d3.select("#"+id).classed("selectedAvgActiv", selected);
+
+    // let _this = this;
+
+    if (selected) {
+      d3.selectAll(".avgActivation")
+        .classed("fadedAvgActiv", true);
+
+      self.targetSvg.selectAll(".singleActivation").remove();
+
+      self.targetSvg.selectAll(".singleActivation")
+        .data(Object.keys(self.data[mouse].activations))
+        .enter()
+        .select(function() {
+          // return _this.parentNode.appendChild(_this.cloneNode(true));
+          return d3.select("#"+id)["_groups"][0][0].parentNode.appendChild(d3.select("#"+id)["_groups"][0][0].cloneNode(true));
+        })
+        .attr("r", 1.5)
+        .attr("class", "singleActivation")
+        .transition().duration(500)
+        .attr("cx", (activation) => {
+          let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
+          return self.xScale(projectedPoint[0]);
+        })
+        .attr("cy", (activation) => {
+          let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
+          return self.yScale(projectedPoint[1]);
+        });
+    } else {
+      d3.selectAll(".avgActivation")
+        .classed("fadedAvgActiv", false);
+
+      let avgLocation = self.projector(App.activationPropertiesToVector(self.data[mouse].average));
+
+      d3.selectAll(".singleActivation")
+        .transition().duration(500)
+        .attr("cx", () => self.xScale(avgLocation[0]))
+        .attr("cy", () => self.yScale(avgLocation[1]))
+        .transition().delay(500)
+        .remove();
+    }
+  }
+
+
+  function xyAxis() {
     let xAxis = self.targetSvg.append("line")
       .attr("class", "pcaAxis")
       .attr("x1", 10)
@@ -286,8 +296,9 @@ let PcaView = function(targetID) {
       .style("stroke", "black")
       .style("stroke-width", 1)
       .style("opacity", "0.7");
+  }
 
-    // label
+  function xyAxisLabels(pc1Min, pc1Max, pc2Min, pc2Max) {
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
       .attr("x", 10)
@@ -343,56 +354,6 @@ let PcaView = function(targetID) {
       .text("PC2");
   }
 
-  function selectAnimal(that, mouse) {
-    console.log(that);
-    let selected = !d3.select(that).classed("selectedAvgActiv");
-
-    d3.selectAll(".avgActivation")
-      .classed("selectedAvgActiv", false);
-
-    d3.select(that).classed("selectedAvgActiv", selected);
-
-    let _this = that;
-
-    if (selected) {
-      d3.selectAll(".avgActivation")
-        .classed("fadedAvgActiv", true);
-
-      self.targetSvg.selectAll(".singleActivation").remove();
-
-      self.targetSvg.selectAll(".singleActivation")
-        .data(Object.keys(self.data[mouse].activations))
-        .enter()
-        .select(function() {
-          return _this.parentNode.appendChild(_this.cloneNode(true));
-        })
-        .attr("r", 1.5)
-        .attr("class", "singleActivation")
-        .transition().duration(500)
-        .attr("cx", (activation) => {
-          let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
-          return xScale(projectedPoint[0]);
-        })
-        .attr("cy", (activation) => {
-          let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
-          return yScale(projectedPoint[1]);
-        });
-
-    } else {
-      d3.selectAll(".avgActivation")
-        .classed("fadedAvgActiv", false);
-
-      let avgLocation = projector(App.activationPropertiesToVector(self.data[mouse].average));
-
-      d3.selectAll(".singleActivation")
-        .transition().duration(500)
-        .attr("cx", () => xScale(avgLocation[0]))
-        .attr("cy", () => yScale(avgLocation[1]))
-        .transition().delay(500)
-        .remove();
-    }
-  }
-
 
   function creatToolTips() {
     self.pcaDotTip = d3.tip()
@@ -414,7 +375,8 @@ let PcaView = function(targetID) {
 
 
   return {
-    pcaPlot
+    pcaPlot,
+    selectAnimal
   };
 
 }

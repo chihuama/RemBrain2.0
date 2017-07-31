@@ -236,7 +236,7 @@ let KiviatSummaryView = function(targetID) {
     /* click on an animal to display all runs of that animal */
     if (type == "kiviatAvg") {
       translateGroup.on("click", function() {
-        selectAnimal(Ind);
+        App.controllers.animalSelector.updateFromKiviat(Ind);
       });
     }
 
