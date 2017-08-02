@@ -204,18 +204,18 @@ let PcaView = function(targetID) {
       });
 
     // tool tip circle for each axis
-    self.targetSvg.selectAll(".axisTooltip")
-      .data(projectedAxes)
-      .enter()
-      .append("circle")
-      .attr("class", "axisTooltip")
-      .attr("cx", (d) => self.xScale(d[0]))
-      .attr("cy", (d) => self.yScale(d[1]))
-      .attr("r", 5)
-      .style("fill", "lightgray")
-      .style("opacity", 0.2)
-      .on("mouseover", self.pcaAxesLabelTip.show)
-      .on("mouseout", self.pcaAxesLabelTip.hide);
+    // self.targetSvg.selectAll(".axisTooltip")
+    //   .data(projectedAxes)
+    //   .enter()
+    //   .append("circle")
+    //   .attr("class", "axisTooltip")
+    //   .attr("cx", (d) => self.xScale(d[0]))
+    //   .attr("cy", (d) => self.yScale(d[1]))
+    //   .attr("r", 5)
+    //   .style("fill", "lightgray")
+    //   .style("opacity", 0.2)
+    //   .on("mouseover", self.pcaAxesLabelTip.show)
+    //   .on("mouseout", self.pcaAxesLabelTip.hide);
 
     // x/y axis
     xyAxis();
@@ -223,9 +223,8 @@ let PcaView = function(targetID) {
     xyAxisLabels(pc1Min, pc1Max, pc2Min, pc2Max);
   }
 
-  function selectAnimal(id) {
 
-    let mouse = id;
+  function selectAnimal(id) {
 
     let selected = !d3.select("#"+id).classed("selectedAvgActiv");
 
@@ -235,6 +234,7 @@ let PcaView = function(targetID) {
     d3.select("#"+id).classed("selectedAvgActiv", selected);
 
     // let _this = this;
+    let mouse = id;
 
     if (selected) {
       d3.selectAll(".avgActivation")
@@ -368,6 +368,7 @@ let PcaView = function(targetID) {
       .attr("class", "d3-tip")
       .direction("n")
       .html(function(d, i) {
+        // not correct ...
         ind = _.indexOf(Object.values(App.pcaAttributes), true, ind + 1);
         return App.sortingAttributes[ind + 1];
       });
