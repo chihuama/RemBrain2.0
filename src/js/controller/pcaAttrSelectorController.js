@@ -2,11 +2,14 @@
 
 var App = App || {};
 
-let PcaAttrSelectorController = function(listID) {
+let PcaAttrSelectorController = function() {
   let self = {
     list: null,
     attributes: null,
-    checkboxStates: {}
+    checkboxStates: {},
+
+    toggleButtons: null,
+    mode: "byAnimal"
   };
 
   init();
@@ -18,8 +21,12 @@ let PcaAttrSelectorController = function(listID) {
     for (let attribute of self.attributes) {
       self.checkboxStates[attribute] = true;
     }
-    // self.checkboxStates["selectAll"] = false;
 
+    attachToList("#pcaAttributesSelector");
+    attachToSelectToggle("#pcaButton");
+  }
+
+  function attachToList(listID) {
     self.list = d3.select(listID);
 
     self.list.selectAll(".checkbox-li")
@@ -62,6 +69,12 @@ let PcaAttrSelectorController = function(listID) {
       .text("Select All");
   }
 
+  function attachToSelectToggle(buttonID) {
+    self.toggleButtons = d3.selectAll(buttonID)
+      .on("click", toggleButtonOnCLick);
+  }
+
+
   function checkboxOnChange() {
     let checkbox = d3.select(this).node();
 
@@ -88,8 +101,29 @@ let PcaAttrSelectorController = function(listID) {
         App.pcaAttributes[self.attributes[attributeInd]] = true;
       }
       updateViews();
+
+      // let animalId = App.models.applicationState.getSelectedAnimalId();
+      // App.views.pca.selectAnimal(animalId);
     }
   }
+
+  function toggleButtonOnCLick() {
+    self.mode = d3.select(this).attr("value");
+
+    self.toggleButtons.classed("active", function() {
+      return d3.select(this).attr("value") === self.mode;
+    });
+
+    console.log(self.mode);
+
+    if (self.mode === "byAnimal") {
+
+    } else if (self.mode === "byRun") {
+
+    }
+
+  }
+
 
   function updateViews() {
     let data = App.models.networkMetrics.getNetworkMetrics();
@@ -109,10 +143,16 @@ let PcaAttrSelectorController = function(listID) {
     App.models.allPCA = new ProjectionModel(allActivationsMatrix);
 
     // set a projecction mode for averate or all points
-
     // let projectionMode = "averagePCA"; // or "allPCA"
     let projectionMode = "allPCA"; // or "averagePCA"
     App.views.pca.pcaPlot(data, App.models[projectionMode].pcaProject);
+
+    // reset to avg mode for the kiviat summary view
+    let animalId = App.models.applicationState.getSelectedAnimalId();
+    if (animalId != null) {
+      let animalInd = _.indexOf(Object.keys(App.runs).sort(), animalId);
+      App.views.kiviatSummary.selectAnimal(animalInd);
+    }
   }
 
 }

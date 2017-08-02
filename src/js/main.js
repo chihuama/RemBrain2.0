@@ -52,8 +52,8 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
 
   App.init = function() {
     // create models
-    App.models.averagePCA = null;
-    App.models.singularPCA = null;
+    // App.models.averagePCA = null;
+    // App.models.singularPCA = null;
 
     App.models.networkMetrics = new NetworkMetricsModel();
     App.models.applicationState = new ApplicationStateModel();
@@ -66,7 +66,7 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
     App.controllers.kiviatSorting = new KiviatSortingController();
     App.controllers.kiviatSelector = new KiviatSelectorController();
     App.controllers.animalSelector = new AnimalSelectorController();
-    App.controllers.pcaAttrSelector = new PcaAttrSelectorController("#pcaAttributesSelector");
+    App.controllers.pcaAttrSelector = new PcaAttrSelectorController();
 
 
     // load network metrics from all runs
@@ -93,7 +93,6 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
         App.models.allPCA = new ProjectionModel(allActivationsMatrix);
 
         // set a projecction mode for averate or all points
-
         // let projectionMode = "averagePCA"; // or "allPCA"
         let projectionMode = "allPCA"; // or "averagePCA"
         App.views.pca.pcaPlot(data, App.models[projectionMode].pcaProject);

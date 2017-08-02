@@ -7,7 +7,8 @@ let ApplicationStateModel = function() {
   let self = {
     attributesForPCA: [],
     attributeForSorting: "animal.id", // default by name
-    selectedAnimal: null  // objec includes all runs
+    selectedAnimal: null,  // objec includes all runs
+    selectedAnimalId: null
   };
 
   function setAttributesForPCA(attrs) {
@@ -34,13 +35,23 @@ let ApplicationStateModel = function() {
     return self.selectedAnimal;
   }
 
+  function setSelectedAnimalId(animalId) {
+    self.selectedAnimalId = animalId;
+  }
+
+  function getSelectedAnimalId() {
+    return self.selectedAnimalId;
+  }
+
   return {
     setAttributesForPCA,
     getAttributesForPCA,
     setAttributeForSorting,
     getAttributeForSorting,
     setSelectedAnimal,
-    getSelectedAnimal
+    getSelectedAnimal,
+    setSelectedAnimalId,
+    getSelectedAnimalId
   };
 
 }

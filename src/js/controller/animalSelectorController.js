@@ -12,12 +12,18 @@ let AnimalSelectorController = function() {
     self.animalId = animalId;
     self.animalInd = _.indexOf(Object.keys(App.runs).sort(), animalId);
 
+    // update the application state
+    App.models.applicationState.setSelectedAnimalId(self.animalId);
+
     updateViews();
   }
 
   function updateFromKiviat(Ind) {
-    self.animalInd = Ind
+    self.animalInd = Ind;
     self.animalId = Object.keys(App.runs).sort()[Ind];
+
+    // update the application state
+    App.models.applicationState.setSelectedAnimalId(self.animalId);
 
     updateViews();
   }

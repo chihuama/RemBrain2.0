@@ -88,6 +88,8 @@ let PcaView = function(targetID) {
 
     // let allProjectedPoints = projector(_.concat(avgActivationsMatrix, allActivationsMatrix));
     let allProjectedPoints = projector(avgActivationsMatrix);
+    // let allProjectedPoints = projector(allActivationsMatrix);
+
 
     // calculate the domains of the two principle coordinates
     let pc1Range = d3.extent(allProjectedPoints, tuple => tuple[0]);
@@ -110,7 +112,9 @@ let PcaView = function(targetID) {
       return point;
     });
 
-    let projectedAxes = App.models.averagePCA.pcaProject(xformAxes);
+    // let projectedAxes = App.models.averagePCA.pcaProject(xformAxes);
+    let projectedAxes = projector(xformAxes);
+
 
     let axisRangePC1 = d3.extent(projectedAxes, tuple => tuple[0]);
     let axisRangePC2 = d3.extent(projectedAxes, tuple => tuple[1]);

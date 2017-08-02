@@ -248,6 +248,14 @@ let KiviatSummaryView = function(targetID) {
     d3.select(".highlight").remove();
     d3.selectAll(".kiviatAll-translateGroup").remove();
 
+    // update the application state
+    if (self.selection[Ind]) {
+      let animalId = Object.keys(App.runs).sort()[Ind];
+      App.models.applicationState.setSelectedAnimalId(animalId);
+    } else {
+      App.models.applicationState.setSelectedAnimalId(null);
+    }
+
     setTimeout(function() {
       if (self.selection[Ind]) {
         self.mode = "all";
