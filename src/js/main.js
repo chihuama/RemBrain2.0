@@ -52,9 +52,6 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
 
   App.init = function() {
     // create models
-    // App.models.averagePCA = null;
-    // App.models.singularPCA = null;
-
     App.models.networkMetrics = new NetworkMetricsModel();
     App.models.applicationState = new ApplicationStateModel();
 
@@ -74,28 +71,12 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
       .then(function(data) {
         console.log("Promise Finished", data);
 
+        // controllers
         App.controllers.kiviatSorting.attachToSelect(".attribute-dropdown");
 
+        // views
         App.views.kiviatSummary.create(data);
-
-        // get flattened arrays of activations as objects
-        let avgActivations = _.map(Object.values(data), mouse => mouse.average);
-        let allActivations = _.flatten(
-          _.map(Object.values(data), mouse => Object.values(mouse.activations))
-        );
-
-        // convert these arrays of objects into vector form
-        let avgActivationsMatrix = _.map(avgActivations, App.activationPropertiesToVector);
-        let allActivationsMatrix = _.map(allActivations, App.activationPropertiesToVector);
-
-        // create a projection based on each set of vectors
-        App.models.averagePCA = new ProjectionModel(avgActivationsMatrix);
-        App.models.allPCA = new ProjectionModel(allActivationsMatrix);
-
-        // set a projecction mode for averate or all points
-        // let projectionMode = "averagePCA"; // or "allPCA"
-        let projectionMode = "allPCA"; // or "averagePCA"
-        App.views.pca.pcaPlot(data, App.models[projectionMode].pcaProject);
+        App.views.pca.pcaPlot(data, "averagePCA");
 
       })
       .catch(function(err) {
@@ -111,6 +92,5 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
       attr => activation[attr]
     );
   }
-
 
 })();

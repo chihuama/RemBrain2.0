@@ -9,7 +9,7 @@ let PcaAttrSelectorController = function() {
     checkboxStates: {},
 
     toggleButtons: null,
-    mode: "byAnimal"
+    mode: "averagePCA"
   };
 
   init();
@@ -25,6 +25,7 @@ let PcaAttrSelectorController = function() {
     attachToList("#pcaAttributesSelector");
     attachToSelectToggle("#pcaButton");
   }
+
 
   function attachToList(listID) {
     self.list = d3.select(listID);
@@ -101,7 +102,6 @@ let PcaAttrSelectorController = function() {
         App.pcaAttributes[self.attributes[attributeInd]] = true;
       }
       updateViews();
-
       // let animalId = App.models.applicationState.getSelectedAnimalId();
       // App.views.pca.selectAnimal(animalId);
     }
@@ -116,36 +116,13 @@ let PcaAttrSelectorController = function() {
 
     console.log(self.mode);
 
-    if (self.mode === "byAnimal") {
-
-    } else if (self.mode === "byRun") {
-
-    }
-
+    updateViews();
   }
 
 
   function updateViews() {
     let data = App.models.networkMetrics.getNetworkMetrics();
-
-    // get flattened arrays of activations as objects
-    let avgActivations = _.map(Object.values(data), mouse => mouse.average);
-    let allActivations = _.flatten(
-      _.map(Object.values(data), mouse => Object.values(mouse.activations))
-    );
-
-    // convert these arrays of objects into vector form
-    let avgActivationsMatrix = _.map(avgActivations, App.activationPropertiesToVector);
-    let allActivationsMatrix = _.map(allActivations, App.activationPropertiesToVector);
-
-    // create a projection based on each set of vectors
-    App.models.averagePCA = new ProjectionModel(avgActivationsMatrix);
-    App.models.allPCA = new ProjectionModel(allActivationsMatrix);
-
-    // set a projecction mode for averate or all points
-    // let projectionMode = "averagePCA"; // or "allPCA"
-    let projectionMode = "allPCA"; // or "averagePCA"
-    App.views.pca.pcaPlot(data, App.models[projectionMode].pcaProject);
+    App.views.pca.pcaPlot(data, self.mode);
 
     // reset to avg mode for the kiviat summary view
     let animalId = App.models.applicationState.getSelectedAnimalId();
