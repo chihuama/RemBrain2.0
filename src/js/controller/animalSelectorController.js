@@ -29,7 +29,9 @@ let AnimalSelectorController = function() {
   }
 
   function updateViews() {
-    App.views.pca.selectAnimal(self.animalId);
+    if (App.controllers.pcaAttrSelector.getMode() === "averagePCA") {
+      App.views.pca.selectAnimal(self.animalId);
+    }
     App.views.kiviatSummary.selectAnimal(self.animalInd);
   }
 

@@ -126,10 +126,18 @@ let PcaAttrSelectorController = function() {
 
     // reset to avg mode for the kiviat summary view
     let animalId = App.models.applicationState.getSelectedAnimalId();
-    if (animalId != null) {
-      let animalInd = _.indexOf(Object.keys(App.runs).sort(), animalId);
-      App.views.kiviatSummary.selectAnimal(animalInd);
+    if (animalId != null && self.mode === "averagePCA") {
+      App.views.pca.selectAnimal(animalId);
     }
   }
+
+  function getMode() {
+    return self.mode;
+  }
+
+
+  return {
+    getMode
+  };
 
 }
