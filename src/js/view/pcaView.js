@@ -11,7 +11,8 @@ let PcaView = function(targetID) {
     legendElement: null,
     legendSvg: null,
 
-    pcaDotTip: null,
+    pcaAnimalDotTip: null,
+    pcaRunDotTip: null,
     pcaAxesLabelTip: null,
 
     data: null,
@@ -141,7 +142,8 @@ let PcaView = function(targetID) {
 
     // tool tips
     creatToolTips();
-    self.targetSvg.call(self.pcaDotTip);
+    self.targetSvg.call(self.pcaAnimalDotTip);
+    self.targetSvg.call(self.pcaRunDotTip);
 
 
     self.targetSvg.selectAll(".avgActivation").remove();
@@ -159,6 +161,7 @@ let PcaView = function(targetID) {
         .enter()
         .append("g")
         .attr("class", "allMouse")
+        .attr("id", (d) => d)
         .style("fill", function(d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
         });
@@ -170,6 +173,8 @@ let PcaView = function(targetID) {
         .enter()
         .append("circle")
         .attr("class", "allActivation")
+        .attr("value", (d) => d)
+        .attr("id", (d, i) => i)
         .each(function(d) {
           // project point from data into the PCA space
           let projectedPoint = self.projector(App.activationPropertiesToVector(d));
@@ -180,6 +185,18 @@ let PcaView = function(targetID) {
         })
         .attr("r", 2);
 
+      let animalId = App.models.applicationState.getSelectedAnimalId();
+      if (animalId != null) { // a particular mouse has been selected
+        d3.selectAll(".allMouse").style("opacity", 0.15);
+
+        d3.selectAll("#" + animalId)
+          .style("fill", _.includes(animalId, "Old") ? "pink" : "lightblue")
+          .style("opacity", 1);
+
+        d3.selectAll("#" + animalId).selectAll(".allActivation")
+          .on("mouseover", self.pcaRunDotTip.show)
+          .on("mouseout", self.pcaRunDotTip.hide);
+      }
     } else if (projectionMode === "averagePCA") { // by animal
       let dots = self.targetSvg.selectAll(".avgActivation")
         .data(Object.keys(data))
@@ -199,8 +216,8 @@ let PcaView = function(targetID) {
         .style("fill", function(d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
         })
-        .on("mouseover", self.pcaDotTip.show)
-        .on("mouseout", self.pcaDotTip.hide)
+        .on("mouseover", self.pcaAnimalDotTip.show)
+        .on("mouseout", self.pcaAnimalDotTip.hide)
         .on("click", function(mouse) {
           App.controllers.animalSelector.updateFromPCA(mouse);
         });
@@ -392,12 +409,21 @@ let PcaView = function(targetID) {
 
 
   function creatToolTips() {
-    self.pcaDotTip = d3.tip()
+    self.pcaAnimalDotTip = d3.tip()
       .attr("class", "d3-tip")
       .direction("n")
       .html(function(d, i) {
         return d;
-      })
+      });
+
+    self.pcaRunDotTip = d3.tip()
+      .attr("class", "d3-tip")
+      .direction("n")
+      .html(function(d, i) {
+        let animalId = App.models.applicationState.getSelectedAnimalId();
+        // console.log(d);
+        return _.findKey(self.data[animalId].activations, d);
+      });
 
     let ind = -1;
     self.pcaAxesLabelTip = d3.tip()

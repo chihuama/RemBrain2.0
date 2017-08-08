@@ -240,8 +240,7 @@ let NetworkMetricsModel = function() {
         animalNetworkMetrics[run].runInd = runInd;
       }
     }
-
-    console.log(animalNetworkMetrics);
+    // console.log(animalNetworkMetrics);
 
     let sortedRuns = _.reverse(_.sortBy(animalNetworkMetrics, function(o) {
       return o[attr];
