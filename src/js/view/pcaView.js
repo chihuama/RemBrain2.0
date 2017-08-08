@@ -195,7 +195,10 @@ let PcaView = function(targetID) {
 
         d3.selectAll("#" + animalId).selectAll(".allActivation")
           .on("mouseover", self.pcaRunDotTip.show)
-          .on("mouseout", self.pcaRunDotTip.hide);
+          .on("mouseout", self.pcaRunDotTip.hide)
+          .on("click", function() {
+            console.log("click");
+          });
       }
     } else if (projectionMode === "averagePCA") { // by animal
       let dots = self.targetSvg.selectAll(".avgActivation")

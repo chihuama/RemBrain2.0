@@ -388,9 +388,6 @@ let KiviatSummaryView = function(targetID) {
   function updateAnimal(animal) {
     // animal Object includes all runs of that animal
     let runs = Object.keys(animal.activations);
-    // let runs = _.filter(Object.keys(animal), function(o) {
-    //   return (o != "runAvg" && o != "runMin" && o != "runMax");
-    // });
 
     for (let runInd in runs) {
       update("kiviatAll", runInd, runs[runInd], animal.activations[runs[runInd]]);
@@ -405,8 +402,49 @@ let KiviatSummaryView = function(targetID) {
           .attr("transform", "translate(" + (140 + 66 * (runInd % 5)) + "," +
             (33 + 66 * Math.floor(runInd / 5)) + ") scale(0.66, 0.66)");
       }
-    }
 
+
+      // click a kiviat to load dynamic community data of that run
+      // d3.select("#kiviatAll-" + runInd)
+      //   .on("click", function() {
+      //     // highlight the selected kiviat
+      //     d3.selectAll(".selectedRun").remove();
+      //
+      //     d3.select(this).append("g")
+      //       .attr("class", "selectedRun")
+      //       .append("circle")
+      //       .attr("cx", 0)
+      //       .attr("cy", 0)
+      //       .attr("r", 35)
+      //       .style("fill", "red")
+      //       .style("opacity", 0.25);
+      //   })
+
+      $.contextMenu({
+        selector: "#kiviatAll-" + runInd,
+        callback: function() {
+          let animalId = App.models.applicationState.getSelectedAnimalId();
+          console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
+
+          // highlight the selected kiviat
+          d3.selectAll(".selectedRun").remove();
+          d3.select("#kiviatAll-" + runInd).append("g")
+            .attr("class", "selectedRun")
+            .append("circle")
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", 35)
+            .style("fill", "red")
+            .style("opacity", 0.25);
+        },
+        items: {
+          "loadData": {
+            name: "Load Data"
+          }
+        }
+      });
+
+    }
   }
 
   /* highlight the axis of the selected attribute */
