@@ -424,18 +424,30 @@ let KiviatSummaryView = function(targetID) {
         selector: "#kiviatAll-" + runInd,
         callback: function() {
           let animalId = App.models.applicationState.getSelectedAnimalId();
-          console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
+          // console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
+          App.models.applicationState.setSelectedActivationId(App.runs[animalId][runInd]);
 
-          // highlight the selected kiviat
-          d3.selectAll(".selectedRun").remove();
-          d3.select("#kiviatAll-" + runInd).append("g")
-            .attr("class", "selectedRun")
-            .append("circle")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("r", 35)
-            .style("fill", "red")
-            .style("opacity", 0.25);
+          // load data
+          App.models.networkDynamics.loadNetworkDynamics(animalId, App.runs[animalId][runInd])
+            .then(function(data) {
+              console.log("dynamics: ", data);
+              // highlight the selected kiviat
+              d3.selectAll(".selectedRun").remove();
+              d3.select("#kiviatAll-" + runInd).append("g")
+                .attr("class", "selectedRun")
+                .append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", 35)
+                .style("fill", "red")
+                .style("opacity", 0.25);
+
+              // update image view
+
+            })
+            .catch(function(err) {
+              console.log("Promise Error", err);
+            });
         },
         items: {
           "loadData": {

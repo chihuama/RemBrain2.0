@@ -53,6 +53,7 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
   App.init = function() {
     // create models
     App.models.networkMetrics = new NetworkMetricsModel();
+    App.models.networkDynamics = new NetworkDynamicsModel();
     App.models.applicationState = new ApplicationStateModel();
 
     // create views
