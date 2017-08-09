@@ -59,6 +59,8 @@ Promise.all([bodyLoadPromise,less.pageLoadFinished]).then(function() {
     // create views
     App.views.pca = new PcaView("#pca");
     App.views.kiviatSummary = new KiviatSummaryView("#kiviatSummary");
+    App.views.imageSliceLeft = new ImageSliceView("#imageSliceLeft");
+    App.views.imageSliceRight = new ImageSliceView("#imageSliceRight");
 
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();

@@ -33,6 +33,7 @@
   <!-- views -->
   <script src="src/js/view/pcaView.js" charset="utf-8"></script>
   <script src="src/js/view/kiviatSummaryView.js" charset="utf-8"></script>
+  <script src="src/js/view/imageSliceView.js" charset="utf-8"></script>
 
   <!-- controllers -->
   <script src="src/js/controller/kiviatSortingController.js" charset="utf-8"></script>
@@ -136,14 +137,12 @@
         </div>
         <div class="row" id="bottom-content">
           <div class="col-md-5 contentWrapper sliceDiv">
-            <!-- <div class="contentDiv">
-              <div id="sliceLeft">
-              </div>
-            </div> -->
             <div class="col-md-9 contentWrapper sliceDiv">
               <!-- image view -->
               <div class="row imageDiv">
                 <div class="contentDiv">
+                  <div id="imageSliceLeft">
+                  </div>
                 </div>
               </div>
               <!-- time controller -->
@@ -202,8 +201,8 @@
               <!-- image view -->
               <div class="row imageDiv">
                 <div class="contentDiv">
-                  <!-- <div id="sliceRight">
-                  </div> -->
+                  <div id="imageSliceRight">
+                  </div>
                 </div>
               </div>
               <!-- time controller -->

@@ -422,7 +422,8 @@ let KiviatSummaryView = function(targetID) {
 
       $.contextMenu({
         selector: "#kiviatAll-" + runInd,
-        callback: function() {
+        callback: function(key) {
+          console.log(key);
           let animalId = App.models.applicationState.getSelectedAnimalId();
           // console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
           App.models.applicationState.setSelectedActivationId(App.runs[animalId][runInd]);
@@ -450,8 +451,11 @@ let KiviatSummaryView = function(targetID) {
             });
         },
         items: {
-          "loadData": {
-            name: "Load Data"
+          "imageSliceLeft": {
+            name: "Load Data on Left"
+          },
+          "imageSliceRight": {
+            name: "Load Data on Right"
           }
         }
       });
