@@ -423,7 +423,7 @@ let KiviatSummaryView = function(targetID) {
       $.contextMenu({
         selector: "#kiviatAll-" + runInd,
         callback: function(key) {
-          console.log(key);
+
           let animalId = App.models.applicationState.getSelectedAnimalId();
           // console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
           App.models.applicationState.setSelectedActivationId(App.runs[animalId][runInd]);
@@ -431,7 +431,7 @@ let KiviatSummaryView = function(targetID) {
           // load data
           App.models.networkDynamics.loadNetworkDynamics(animalId, App.runs[animalId][runInd])
             .then(function(data) {
-              console.log("dynamics: ", data);
+              // console.log("dynamics: ", data);
               // highlight the selected kiviat
               d3.selectAll(".selectedRun").remove();
               d3.select("#kiviatAll-" + runInd).append("g")
@@ -443,8 +443,8 @@ let KiviatSummaryView = function(targetID) {
                 .style("fill", "red")
                 .style("opacity", 0.25);
 
-              // update image view
-
+              // update imageSlice views
+              App.views[key].updateView();
             })
             .catch(function(err) {
               console.log("Promise Error", err);

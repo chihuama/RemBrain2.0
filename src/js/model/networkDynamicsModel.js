@@ -14,7 +14,7 @@ let NetworkDynamicsModel = function() {
   function loadNetworkDynamics(animalId, activationId) {
     self.animalId = animalId;
     self.activationId = activationId;
-    console.log("selected run: " + animalId + "-" + activationId);
+    // console.log("selected run: " + animalId + "-" + activationId);
 
     return new Promise(function(resolve, reject) {
       d3.json("data/" + self.animalId + "/" + self.activationId + "/dataCompressed.json", function(error, data) {
