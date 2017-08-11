@@ -51,18 +51,8 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
   // console.log(App.pcaAttributes);
 
   // color scale
-  App.colorScale = [
-    "#cccccc",
-    "#1f78b4",
-    "#ff7f00",
-    "#33a02c",
-    "#e31a1c",
-    "#6a3d9a",
-    "#a6cee3",
-    "#fdbf6f",
-    "#b2df8a",
-    "#fb9a99",
-    "#cab2d6"
+  App.colorScale = ["#cccccc", "#1f78b4", "#ff7f00", "#33a02c", "#e31a1c",
+    "#6a3d9a", "#a6cee3", "#fdbf6f", "#b2df8a", "#fb9a99", "#cab2d6"
   ];
 
   App.init = function() {
@@ -82,6 +72,8 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     App.controllers.kiviatSelector = new KiviatSelectorController();
     App.controllers.animalSelector = new AnimalSelectorController();
     App.controllers.pcaAttrSelector = new PcaAttrSelectorController();
+    App.controllers.timeSliderLeft = new TimeSliderController("#timeSliderLeft");
+    App.controllers.timeSliderRight = new TimeSliderController("#timeSliderRight");
 
 
     // load network metrics from all runs

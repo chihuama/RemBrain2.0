@@ -444,7 +444,8 @@ let KiviatSummaryView = function(targetID) {
                 .style("opacity", 0.25);
 
               // update imageSlice views
-              App.views[key].updateView();
+              App.views[key].update();
+              App.controllers["timeSlider" + key.substr(10)].update();
             })
             .catch(function(err) {
               console.log("Promise Error", err);

@@ -40,6 +40,7 @@
   <script src="src/js/controller/kiviatSelectorController.js" charset="utf-8"></script>
   <script src="src/js/controller/animalSelectorController.js" charset="utf-8"></script>
   <script src="src/js/controller/pcaAttrSelectorController.js" charset="utf-8"></script>
+  <script src="src/js/controller/timeSliderController.js" charset="utf-8"></script>
 
 
   <script src="src/js/main.js" charset="utf-8"></script>
@@ -108,7 +109,7 @@
           <div class="contentDiv">
             <div id="kiviatSummaryHeader">
               <div class="row viewTitleDiv">
-                Kiviat Summary View
+                Network Metrics Summary View
               </div>
               <div class="row attribute-dropdown-wrapper">
                 <div class="col-md-4" id="kiviatSummary-colorLegend">
@@ -133,40 +134,32 @@
 
       <div class="row" id="bottom">
         <div class="row viewTitleDiv" id="bottom-header">
-          Brain Slice View
+          Dynamic Community Distributions per Brain Slice
         </div>
         <div class="row" id="bottom-content">
           <div class="col-md-5 contentWrapper sliceDiv">
-            <div class="col-md-9 contentWrapper sliceDiv">
+            <!-- time controller -->
+            <div class="row timeDiv" id="timeSliderLeft">
+            </div>
+            <div class="row imageDiv" style="height:75%">
               <!-- image view -->
-              <div class="row imageDiv">
-                <div class="contentDiv">
-                  <div id="imageSliceLeft">
+              <div class="col-md-8 contentWrapper sliceDiv">
+                <div class="row" id="imageSliceLeft">
+                </div>
+              </div>
+              <!-- mosaic-matrix views -->
+              <div class="col-md-4 contentWrapper sliceDiv">
+                <div class="row mosaicMatrix">
+                  <div class="contentDiv">
                   </div>
                 </div>
-              </div>
-              <!-- time controller -->
-              <div class="row timeDiv">
-                <div class="contentDiv">
+                <div class="row mosaicMatrix">
+                  <div class="contentDiv">
+                  </div>
                 </div>
-              </div>
-            </div>
-            <!-- mosaic-matrix views -->
-            <div class="col-md-3 contentWrapper sliceDiv">
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
+                <div class="row mosaicMatrix">
+                  <div class="contentDiv">
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,36 +171,28 @@
             </div>
           </div>
           <div class="col-md-5 contentWrapper sliceDiv">
-            <!-- mosaic-matrix views -->
-            <div class="col-md-3 contentWrapper sliceDiv">
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
-              <div class="row mosaicMatrix">
-                <div class="contentDiv">
-                </div>
-              </div>
+            <!-- time controller -->
+            <div class="row timeDiv" id="timeSliderRight">
             </div>
-            <div class="col-md-9 contentWrapper sliceDiv">
-              <!-- image view -->
-              <div class="row imageDiv">
-                <div class="contentDiv">
-                  <div id="imageSliceRight">
+            <div class="row imageDiv" style="height:75%">
+              <!-- mosaic-matrix views -->
+              <div class="col-md-3 contentWrapper sliceDiv">
+                <div class="row mosaicMatrix">
+                  <div class="contentDiv">
+                  </div>
+                </div>
+                <div class="row mosaicMatrix">
+                  <div class="contentDiv">
+                  </div>
+                </div>
+                <div class="row mosaicMatrix">
+                  <div class="contentDiv">
                   </div>
                 </div>
               </div>
-              <!-- time controller -->
-              <div class="row timeDiv">
-                <div class="contentDiv">
+              <!-- image view -->
+              <div class="col-md-9 contentWrapper sliceDiv">
+                <div class="row" id="imageSliceRight">
                 </div>
               </div>
             </div>
