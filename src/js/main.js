@@ -83,6 +83,8 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
 
         // controllers
         App.controllers.kiviatSorting.attachToSelect(".attribute-dropdown");
+        App.controllers.timeSliderLeft.update(App.models.applicationState.getTimeSliderMode());
+        App.controllers.timeSliderRight.update(App.models.applicationState.getTimeSliderMode());
 
         // views
         App.views.kiviatSummary.create(data);
@@ -101,6 +103,15 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
       _.filter(Object.keys(activation), key => (key !== 'size' && App.pcaAttributes[key])),
       attr => activation[attr]
     );
+  }
+
+  //
+  App.timeOpt = function(value) {
+    console.log(value);
+    App.models.applicationState.setTimeSliderMode(value);
+
+    App.controllers.timeSliderLeft.update(value);
+    App.controllers.timeSliderRight.update(value);
   }
 
 })();

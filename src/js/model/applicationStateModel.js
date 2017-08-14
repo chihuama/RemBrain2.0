@@ -10,7 +10,11 @@ let ApplicationStateModel = function() {
 
     selectedAnimal: null,  // objec includes all runs
     selectedAnimalId: null,  // animal.id
-    selectedActivationId: null  // activation.id
+    selectedActivationId: null,  // activation.id
+
+    timeSliderMode: "timeDuration",
+    timeStart: 20,
+    timeSpan: 10
   };
 
   function setAttributesForPCA(attrs) {
@@ -28,6 +32,7 @@ let ApplicationStateModel = function() {
   function getAttributeForSorting() {
     return self.attributeForSorting;
   }
+
 
   function setSelectedAnimal(animal) {
     self.selectedAnimal = animal;
@@ -53,6 +58,32 @@ let ApplicationStateModel = function() {
     return self.selectedActivationId;
   }
 
+
+  function setTimeSliderMode(mode) {
+    self.timeSliderMode = mode;
+  }
+
+  function getTimeSliderMode() {
+    return self.timeSliderMode;
+  }
+
+  function setTimeStart(timeStart) {
+    self.timeStart = Math.round(timeStart);
+  }
+
+  function getTimeStart() {
+    return self.timeStart;
+  }
+
+  function setTimeSpan(timeSpan) {
+    self.timeSpan = Math.round(timeSpan);
+  }
+
+  function getTimeSpan() {
+    return self.timeSpan;
+  }
+
+
   return {
     setAttributesForPCA,
     getAttributesForPCA,
@@ -63,7 +94,13 @@ let ApplicationStateModel = function() {
     setSelectedAnimalId,
     getSelectedAnimalId,
     setSelectedActivationId,
-    getSelectedActivationId
+    getSelectedActivationId,
+    setTimeSliderMode,
+    getTimeSliderMode,
+    setTimeStart,
+    getTimeStart,
+    setTimeSpan,
+    getTimeSpan
   };
 
 }

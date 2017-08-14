@@ -157,16 +157,27 @@
                   <div class="contentDiv">
                   </div>
                 </div>
-                <div class="row mosaicMatrix">
-                  <div class="contentDiv">
-                  </div>
-                </div>
               </div>
             </div>
           </div>
           <div class="col-md-2 contentWrapper sliceDiv">
-            <div class="contentDiv">
-              <div id="sliceControl">
+            <div class="row" id="sliceControl">
+              <input id="timeSync" type="checkbox" style="display:inline" checked> Sync Timelines</input> <br>
+              <input id="timeDuration" type="radio" name="timeline" value="timeDuration" checked onchange="App.timeOpt(this.value)"> Time Duration</input> <br>
+              <input id="timeStep" type="radio" name="timeline" value="timeStep" onchange="App.timeOpt(this.value)"> Time Step</input> <br><br><br>
+              <input id="zoomSync" type="checkbox" style="display:inline" checked> Sync Zoom</input> <br><br>
+
+              <input type="radio" name="overlay" checked> Home Community</input>
+              <input type="radio" name="overlay"> Temporary Community</input>
+              <div class="contentDiv" id="communityControl">
+              </div>
+              <input type="radio" name="overlay"> Homing </input>
+              <input type="radio" name="overlay"> Visiting </input>
+              <input type="radio" name="overlay"> Switching </input>
+              <div class="contentDiv" id="communityBehavior">
+              </div>
+              <input type="radio" name="overlay"> Node Degree</input>
+              <div class="contentDiv" id="nodeDegree">
               </div>
             </div>
           </div>
@@ -176,11 +187,7 @@
             </div>
             <div class="row imageDiv" style="height:75%">
               <!-- mosaic-matrix views -->
-              <div class="col-md-3 contentWrapper sliceDiv">
-                <div class="row mosaicMatrix">
-                  <div class="contentDiv">
-                  </div>
-                </div>
+              <div class="col-md-4 contentWrapper sliceDiv">
                 <div class="row mosaicMatrix">
                   <div class="contentDiv">
                   </div>
@@ -191,7 +198,7 @@
                 </div>
               </div>
               <!-- image view -->
-              <div class="col-md-9 contentWrapper sliceDiv">
+              <div class="col-md-8 contentWrapper sliceDiv">
                 <div class="row" id="imageSliceRight">
                 </div>
               </div>

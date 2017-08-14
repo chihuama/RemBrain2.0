@@ -24,6 +24,10 @@ let NetworkDynamicsModel = function() {
 
         self.networkDynamics = data;
 
+        for(let time of Object.keys(self.networkDynamics)) {
+          delete self.networkDynamics[time].size;
+        }
+
         resolve(self.networkDynamics);
       });
     });

@@ -51,21 +51,58 @@ let ImageSliceView = function(targetID) {
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
 
     // dynamic community info for all active nodes
+    let currentTime = App.models.applicationState.getTimeStart();
     self.targetSvg.selectAll("circle")
-      .data(Object.keys(self.networkDynamics[self.currentTime]))
+      .data(Object.keys(self.networkDynamics[currentTime]))
       .enter()
       .append("circle")
       .attr("class", "activeNodes" + targetName)
       .attr("cx", (d) => d % 172)
       .attr("cy", (d) => Math.floor(d / 172))
       .attr("r", 0.5)
-      .style("fill", (d) => App.colorScale[self.networkDynamics[self.currentTime][d][1]]);
+      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
+
+  }
+
+  function updateOverlay() {
+    let targetName = targetID.substr(1);
+    let currentTime = App.models.applicationState.getTimeStart();
+    console.log(currentTime);
+
+    // let bind = self.targetSvg.selectAll(".activeNodes" + targetName)
+    //   .data(Object.keys(self.networkDynamics[currentTime]));
+    //
+    // bind.exit().remove();
+    //
+    // self.targetSvg.selectAll(".activeNodes" + targetName)
+    //   .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
+    //
+    // bind.enter()
+    //   .append("circle")
+    //   .attr("class", "activeNodes" + targetName)
+    //   .attr("cx", (d) => d % 172)
+    //   .attr("cy", (d) => Math.floor(d / 172))
+    //   .attr("r", 0.5)
+    //   .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
+
+    d3.selectAll(".activeNodes" + targetName).remove();
+    
+    self.targetSvg.selectAll("circle")
+      .data(Object.keys(self.networkDynamics[currentTime]))
+      .enter()
+      .append("circle")
+      .attr("class", "activeNodes" + targetName)
+      .attr("cx", (d) => d % 172)
+      .attr("cy", (d) => Math.floor(d / 172))
+      .attr("r", 0.5)
+      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
 
   }
 
 
   return {
-    update
+    update,
+    updateOverlay
   };
 
 }
