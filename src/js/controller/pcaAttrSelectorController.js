@@ -7,6 +7,7 @@ let PcaAttrSelectorController = function() {
     list: null,
     attributes: null,
     checkboxStates: {},
+    selectedAttrInds: [],
 
     toggleButtons: null,
     mode: "averagePCA"
@@ -21,6 +22,8 @@ let PcaAttrSelectorController = function() {
     for (let attribute of self.attributes) {
       self.checkboxStates[attribute] = true;
     }
+
+    self.selectedAttrInds = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
     attachToList("#pcaAttributesSelector");
     attachToSelectToggle("#pcaButton");
@@ -89,6 +92,7 @@ let PcaAttrSelectorController = function() {
 
     App.pcaAttributes[checkbox.value] = checkbox.checked;
 
+    updateSelectedAttrInds();
     updateViews();
   }
 
@@ -101,10 +105,20 @@ let PcaAttrSelectorController = function() {
         d3.select("#pcaAttrCheck-" + attributeInd).node().checked = true;
         App.pcaAttributes[self.attributes[attributeInd]] = true;
       }
+      updateSelectedAttrInds();
       updateViews();
       // let animalId = App.models.applicationState.getSelectedAnimalId();
       // App.views.pca.selectAnimal(animalId);
     }
+  }
+
+  function updateSelectedAttrInds() {
+    self.selectedAttrInds = [];
+    _.forEach(Object.values(App.pcaAttributes), function(value, i) {
+      if (value === true) {
+        self.selectedAttrInds.push(i);
+      }
+    });
   }
 
   function toggleButtonOnCLick() {
@@ -135,9 +149,14 @@ let PcaAttrSelectorController = function() {
     return self.mode;
   }
 
+  function getSelectedAttrInds() {
+    return self.selectedAttrInds;
+  }
+
 
   return {
-    getMode
+    getMode,
+    getSelectedAttrInds
   };
 
 }

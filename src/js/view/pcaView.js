@@ -106,6 +106,7 @@ let PcaView = function(targetID) {
     // calculate the domains of the two principle coordinates
     let pc1Range = d3.extent(allProjectedPoints, tuple => tuple[0]);
     let pc2Range = d3.extent(allProjectedPoints, tuple => tuple[1]);
+    // console.log(pc1Range, pc2Range);
 
     // project the attribute axes on the 2D projection space
     let attrNum = 0;
@@ -126,24 +127,34 @@ let PcaView = function(targetID) {
     // calculate the domains of all attributtes
     let axisRangePC1 = d3.extent(projectedAxes, tuple => tuple[0]);
     let axisRangePC2 = d3.extent(projectedAxes, tuple => tuple[1]);
+    // console.log(axisRangePC1, axisRangePC2);
 
-    let pc1Min = Math.min(-1.4, axisRangePC1[0].toFixed(2));
-    let pc1Max = Math.max(0.2, axisRangePC1[1].toFixed(2));
-    let pc2Min = Math.max(0.5, axisRangePC2[1].toFixed(2));
-    let pc2Max = Math.min(-0.6, axisRangePC2[0].toFixed(2));
+    let pc1Min = Math.min(pc1Range[0], axisRangePC1[0]);
+    let pc1Max = Math.max(pc1Range[1], axisRangePC1[1]);
+    let pc2Min = Math.min(pc2Range[0], axisRangePC2[0]);
+    let pc2Max = Math.max(pc2Range[1], axisRangePC2[1]);
+    // console.log([pc1Min, pc1Max], [pc2Min, pc2Max]);
+
+    pc1Min = (pc1Min - 0.1).toFixed(1);
+    pc1Max = (pc1Max + 0.1).toFixed(1);
+    pc2Min = (pc2Min - 0.1).toFixed(1);
+    pc2Max = (pc2Max + 0.1).toFixed(1);
+    // console.log([pc1Min, pc1Max], [pc2Min, pc2Max]);
+
 
     self.xScale = d3.scaleLinear()
       .domain([pc1Min, pc1Max])
       .range([10, 180]);
 
     self.yScale = d3.scaleLinear()
-      .domain([pc2Min, pc2Max])
+      .domain([pc2Max, pc2Min])
       .range([5, 120]);
 
     // tool tips
     creatToolTips();
     self.targetSvg.call(self.pcaAnimalDotTip);
     self.targetSvg.call(self.pcaRunDotTip);
+    self.targetSvg.call(self.pcaAxesLabelTip);
 
 
     self.targetSvg.selectAll(".avgActivation").remove();
@@ -152,7 +163,7 @@ let PcaView = function(targetID) {
     self.targetSvg.selectAll(".allActivation").remove();
     self.targetSvg.selectAll(".pcaAxis").remove();
     self.targetSvg.selectAll(".pcaAxislabel").remove();
-    // self.targetSvg.selectAll(".axisTooltip").remove();
+    self.targetSvg.selectAll(".axisTooltip").remove();
 
     // dots
     if (projectionMode === "allPCA") { // by run
@@ -215,7 +226,7 @@ let PcaView = function(targetID) {
             .attr("cx", () => self.xScale(projectedPoint[0]))
             .attr("cy", () => self.yScale(projectedPoint[1]));
         })
-        .attr("r", 3)
+        .attr("r", 4)
         .style("fill", function(d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
         })
@@ -239,39 +250,39 @@ let PcaView = function(targetID) {
       .attr('x2', (d) => self.xScale(d[0]))
       .attr("y2", (d) => self.yScale(d[1]))
       .style("stroke", "gray")
-      .style("stroke-width", 1)
+      .style("stroke-width", 0.5)
       .style("opacity", 0.5);
 
-    // attribute axes labels
-    let ind = -1;
-    let pcaAxesLabel = self.targetSvg.selectAll("text")
-      .data(projectedAxes)
-      .enter()
-      .append("text")
-      .attr("class", "pcaAxislabel")
-      .attr("x", (d) => self.xScale(d[0]))
-      .attr("y", (d) => self.yScale(d[1]))
-      .style("fill", "black")
-      .style("font-size", "6px")
-      .style("text-anchor", "middle")
-      .text(function(d, i) {
-        ind = _.indexOf(Object.values(App.pcaAttributes), true, ind + 1);
-        return App.sortingAttributes[ind + 1];
-      });
-
-    // tool tip circle for each axis
-    // self.targetSvg.selectAll(".axisTooltip")
+    // // attribute axes labels
+    // let ind = -1;
+    // let pcaAxesLabel = self.targetSvg.selectAll("text")
     //   .data(projectedAxes)
     //   .enter()
-    //   .append("circle")
-    //   .attr("class", "axisTooltip")
-    //   .attr("cx", (d) => self.xScale(d[0]))
-    //   .attr("cy", (d) => self.yScale(d[1]))
-    //   .attr("r", 5)
-    //   .style("fill", "lightgray")
-    //   .style("opacity", 0.2)
-    //   .on("mouseover", self.pcaAxesLabelTip.show)
-    //   .on("mouseout", self.pcaAxesLabelTip.hide);
+    //   .append("text")
+    //   .attr("class", "pcaAxislabel")
+    //   .attr("x", (d) => self.xScale(d[0]))
+    //   .attr("y", (d) => self.yScale(d[1]))
+    //   .style("fill", "black")
+    //   .style("font-size", "6px")
+    //   .style("text-anchor", "middle")
+    //   .text(function(d, i) {
+    //     ind = _.indexOf(Object.values(App.pcaAttributes), true, ind + 1);
+    //     return App.sortingAttributes[ind + 1];
+    //   });
+
+    // tool tip circle for each axis
+    self.targetSvg.selectAll(".axisTooltip")
+      .data(projectedAxes)
+      .enter()
+      .append("circle")
+      .attr("class", "axisTooltip")
+      .attr("cx", (d) => self.xScale(d[0]))
+      .attr("cy", (d) => self.yScale(d[1]))
+      .attr("r", 3)
+      .style("fill", "lightgray")
+      .style("opacity", 0.2)
+      .on("mouseover", self.pcaAxesLabelTip.show)
+      .on("mouseout", self.pcaAxesLabelTip.hide);
 
     // x/y axis
     xyAxis();
@@ -305,7 +316,7 @@ let PcaView = function(targetID) {
           // return _this.parentNode.appendChild(_this.cloneNode(true));
           return d3.select("#" + id)["_groups"][0][0].parentNode.appendChild(d3.select("#" + id)["_groups"][0][0].cloneNode(true));
         })
-        .attr("r", 1.5)
+        .attr("r", 2)
         .attr("class", "singleActivation")
         .transition().duration(500)
         .attr("cx", (activation) => {
@@ -424,18 +435,15 @@ let PcaView = function(targetID) {
       .direction("n")
       .html(function(d, i) {
         let animalId = App.models.applicationState.getSelectedAnimalId();
-        // console.log(d);
         return _.findKey(self.data[animalId].activations, d);
       });
 
-    let ind = -1;
     self.pcaAxesLabelTip = d3.tip()
       .attr("class", "d3-tip")
       .direction("n")
       .html(function(d, i) {
-        // not correct ...
-        ind = _.indexOf(Object.values(App.pcaAttributes), true, ind + 1);
-        return App.sortingAttributes[ind + 1];
+        let selectedAttrInds = App.controllers.pcaAttrSelector.getSelectedAttrInds();
+        return App.sortingAttributes[selectedAttrInds[i] + 1];
       });
   }
 
