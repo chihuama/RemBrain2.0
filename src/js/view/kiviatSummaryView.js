@@ -18,9 +18,9 @@ let KiviatSummaryView = function(targetID) {
     axisTip: null,
     centerTip: null,
 
-    sortInd: {},
     selection: {},
     animalSortInd: {},
+    activationSortInd: {},
 
     mode: "avg" // or "all"
   };
@@ -52,8 +52,6 @@ let KiviatSummaryView = function(targetID) {
 
     // get attributes from networkMetricsModel
     self.attributes = App.models.networkMetrics.getMetricsAttributes();
-    // self.attributes = App.sortingAttributes;
-    // self.attributes.shift();
 
     for (let attribute of self.attributes) {
       let attributeExtent = App.models.networkMetrics.getAttributesRange()[attribute];
@@ -74,15 +72,25 @@ let KiviatSummaryView = function(targetID) {
     drawLegend(extent);
 
     // draw kiviats for each animal
-    for (let network of Object.keys(networkMetrics).sort()) {
-      let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
+    // for (let network of Object.keys(networkMetrics).sort()) {
+    //   let networkInd = Object.keys(networkMetrics).sort().indexOf(network);
+    //
+    //   // initialize sortInd and selection
+    //   self.sortInd[networkInd] = networkInd;
+    //   self.selection[networkInd] = false;
+    //
+    //   // draw the kiviat diagram of the run avg of this animal
+    //   update("kiviatAvg", networkInd, network, networkMetrics[network].average);
+    // }
 
-      // initialize sortInd and selection
-      self.sortInd[networkInd] = networkInd;
-      self.selection[networkInd] = false;
+    // revised
+    for (let animalId of Object.keys(networkMetrics).sort()) {
+      // initialize selection and animalSortInd
+      self.selection[animalId] = false;
+      self.animalSortInd[animalId] = Object.keys(networkMetrics).sort().indexOf(animalId);
 
       // draw the kiviat diagram of the run avg of this animal
-      update("kiviatAvg", networkInd, network, networkMetrics[network].average);
+      drawKiviats("kiviatAvg", animalId, networkMetrics[animalId].average);
     }
   }
 
@@ -145,18 +153,114 @@ let KiviatSummaryView = function(targetID) {
       .text("# of active pixels");
   }
 
-  function update(type, Ind, label, networkMetricsAtInd) {
+  // function update(type, Ind, label, networkMetricsAtInd) {
+  //
+  //   creatToolTips();
+  //
+  //   self.targetSvg.call(self.axisTip);
+  //   self.targetSvg.call(self.centerTip);
+  //
+  //   let translateGroup = self.targetSvg.append("g")
+  //     // .attr("class", type)
+  //     .attr("id", type + "-" + Ind)
+  //     .attr("transform", "translate(" + (50 + 100 * (Ind % 5)) + "," + (50 + 100 * Math.floor(Ind / 5)) + ")")
+  //     .attr("class", type + "-translateGroup")
+  //     .style("opacity", 0);
+  //
+  //   let axesGroup = translateGroup.append("g")
+  //     .attr("calss", "axesGroup");
+  //
+  //   let pathGroup = translateGroup.append("path")
+  //     .attr("class", "kiviatPath");
+  //
+  //   // tool tip circle in the center to show the network size
+  //   translateGroup.append("circle")
+  //     .attr("class", "centerTooltipCircle")
+  //     .attr("cx", 0)
+  //     .attr("cy", 0)
+  //     .attr("r", 8)
+  //     .style("opacity", 0.05)
+  //     .datum({
+  //       "attr": "# of active pixels",
+  //       "val": (networkMetricsAtInd.size).toFixed(0)
+  //     })
+  //     .on('mouseover', self.centerTip.show)
+  //     .on('mouseout', self.centerTip.hide);
+  //
+  //   // draw axes
+  //   for (let i = 0; i < self.attributes.length; i++) {
+  //     let axisEndpoint = rotatePointOntoAxis(40, i);
+  //
+  //     axesGroup.append("line")
+  //       .attr("class", "axisLine")
+  //       .attr("x1", 0)
+  //       .attr("y1", 0)
+  //       .attr("x2", axisEndpoint.x)
+  //       .attr("y2", axisEndpoint.y)
+  //       .style("stroke", "darkgray")
+  //       .style("stroke-width", "1px");
+  //
+  //     // axis label
+  //     axesGroup.append("text")
+  //       .attr("x", axisEndpoint.x)
+  //       .attr("y", axisEndpoint.y + 2)
+  //       .style("font-size", "6px")
+  //       .style("text-anchor", "middle")
+  //       .text(i);
+  //
+  //     // tool tip circle for each axis
+  //     axesGroup.append("circle")
+  //       .attr("class", "axisTooltipCircle")
+  //       .attr("id", "attributeInd-" + i)
+  //       .attr("cx", axisEndpoint.x)
+  //       .attr("cy", axisEndpoint.y)
+  //       .attr("r", 5)
+  //       .style("opacity", 0.25)
+  //       .datum({
+  //         "attr": self.attributes[i],
+  //         "val": (networkMetricsAtInd[self.attributes[i]]).toFixed(3)
+  //       })
+  //       .on('mouseover', self.axisTip.show)
+  //       .on('mouseout', self.axisTip.hide);
+  //   }
+  //
+  //   // draw path
+  //   pathGroup.datum(networkMetricsAtInd)
+  //     .attr("d", calculatePath)
+  //     .style("fill", d => self.colorScale(d.size))
+  //     .style("opacity", 0.75);
+  //
+  //   // run name
+  //   translateGroup.append("text")
+  //     .attr("class", "networkInd")
+  //     .attr("x", -48)
+  //     .attr("y", -42)
+  //     .style("font-size", "6px")
+  //     .text(label);
+  //
+  //   translateGroup.transition().delay(500)
+  //     .style("opacity", 1);
+  //
+  //   /* click on an animal to display all runs of that animal */
+  //   if (type == "kiviatAvg") {
+  //     translateGroup.on("click", function() {
+  //       App.controllers.animalSelector.updateFromKiviat(Ind);
+  //     });
+  //   }
+  // }
 
+
+  function drawKiviats(mode, animalId, animalIdNetworkMetrics) {
     creatToolTips();
 
     self.targetSvg.call(self.axisTip);
     self.targetSvg.call(self.centerTip);
 
     let translateGroup = self.targetSvg.append("g")
-      // .attr("class", type)
-      .attr("id", type + "-" + Ind)
-      .attr("transform", "translate(" + (50 + 100 * (Ind % 5)) + "," + (50 + 100 * Math.floor(Ind / 5)) + ")")
-      .attr("class", type + "-translateGroup")
+      .attr("id", mode + "-" + animalId)
+      .attr("transform", "translate(" + (50 + 100 * (self.animalSortInd[animalId] % 5)) + "," +
+        (50 + 100 * Math.floor(self.animalSortInd[animalId] / 5)) + ")")
+      .attr("class", mode + "-translateGroup")
       .style("opacity", 0);
 
     let axesGroup = translateGroup.append("g")
@@ -174,7 +278,7 @@ let KiviatSummaryView = function(targetID) {
       .style("opacity", 0.05)
       .datum({
         "attr": "# of active pixels",
-        "val": (networkMetricsAtInd.size).toFixed(0)
+        "val": (animalIdNetworkMetrics.size).toFixed(0)
       })
       .on('mouseover', self.centerTip.show)
       .on('mouseout', self.centerTip.hide);
@@ -210,14 +314,14 @@ let KiviatSummaryView = function(targetID) {
         .style("opacity", 0.25)
         .datum({
           "attr": self.attributes[i],
-          "val": (networkMetricsAtInd[self.attributes[i]]).toFixed(3)
+          "val": (animalIdNetworkMetrics[self.attributes[i]]).toFixed(3)
         })
         .on('mouseover', self.axisTip.show)
         .on('mouseout', self.axisTip.hide);
     }
 
     // draw path
-    pathGroup.datum(networkMetricsAtInd)
+    pathGroup.datum(animalIdNetworkMetrics)
       .attr("d", calculatePath)
       .style("fill", d => self.colorScale(d.size))
       .style("opacity", 0.75);
@@ -228,56 +332,17 @@ let KiviatSummaryView = function(targetID) {
       .attr("x", -48)
       .attr("y", -42)
       .style("font-size", "6px")
-      .text(label);
+      .text(animalId);
 
     translateGroup.transition().delay(500)
       .style("opacity", 1);
 
     /* click on an animal to display all runs of that animal */
-    if (type == "kiviatAvg") {
+    if (mode == "kiviatAvg") {
       translateGroup.on("click", function() {
-        App.controllers.animalSelector.updateFromKiviat(Ind);
+        App.controllers.animalSelector.update(animalId);
       });
     }
-
-  }
-
-  function selectAnimal(Ind) {
-    self.selection[Ind] = !self.selection[Ind];
-
-    d3.select(".highlight").remove();
-    d3.selectAll(".kiviatAll-translateGroup").remove();
-
-    // update the application state
-    if (self.selection[Ind]) {
-      let animalId = Object.keys(App.runs).sort()[Ind];
-      App.models.applicationState.setSelectedAnimalId(animalId);
-    } else {
-      App.models.applicationState.setSelectedAnimalId(null);
-    }
-
-    setTimeout(function() {
-      if (self.selection[Ind]) {
-        self.mode = "all";
-        highlightKiviat(Ind);
-        shrinkAvgKiviats();
-
-        // update kiviat selector controller
-        App.controllers.kiviatSelector.update(Ind);
-
-        // set rest selections to false
-        _.forEach(self.selection, function(value, key) {
-          if (key != Ind) {
-            self.selection[key] = false;
-          }
-        });
-      } else {
-        self.mode = "avg";
-
-        // reset to origianl views
-        sortAvgKiviats();
-      }
-    }, 0)
   }
 
   /* calculate the path */
@@ -324,21 +389,97 @@ let KiviatSummaryView = function(targetID) {
       .direction("n")
       .html(function(d) {
         return d.attr + ": " + d.val;
-        // return "ID: " + d.ID + "<br>Age: " + d.AgeAtTx + "<br>5y Sur. Pb.: " + d["Probability of Survival"];
       });
   }
 
+
+  /* click on a kiviat to select an animal */
+  function selectAnimal(Ind) {
+    self.selection[Ind] = !self.selection[Ind];
+
+    d3.select(".highlight").remove();
+    d3.selectAll(".kiviatAll-translateGroup").remove();
+
+    // update the application state
+    if (self.selection[Ind]) {
+      let animalId = Object.keys(App.runs).sort()[Ind];
+      App.models.applicationState.setSelectedAnimalId(animalId);
+    } else {
+      App.models.applicationState.setSelectedAnimalId(null);
+    }
+
+    setTimeout(function() {
+      if (self.selection[Ind]) {
+        self.mode = "all";
+        highlightKiviat(Ind);
+        shrinkAvgKiviats();
+
+        // update kiviat selector controller
+        App.controllers.kiviatSelector.update(Ind);
+
+        // set rest selections to false
+        _.forEach(self.selection, function(value, key) {
+          if (key != Ind) {
+            self.selection[key] = false;
+          }
+        });
+      } else {
+        self.mode = "avg";
+
+        // reset to origianl views
+        sortAvgKiviats();
+      }
+    }, 0)
+  }
+
+  function selectAnimal2(animalId) {
+    self.selection[animalId] = !self.selection[animalId];
+
+    d3.select(".highlight").remove();
+    d3.selectAll(".kiviatAll-translateGroup").remove();
+
+    // update the application state
+    if (self.selection[animalId]) {
+      App.models.applicationState.setSelectedAnimalId(animalId);
+    } else {
+      App.models.applicationState.setSelectedAnimalId(null);
+    }
+
+    setTimeout(function() {
+      if (self.selection[animalId]) {
+        self.mode = "all";
+        highlightKiviat(animalId);
+        shrinkAvgKiviats();
+
+        // update kiviat selector controller
+        // App.controllers.kiviatSelector.update(Ind);
+
+        // set rest selections to false
+        _.forEach(self.selection, function(value, key) {
+          if (key != animalId) {
+            self.selection[key] = false;
+          }
+        });
+      } else {
+        self.mode = "avg";
+        // reset to origianl views
+        sortAvgKiviats();
+      }
+    }, 0)
+  }
+
+
   /* update sortInd */
-  function updateSortInd(avgSortInd, animalSortInd) {
-    self.sortInd = avgSortInd;
+  function updateSortInd(animalSortInd, activationSortInd) {
     self.animalSortInd = animalSortInd;
+    self.activationSortInd = activationSortInd;
 
     sortAvgKiviats();
   }
 
   /* sort kiviats */
   function sortAvgKiviats() {
-    _.forEach(self.sortInd, function(value, key) {
+    _.forEach(self.animalSortInd, function(value, key) {
       d3.select("#kiviatAvg-" + key).transition().duration(500)
         .attr("transform", "translate(" + (50 + 100 * (value % 5)) + "," + (50 + 100 * Math.floor(value / 5)) + ")")
     });
@@ -351,8 +492,8 @@ let KiviatSummaryView = function(targetID) {
   }
 
   function sortAllKiviatsOf() {
-    _.forEach(self.animalSortInd, function(value, key) {
-      if (Object.keys(self.animalSortInd).length <= 10) { // 2 rows
+    _.forEach(self.activationSortInd, function(value, key) {
+      if (Object.keys(self.activationSortInd).length <= 10) { // 2 rows
         d3.select("#kiviatAll-" + key)
           .attr("transform", "translate(" + (140 + 80 * (value % 5)) + "," +
             (40 + 80 * Math.floor(value / 5)) + ") scale(0.8, 0.8)");
@@ -366,23 +507,13 @@ let KiviatSummaryView = function(targetID) {
 
   /* shrink kiviats */
   function shrinkAvgKiviats() {
-    _.forEach(self.sortInd, function(value, key) {
+    _.forEach(self.animalSortInd, function(value, key) {
       d3.select("#kiviatAvg-" + key).transition().duration(500)
         .attr("transform", "translate(" + (20 + 40 * Math.floor(value / 5)) + "," +
           (20 + 40 * (value % 5)) + ") scale(0.4, 0.4)");
     });
   }
 
-  /* highlight the selected kiviat */
-  function highlightKiviat(animalInd) {
-    d3.select("#kiviatAvg-" + animalInd).append("g")
-      .attr("class", "highlight")
-      .append("circle")
-      .attr("cx", 0)
-      .attr("cy", 0)
-      .attr("r", 35)
-      .style("opacity", 0.4);
-  }
 
   /* update kiviats from the same animal */
   function updateAnimal(animal) {
@@ -390,7 +521,8 @@ let KiviatSummaryView = function(targetID) {
     let runs = Object.keys(animal.activations);
 
     for (let runInd in runs) {
-      update("kiviatAll", runInd, runs[runInd], animal.activations[runs[runInd]]);
+      // update("kiviatAll", runInd, runs[runInd], animal.activations[runs[runInd]]);
+      drawKiviats("kiviatAll", runs[runInd], animal.activations[runs[runInd]]);
 
       // translate and scale
       if (runs.length <= 10) { // 2 rows
@@ -403,23 +535,7 @@ let KiviatSummaryView = function(targetID) {
             (33 + 66 * Math.floor(runInd / 5)) + ") scale(0.66, 0.66)");
       }
 
-
-      // click a kiviat to load dynamic community data of that run
-      // d3.select("#kiviatAll-" + runInd)
-      //   .on("click", function() {
-      //     // highlight the selected kiviat
-      //     d3.selectAll(".selectedRun").remove();
-      //
-      //     d3.select(this).append("g")
-      //       .attr("class", "selectedRun")
-      //       .append("circle")
-      //       .attr("cx", 0)
-      //       .attr("cy", 0)
-      //       .attr("r", 35)
-      //       .style("fill", "red")
-      //       .style("opacity", 0.25);
-      //   })
-
+      // right click a kiviat to load dynamic community data of that run
       $.contextMenu({
         selector: "#kiviatAll-" + runInd,
         callback: function(key) {
@@ -463,6 +579,18 @@ let KiviatSummaryView = function(targetID) {
     }
   }
 
+
+  /* highlight the selected kiviat */
+  function highlightKiviat(animalId) {
+    d3.select("#kiviatAvg-" + animalId).append("g")
+      .attr("class", "highlight")
+      .append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 35)
+      .style("opacity", 0.4);
+  }
+
   /* highlight the axis of the selected attribute */
   function highlightAxis(attr) {
     _.forEach(self.attributes, function(value, i) {
@@ -477,7 +605,7 @@ let KiviatSummaryView = function(targetID) {
 
   return {
     create,
-    update,
+    selectAnimal2,
     updateSortInd,
     updateAnimal,
     highlightAxis,

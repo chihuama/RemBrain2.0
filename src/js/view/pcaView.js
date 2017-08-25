@@ -254,7 +254,7 @@ let PcaView = function(targetID) {
         .on("mouseover", self.pcaAnimalDotTip.show)
         .on("mouseout", self.pcaAnimalDotTip.hide)
         .on("click", function(mouse) {
-          App.controllers.animalSelector.updateFromPCA(mouse);
+          App.controllers.animalSelector.update(mouse);
         });
 
     }
@@ -312,6 +312,7 @@ let PcaView = function(targetID) {
   }
 
 
+  /************************* need to work on this func!!! *************************/
   function selectAnimal(id) {
 
     let selected = !d3.select("#" + id).classed("selectedAvgActiv");
@@ -337,9 +338,15 @@ let PcaView = function(targetID) {
           // return _this.parentNode.appendChild(_this.cloneNode(true));
           return d3.select("#" + id)["_groups"][0][0].parentNode.appendChild(d3.select("#" + id)["_groups"][0][0].cloneNode(true));
         })
-        .attr("r", 2)
         .attr("class", "singleActivation")
         .transition().duration(500)
+        // .each(function(d) {
+        //   let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[d]));
+        //
+        //   d3.select(this)
+        //     .attr("cx", () => self.xScale(projectedPoint[0]))
+        //     .attr("cy", () => self.yScale(projectedPoint[1]));
+        // })
         .attr("cx", (activation) => {
           let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
           return self.xScale(projectedPoint[0]);
@@ -348,6 +355,10 @@ let PcaView = function(targetID) {
           let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
           return self.yScale(projectedPoint[1]);
         })
+        .attr("r", 2)
+      // .on("mouseover", function() {
+      //   console.log("test");
+      // })
       // .on("mouseover", self.pcaAnimalDotTip.show)
       // .on("mouseout", self.pcaAnimalDotTip.hide);
     } else {
