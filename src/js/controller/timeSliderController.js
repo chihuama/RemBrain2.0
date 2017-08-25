@@ -7,6 +7,7 @@ let TimeSliderController = function(targetID) {
   let self = {
     targetElement: null,
     targetSvg: null,
+    handle: null,
 
     timeBrush: null,
     timeScale: null,
@@ -62,14 +63,81 @@ let TimeSliderController = function(targetID) {
       .call(self.timeBrush)
       // .call(self.timeBrush.move, self.timeScale.range());
       .call(self.timeBrush.move, [self.timeScale(self.timeStart), self.timeScale(self.timeStart + self.timeSpan)]);
+    //
+    // let slider = self.targetSvg.append("g")
+    //   .attr("class", "slider")
+    //   .attr("class", "slider" + targetID.substr(1))
+    //   // .attr("transform", "translate(0, 15)")
+    //   .style("display", "none");
+    //
+    // slider.append("line")
+    //   .attr("class", "track")
+    //   .attr("x1", self.timeScale2.range()[0])
+    //   .attr("x2", self.timeScale2.range()[1])
+    //   .select(function() {
+    //     return this.parentNode.appendChild(this.cloneNode(true));
+    //   })
+    //   .attr("class", "track-inset")
+    //   .select(function() {
+    //     return this.parentNode.appendChild(this.cloneNode(true));
+    //   })
+    //   .attr("class", "track-overlay")
+    //   .call(d3.drag()
+    //     .on("start.interrupt", function() {
+    //       slider.interrupt();
+    //     })
+    //     .on("start drag", function() {
+    //       hue(d3.event.x);
+    //     }));
+    //
+    // self.handle = slider.insert("rect", ".track-overlay")
+    //   .attr("class", "handle")
+    //   .attr("class", "handle" + targetID.substr(1))
+    //   .attr("width", 3)
+    //   .attr("height", 30);
+
+    // self.handle = self.targetSvg.append("circle")
+    //   .attr("class", "handle" + targetID.substr(1))
+    //   .attr("cx", (d) => 0)
+    //   .attr("cy", (d) => 15)
+    //   .attr("r", 3)
+    //   .style("cursor", "ew-resize")
+    //   .call(d3.drag()
+    //     .on("start darg", dragmove)
+    //   );
   }
 
   function update(mode) {
     if (mode === "timeDuration") {
       d3.select(".brush" + targetID.substr(1)).style("display", "block");
+      // d3.select(".slider" + targetID.substr(1)).selectAll("*").style("display", "none");
+      d3.select(".handle" + targetID.substr(1)).style("display", "none");
     } else if (mode === "timeStep") {
       d3.select(".brush" + targetID.substr(1)).style("display", "none");
+      // d3.select(".slider" + targetID.substr(1)).style("display", "block");
+      d3.select(".handle" + targetID.substr(1)).style("display", "block");
     }
+  }
+
+  function hue(h) {
+    console.log(h);
+    self.handle.attr("x", h);
+    // svg.style("background-color", d3.hsl(h, 0.8, 0.8));
+  }
+
+  function dragmove(d) {
+    // Get the updated X location computed by the drag behavior.
+    var x = d3.event.x;
+
+    // Constrain x to be between x1 and x2 (the ends of the line).
+    // x = x < x1 ? x1 : x > x2 ? x2 : x;
+
+    // This assignment is necessary for multiple drag gestures.
+    // It makes the drag.origin function yield the correct value.
+    d.x = x;
+
+    // Update the circle location.
+    circle.attr("cx", x);
   }
 
   function brushed() {

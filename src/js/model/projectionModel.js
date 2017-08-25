@@ -25,15 +25,17 @@ let ProjectionModel = function(data) {
 
     // an eigendecomposition on the covariance matrix
     let eig = numeric.eig(covariance(data));
+    // console.log(eig.E.x);
 
     self.Ureduced = pcaReduce(eig.E.x, self.k);
-    console.log(self.Ureduced);
+    // console.log(self.Ureduced);
   }
 
   /* return a matrix of all principle components as column vectors */
   function pca(X) {
     let m = X.length;
-    let sigma = numeric.div(numeric.dot(numeric.transpose(X), X), m);
+    console.log(m);
+    let sigma = numeric.div(numeric.dot(numeric.transpose(X), X), m - 1);
     // console.log(sigma);
 
     return numeric.svd(sigma);

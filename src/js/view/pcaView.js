@@ -167,7 +167,8 @@ let PcaView = function(targetID) {
 
     // dots
     if (projectionMode === "allPCA") { // by run
-      let dots = self.targetSvg.selectAll("g.allMouse")
+      // let dots = self.targetSvg.selectAll("g.allMouse")
+      self.targetSvg.selectAll("g.allMouse")
         .data(Object.keys(data))
         .enter()
         .append("g")
@@ -175,26 +176,53 @@ let PcaView = function(targetID) {
         .attr("id", (d) => d)
         .style("fill", function(d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
+        })
+        .each(function(mouse) {
+          d3.select(this).selectAll(".allActivation")
+            .data(Object.keys(data[mouse].activations))
+            .enter()
+            .append("circle")
+            .datum((activation) => {
+              return {
+                mouse,
+                activation,
+                values: data[mouse].activations[activation]
+              };
+            })
+            .attr("class", "allActivation")
+            .attr("value", (d) => d)
+            .attr("id", (d, i) => d.mouse + "-" + d.activation)
+            .each(function(d) {
+              // project point from data into the PCA space
+              let projectedPoint = self.projector(App.activationPropertiesToVector(d.values));
+
+              d3.select(this)
+                .attr("cx", () => self.xScale(projectedPoint[0]))
+                .attr("cy", () => self.yScale(projectedPoint[1]));
+
+              // right click a dot to load dynamic community data of that run
+              $.contextMenu({
+                selector: "#" + d.mouse + "-" + d.activation,
+                callback: function(key) {
+                  console.log("test");
+                },
+                items: {
+                  "imageSliceLeft": {
+                    name: "Load Data on Left"
+                  },
+                  "imageSliceRight": {
+                    name: "Load Data on Right"
+                  }
+                }
+              }); //
+            })
+            .attr("r", 2)
+            .on("mouseover", self.pcaRunDotTip.show)
+            .on("mouseout", self.pcaRunDotTip.hide)
+            .on("click", d => {
+              console.log(d);
+            });
         });
-
-      dots.selectAll(".allActivation")
-        .data(function(d) {
-          return Object.values(data[d].activations);
-        })
-        .enter()
-        .append("circle")
-        .attr("class", "allActivation")
-        .attr("value", (d) => d)
-        .attr("id", (d, i) => i)
-        .each(function(d) {
-          // project point from data into the PCA space
-          let projectedPoint = self.projector(App.activationPropertiesToVector(d));
-
-          d3.select(this)
-            .attr("cx", () => self.xScale(projectedPoint[0]))
-            .attr("cy", () => self.yScale(projectedPoint[1]));
-        })
-        .attr("r", 2);
 
       let animalId = App.models.applicationState.getSelectedAnimalId();
       if (animalId != null) { // a particular mouse has been selected
@@ -203,13 +231,6 @@ let PcaView = function(targetID) {
         d3.selectAll("#" + animalId)
           .style("fill", _.includes(animalId, "Old") ? "pink" : "lightblue")
           .style("opacity", 1);
-
-        d3.selectAll("#" + animalId).selectAll(".allActivation")
-          .on("mouseover", self.pcaRunDotTip.show)
-          .on("mouseout", self.pcaRunDotTip.hide)
-          .on("click", function() {
-            console.log("click");
-          });
       }
     } else if (projectionMode === "averagePCA") { // by animal
       let dots = self.targetSvg.selectAll(".avgActivation")
@@ -326,7 +347,9 @@ let PcaView = function(targetID) {
         .attr("cy", (activation) => {
           let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
           return self.yScale(projectedPoint[1]);
-        });
+        })
+      // .on("mouseover", self.pcaAnimalDotTip.show)
+      // .on("mouseout", self.pcaAnimalDotTip.hide);
     } else {
       d3.selectAll(".avgActivation")
         .classed("fadedAvgActiv", false);
@@ -433,9 +456,8 @@ let PcaView = function(targetID) {
     self.pcaRunDotTip = d3.tip()
       .attr("class", "d3-tip")
       .direction("n")
-      .html(function(d, i) {
-        let animalId = App.models.applicationState.getSelectedAnimalId();
-        return _.findKey(self.data[animalId].activations, d);
+      .html(function(d) {
+        return (d.mouse + ": " + d.activation);
       });
 
     self.pcaAxesLabelTip = d3.tip()

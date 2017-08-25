@@ -443,9 +443,6 @@ let KiviatSummaryView = function(targetID) {
                 .style("fill", "red")
                 .style("opacity", 0.25);
 
-              // update time sliders
-              // App.controllers["timeSlider" + key.substr(10)].update(App.models.applicationState.getTimeSliderMode());
-
               // update imageSlice views
               App.views[key].update();
             })
