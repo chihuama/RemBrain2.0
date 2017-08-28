@@ -33,19 +33,18 @@ let KiviatSortingController = function() {
 
   /* update views based on the current selected attribute */
   function updateSelectedAttribute() {
-    // console.log(self.currentAttribute);
     // update the application state
     App.models.applicationState.setAttributeForSorting(self.currentAttribute);
 
     // get sortInd from networkMetrics models
-    let avgSortInd = App.models.networkMetrics.getAvgSortInd();
-    let animalSortInd = null;
+    let animalSortInd = App.models.networkMetrics.getAvgSortInd();
+    let activationSortInd = null;
     if (App.models.applicationState.getSelectedAnimal()) {
-      animalSortInd = App.models.networkMetrics.getAnimalSortInd();
+      activationSortInd = App.models.networkMetrics.getAnimalSortInd();
     }
 
     // update views
-    App.views.kiviatSummary.updateSortInd(avgSortInd, animalSortInd);
+    App.views.kiviatSummary.updateSortInd(animalSortInd, activationSortInd);
     App.views.kiviatSummary.highlightAxis(self.currentAttribute);
   }
 

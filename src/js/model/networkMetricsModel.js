@@ -179,14 +179,14 @@ let NetworkMetricsModel = function() {
       let animalInd = Object.keys(App.runs).sort().indexOf(animal);
 
       if (attr === "animal.id") {
-        self.avgSortInd[animalInd] = animalInd;
+        self.avgSortInd[animal] = animalInd;
       } else {
         if (animalInd < 5) {
           oldNetworkMetrics[animal] = self.networkMetrics[animal].average;
-          oldNetworkMetrics[animal].animalInd = animalInd;
+          oldNetworkMetrics[animal].animalId = animal;
         } else {
           youngNetworkMetrics[animal] = self.networkMetrics[animal].average;
-          youngNetworkMetrics[animal].animalInd = animalInd;
+          youngNetworkMetrics[animal].animalId = animal;
         }
       }
     }
@@ -199,11 +199,11 @@ let NetworkMetricsModel = function() {
     }));
 
     _.forEach(sortedOldNetworks, function(value, i) {
-      self.avgSortInd[value.animalInd] = i;
+      self.avgSortInd[value.animalId] = i;
     });
 
     _.forEach(sortedYoungNetworks, function(value, i) {
-      self.avgSortInd[value.animalInd] = i + 5;
+      self.avgSortInd[value.animalId] = i + 5;
     });
 
   }
@@ -232,22 +232,19 @@ let NetworkMetricsModel = function() {
       let runInd = runs.indexOf(run);
 
       if (attr === "animal.id") {
-        self.animalSortInd[runInd] = runInd;
+        self.animalSortInd[run] = runInd;
       } else {
-        // animal[run].runInd = runInd;
-        // animalNetworkMetrics[run] = animal[run];
         animalNetworkMetrics[run] = animal.activations[run];
-        animalNetworkMetrics[run].runInd = runInd;
+        animalNetworkMetrics[run].runId = run;
       }
     }
-    // console.log(animalNetworkMetrics);
 
     let sortedRuns = _.reverse(_.sortBy(animalNetworkMetrics, function(o) {
       return o[attr];
     }));
 
     _.forEach(sortedRuns, function(value, i) {
-      self.animalSortInd[value.runInd] = i;
+      self.animalSortInd[value.runId] = i;
     });
 
   }

@@ -4,23 +4,13 @@ var App = App || {};
 
 let AnimalSelectorController = function() {
   let self = {
-    animalId: null,
-    animalInd: null
+    animalId: null
   };
 
-  function update(animalId) {
+  function updateViews(animalId) {
     self.animalId = animalId;
-    self.animalInd = _.indexOf(Object.keys(App.runs).sort(), animalId);
 
-    // update the application state
-    App.models.applicationState.setSelectedAnimalId(self.animalId);
-
-    updateViews();
-  }
-
-  function updateViews() {
-    // App.views.kiviatSummary.selectAnimal(self.animalInd);
-    App.views.kiviatSummary.selectAnimal2(self.animalId);
+    App.views.kiviatSummary.selectAnimal(self.animalId);
 
     let pcaMode = App.controllers.pcaAttrSelector.getMode();
     if (pcaMode === "averagePCA") {
@@ -34,7 +24,7 @@ let AnimalSelectorController = function() {
   }
 
   return {
-    update
+    update: updateViews
   };
 
 }
