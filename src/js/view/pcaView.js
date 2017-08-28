@@ -217,8 +217,16 @@ let PcaView = function(targetID) {
               }); //
             })
             .attr("r", 2)
-            .on("mouseover", self.pcaRunDotTip.show)
-            .on("mouseout", self.pcaRunDotTip.hide)
+            .on("mouseover", function(d) {
+              App.controllers.activationSelector.highlight(d.mouse, d.activation);
+              // self.pcaRunDotTip.show(d);
+              highlightActivationOf(d);
+            })
+            .on("mouseout", function(d) {
+              App.controllers.activationSelector.reset();
+              // self.pcaRunDotTip.hide(d);
+              resetHighlightActivationOf(d);
+            })
             .on("click", d => {
               console.log(d);
             });
@@ -226,11 +234,7 @@ let PcaView = function(targetID) {
 
       let animalId = App.models.applicationState.getSelectedAnimalId();
       if (animalId != null) { // a particular mouse has been selected
-        d3.selectAll(".allMouse").style("opacity", 0.15);
-
-        d3.selectAll("#" + animalId)
-          .style("fill", _.includes(animalId, "Old") ? "pink" : "lightblue")
-          .style("opacity", 1);
+        highlightAnimalof(animalId);
       }
     } else if (projectionMode === "averagePCA") { // by animal
       let dots = self.targetSvg.selectAll(".avgActivation")
@@ -256,9 +260,7 @@ let PcaView = function(targetID) {
         .on("click", function(mouse) {
           App.controllers.animalSelector.update(mouse);
         });
-
     }
-
 
     // attribute axes
     let pcaAxes = self.targetSvg.selectAll("line")
@@ -480,10 +482,48 @@ let PcaView = function(targetID) {
       });
   }
 
+  function highlightAnimalOf(animalId) {
+    d3.selectAll(".allMouse").style("opacity", 0.15);
+    d3.selectAll("#" + animalId)
+      .style("fill", _.includes(animalId, "Old") ? "pink" : "lightblue")
+      .style("opacity", 1);
+  }
+
+  function resetHighlightAnimal() {
+    _.forEach(Object.keys(App.runs), function(value) {
+      d3.selectAll("#" + value)
+        .style("fill", _.includes(value, "Old") ? "pink" : "lightblue")
+        .style("opacity", 1);
+    });
+  }
+
+  function highlightActivationOf(activation) {
+    console.log(activation);
+    self.pcaRunDotTip.show(activation);
+    d3.select("#" + activation.mouse + "-" + activation.activation)
+      .attr("r", 3)
+      .style("stroke", "gray")
+      .style("stroke-width", 1)
+      .style("z-index", 100);
+
+  }
+
+  function resetHighlightActivationOf(activation) {
+    self.pcaRunDotTip.hide(activation);
+    d3.select("#" + activation.mouse + "-" + activation.activation)
+      .attr("r", 2)
+      .style("stroke", "none")
+      .style("z-index", -1);
+  }
+
 
   return {
     pcaPlot,
-    selectAnimal
+    selectAnimal,
+    highlightAnimalOf,
+    resetHighlightAnimal,
+    highlightActivationOf,
+    resetHighlightActivationOf
   };
 
 }

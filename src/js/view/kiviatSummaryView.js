@@ -287,7 +287,7 @@ let KiviatSummaryView = function(targetID) {
   function selectAnimal(animalId) {
     self.selection[animalId] = !self.selection[animalId];
 
-    d3.select(".highlight").remove();
+    d3.select(".highlight-kiviatAvg").remove();
     d3.selectAll(".kiviatAll-translateGroup").remove();
 
     // get networkMetrics
@@ -305,11 +305,12 @@ let KiviatSummaryView = function(targetID) {
     setTimeout(function() {
       if (self.selection[animalId]) {
         self.mode = "all";
-        highlightKiviat(animalId);
+        highlightKiviat("kiviatAvg", animalId);
         shrinkAvgKiviats();
 
         // update the kiviat summary view
         updateAnimal(networkMetrics[animalId]);
+        // updateAnimal(animalId);
 
         // update controllers
         App.controllers.kiviatSorting.updateSelectedAttribute();
@@ -394,6 +395,16 @@ let KiviatSummaryView = function(targetID) {
             (33 + 66 * Math.floor(runInd / 5)) + ") scale(0.66, 0.66)");
       }
 
+      // mouseover to highligt the activation
+      d3.select("#kiviatAll-" + runs[runInd])
+        .on("mouseover", function() {
+          let animalId = App.models.applicationState.getSelectedAnimalId();
+          App.controllers.activationSelector.highlight(animalId,runs[runInd]);
+        })
+        .on("mouseout", function() {
+          App.controllers.activationSelector.reset();
+        });
+
       // right click a kiviat to load dynamic community data of that run
       $.contextMenu({
         selector: "#kiviatAll-" + runs[runInd],
@@ -401,10 +412,12 @@ let KiviatSummaryView = function(targetID) {
 
           let animalId = App.models.applicationState.getSelectedAnimalId();
           // console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
-          App.models.applicationState.setSelectedActivationId(App.runs[animalId][runInd]);
+
+          // update activation selector
+          App.controllers.activationSelector.update(runs[runInd]);
 
           // load data
-          App.models.networkDynamics.loadNetworkDynamics(animalId, App.runs[animalId][runInd])
+          App.models.networkDynamics.loadNetworkDynamics(animalId, runs[runInd])
             .then(function(data) {
               // console.log("dynamics: ", data);
               // highlight the selected kiviat
@@ -439,9 +452,10 @@ let KiviatSummaryView = function(targetID) {
   }
 
   /* highlight the selected kiviat */
-  function highlightKiviat(animalId) {
-    d3.select("#kiviatAvg-" + animalId).append("g")
-      .attr("class", "highlight")
+  function highlightKiviat(mode, Id) {
+    // d3.select("#kiviatAvg-" + animalId).append("g")
+    d3.select("#" + mode + "-" + Id).append("g")
+      .attr("class", "highlight-" + mode)
       .append("circle")
       .attr("cx", 0)
       .attr("cy", 0)
@@ -465,7 +479,8 @@ let KiviatSummaryView = function(targetID) {
     create,
     selectAnimal,
     updateSortInd,
-    highlightAxis
+    highlightAxis,
+    highlightKiviat
   };
 
 }

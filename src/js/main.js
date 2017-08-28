@@ -70,6 +70,7 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();
     App.controllers.animalSelector = new AnimalSelectorController();
+    App.controllers.activationSelector = new ActivationSelectorController();
     App.controllers.pcaAttrSelector = new PcaAttrSelectorController();
     App.controllers.timeSliderLeft = new TimeSliderController("#timeSliderLeft");
     App.controllers.timeSliderRight = new TimeSliderController("#timeSliderRight");
