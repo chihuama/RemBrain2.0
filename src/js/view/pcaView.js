@@ -219,22 +219,19 @@ let PcaView = function(targetID) {
             .attr("r", 2)
             .on("mouseover", function(d) {
               App.controllers.activationSelector.highlight(d.mouse, d.activation);
-              // self.pcaRunDotTip.show(d);
-              highlightActivationOf(d);
             })
             .on("mouseout", function(d) {
               App.controllers.activationSelector.reset();
-              // self.pcaRunDotTip.hide(d);
-              resetHighlightActivationOf(d);
             })
             .on("click", d => {
               console.log(d);
+              App.controllers.animalSelector.update(d.mouse);
             });
         });
 
       let animalId = App.models.applicationState.getSelectedAnimalId();
       if (animalId != null) { // a particular mouse has been selected
-        highlightAnimalof(animalId);
+        highlightAnimalOf(animalId);
       }
     } else if (projectionMode === "averagePCA") { // by animal
       let dots = self.targetSvg.selectAll(".avgActivation")
@@ -255,8 +252,16 @@ let PcaView = function(targetID) {
         .style("fill", function(d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
         })
-        .on("mouseover", self.pcaAnimalDotTip.show)
-        .on("mouseout", self.pcaAnimalDotTip.hide)
+        // .on("mouseover", self.pcaAnimalDotTip.show)
+        // .on("mouseout", self.pcaAnimalDotTip.hide)
+        .on("mouseover", function(d) {
+          self.pcaAnimalDotTip.show(d);
+          App.controllers.animalSelector.highlight(d);
+        })
+        .on("mouseout", function(d) {
+          self.pcaAnimalDotTip.hide(d);
+          App.controllers.animalSelector.reset(d);
+        })
         .on("click", function(mouse) {
           App.controllers.animalSelector.update(mouse);
         });
@@ -341,14 +346,8 @@ let PcaView = function(targetID) {
           return d3.select("#" + id)["_groups"][0][0].parentNode.appendChild(d3.select("#" + id)["_groups"][0][0].cloneNode(true));
         })
         .attr("class", "singleActivation")
+        .attr("id", (d) => "singleActivation-" + d)
         .transition().duration(500)
-        // .each(function(d) {
-        //   let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[d]));
-        //
-        //   d3.select(this)
-        //     .attr("cx", () => self.xScale(projectedPoint[0]))
-        //     .attr("cy", () => self.yScale(projectedPoint[1]));
-        // })
         .attr("cx", (activation) => {
           let projectedPoint = self.projector(App.activationPropertiesToVector(self.data[mouse].activations[activation]));
           return self.xScale(projectedPoint[0]);
@@ -358,11 +357,23 @@ let PcaView = function(targetID) {
           return self.yScale(projectedPoint[1]);
         })
         .attr("r", 2)
-      // .on("mouseover", function() {
-      //   console.log("test");
-      // })
-      // .on("mouseover", self.pcaAnimalDotTip.show)
-      // .on("mouseout", self.pcaAnimalDotTip.hide);
+        .style("stroke", "none");
+
+      // toolTip
+      let toolTip = {};
+      _.forEach(App.runs[id], function(value) {
+        toolTip["mouse"] = id;
+        d3.select("#singleActivation-" + value).on("mouseover", function(d) {
+            // console.log(id, d);
+            toolTip["activation"] = d;
+            self.pcaRunDotTip.show(toolTip);
+            App.controllers.activationSelector.highlight(id, d);
+          })
+          .on("mouseout", function(d) {
+            self.pcaRunDotTip.hide(toolTip);
+            App.controllers.activationSelector.reset(d);
+          });
+      });
     } else {
       d3.selectAll(".avgActivation")
         .classed("fadedAvgActiv", false);
@@ -482,6 +493,7 @@ let PcaView = function(targetID) {
       });
   }
 
+  /************************* mode: by run *************************/
   function highlightAnimalOf(animalId) {
     d3.selectAll(".allMouse").style("opacity", 0.15);
     d3.selectAll("#" + animalId)
@@ -498,14 +510,12 @@ let PcaView = function(targetID) {
   }
 
   function highlightActivationOf(activation) {
-    console.log(activation);
     self.pcaRunDotTip.show(activation);
     d3.select("#" + activation.mouse + "-" + activation.activation)
       .attr("r", 3)
       .style("stroke", "gray")
       .style("stroke-width", 1)
       .style("z-index", 100);
-
   }
 
   function resetHighlightActivationOf(activation) {
@@ -515,6 +525,7 @@ let PcaView = function(targetID) {
       .style("stroke", "none")
       .style("z-index", -1);
   }
+  /**************************************************/
 
 
   return {

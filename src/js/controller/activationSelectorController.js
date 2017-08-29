@@ -15,33 +15,46 @@ let ActivationSelectorController = function() {
   }
 
   function highlight(animalId, activationId) {
-
     self.activation["mouse"] = animalId;
     self.activation["activation"] = activationId;
 
+    // highlight kiviat diagram
     if (animalId === App.models.applicationState.getSelectedAnimalId()) {
       App.views.kiviatSummary.highlightKiviat("kiviatAll", activationId);
     } else if (!App.models.applicationState.getSelectedAnimalId()) {
       App.views.kiviatSummary.highlightKiviat("kiviatAvg", animalId);
     }
 
+    // highlight pca dot
     let pcaMode = App.controllers.pcaAttrSelector.getMode();
     if (pcaMode === "averagePCA") {
-
+      d3.select("#singleActivation-" + activationId)
+        .attr("r", 3)
+        .style("stroke", "gray")
+        .style("stroke-width", 1);
     } else {
       App.views.pca.highlightActivationOf(self.activation);
     }
   }
 
-  function reset() {
+  function reset(activationId) {
     // reset kiviat Summary View
     if (App.models.applicationState.getSelectedAnimalId()) {
       d3.select(".highlight-kiviatAll").remove();
     } else {
       d3.select(".highlight-kiviatAvg").remove();
     }
+
     // reset PCA View
-    App.views.pca.resetHighlightActivationOf(self.activation);
+    let pcaMode = App.controllers.pcaAttrSelector.getMode();
+    if (pcaMode === "averagePCA") {
+      d3.select("#singleActivation-" + activationId)
+        .attr("r", 2)
+        .style("stroke", "none");
+    } else {
+      App.views.pca.resetHighlightActivationOf(self.activation);
+    }
+
   }
 
   return {

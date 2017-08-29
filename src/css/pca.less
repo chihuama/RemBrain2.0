@@ -1,45 +1,41 @@
-.pcaDiv
-{
-    box-sizing: border-box;
-    height: 100%;
+.pcaDiv {
+  box-sizing: border-box;
+  height: 100%;
 }
 
-#pcaHeader
-{
-    height: 20%;
-
-    background-color: white;
+#pcaHeader {
+  height: 20%;
+  background-color: white;
 }
 
-#pca-legend
-{
-    height: 100%;
+#pca-legend {
+  height: 100%;
 }
 
-#pca
-{
-    height: 80%;
-
-    background-color: white;
+#pca {
+  height: 80%;
+  background-color: white;
 }
 
 .avgActivation {
-
+  &:hover {
+    stroke: gray;
+    stroke-width: 1;
+  }
 }
 
 .fadedAvgActiv {
-  fill-opacity: 0.1;
-  stroke: lightgray;
+  fill-opacity: 0.18;
+  // stroke: lightgray;
+  stroke: 'none';
 }
 
 .selectedAvgActiv {
   fill-opacity: 1;
-  // stroke: yellow;
+  stroke: gray;
   stroke-width: 1px;
 }
 
-
-.checkbox-li
-{
-    padding-left: 20%;
+.checkbox-li {
+  padding-left: 20%;
 }
