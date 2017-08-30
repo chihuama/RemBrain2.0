@@ -204,7 +204,29 @@ let PcaView = function(targetID) {
               $.contextMenu({
                 selector: "#" + d.mouse + "-" + d.activation,
                 callback: function(key) {
-                  console.log("test");
+                  // update activation selector
+                  // App.controllers.animalSelector.update(d.mouse);
+                  App.controllers.activationSelector.update(d.activation);
+                  App.models.applicationState.setSelectedAnimalId(d.mouse);
+
+                  // load data
+                  App.models.networkDynamics.loadNetworkDynamics(d.mouse, d.activation)
+                    .then(function(data) {
+                      // highlight the selected pca dot & the corresponding kiviat diagram
+                      d3.select(".selectedDot-" + key).remove();
+                      d3.select("#" + d.mouse + "-" + d.activation)
+                        .attr("class", "selectedDot-" + key)
+                        .style("stroke", App.colorHighlight[key])
+                        .style("stroke-width", 1);
+                      // d3.selectAll("#" + d.mouse).classed("selectedDot-" + key, false);
+                      // d3.select("#" + d.mouse + "-" + d.activation).classed("selectedDot-" + key, true);
+
+                      // update imageSlice views
+                      App.views[key].update();
+                    })
+                    .catch(function(err) {
+                      console.log("Promise Error", err);
+                    });
                 },
                 items: {
                   "imageSliceLeft": {
@@ -357,7 +379,45 @@ let PcaView = function(targetID) {
           return self.yScale(projectedPoint[1]);
         })
         .attr("r", 2)
-        .style("stroke", "none");
+        .style("z-index", 100)
+        .style("stroke", "none")
+        .each(function(d) {
+          // right click a dot to load dynamic community data of that run
+          $.contextMenu({
+            selector: "#singleActivation-" + d,
+            callback: function(key) {
+              // update activation selector
+              App.controllers.activationSelector.update(d);
+              let animalId = App.models.applicationState.getSelectedAnimalId();
+              console.log(mouse);  // mouse is the previous one not the current one
+
+              // load data
+              App.models.networkDynamics.loadNetworkDynamics(animalId, d)
+                .then(function(data) {
+                  // highlight the selected pca dot & the corresponding kiviat diagram
+                  // d3.select(".selectedDot-" + key).remove();
+                  // d3.select("#singleActivation-" + d)
+                  //   .attr("class", "selectedDot-" + key)
+                  //   .style("stroke", App.colorHighlight[key])
+                  //   .style("stroke-width", 1);
+
+                  // update imageSlice views
+                  App.views[key].update();
+                })
+                .catch(function(err) {
+                  console.log("Promise Error", err);
+                });
+            },
+            items: {
+              "imageSliceLeft": {
+                name: "Load Data on Left"
+              },
+              "imageSliceRight": {
+                name: "Load Data on Right"
+              }
+            }
+          }); //
+        });
 
       // toolTip
       let toolTip = {};

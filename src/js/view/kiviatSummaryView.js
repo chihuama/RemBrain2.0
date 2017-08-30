@@ -440,15 +440,17 @@ let KiviatSummaryView = function(targetID) {
             .then(function(data) {
               // console.log("dynamics: ", data);
               // highlight the selected kiviat
-              d3.selectAll(".selectedRun").remove();
+              d3.select(".selectedRun-" + key).remove();
               d3.select("#kiviatAll-" + runs[runInd]).append("g")
-                .attr("class", "selectedRun")
+                .attr("class", "selectedRun-" + key)
                 .append("circle")
                 .attr("cx", 0)
                 .attr("cy", 0)
                 .attr("r", 35)
-                .style("fill", "red")
-                .style("opacity", 0.25);
+                .style("fill", App.colorHighlight[key])
+                .style("opacity", 0.3);
+
+              // highlight the selected kiviat & the corresponding pca dot
 
               // update imageSlice views
               App.views[key].update();

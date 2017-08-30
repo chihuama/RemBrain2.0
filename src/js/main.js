@@ -55,6 +55,11 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     "#6a3d9a", "#a6cee3", "#fdbf6f", "#b2df8a", "#fb9a99", "#cab2d6"
   ];
 
+  App.colorHighlight = {
+    "imageSliceLeft": "#f1a340",
+    "imageSliceRight": "#998ec3"
+  }
+
   App.init = function() {
     // create models
     App.models.networkMetrics = new NetworkMetricsModel();
@@ -66,6 +71,7 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     App.views.kiviatSummary = new KiviatSummaryView("#kiviatSummary");
     App.views.imageSliceLeft = new ImageSliceView("#imageSliceLeft");
     App.views.imageSliceRight = new ImageSliceView("#imageSliceRight");
+    App.views.controlLegend = new ControlLegendView();
 
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();
