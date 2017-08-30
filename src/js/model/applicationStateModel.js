@@ -12,7 +12,9 @@ let ApplicationStateModel = function() {
     selectedAnimalId: null,  // animal.id
     selectedActivationId: null,  // activation.id
 
+    overlayMode: "homeComm",
     timeSliderMode: "timeDuration",
+
     timeStart: 20,
     timeSpan: 10
   };
@@ -59,6 +61,14 @@ let ApplicationStateModel = function() {
   }
 
 
+  function setOverlayMode(mode) {
+    self.overlayMode = mode;
+  }
+
+  function getOverlayMode() {
+    return self.overlayMode;
+  }
+
   function setTimeSliderMode(mode) {
     self.timeSliderMode = mode;
   }
@@ -95,6 +105,8 @@ let ApplicationStateModel = function() {
     getSelectedAnimalId,
     setSelectedActivationId,
     getSelectedActivationId,
+    setOverlayMode,
+    getOverlayMode,
     setTimeSliderMode,
     getTimeSliderMode,
     setTimeStart,

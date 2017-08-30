@@ -447,11 +447,14 @@ let KiviatSummaryView = function(targetID) {
                 .attr("cx", 0)
                 .attr("cy", 0)
                 .attr("r", 35)
-                .style("fill", App.colorHighlight[key])
+                .style("fill", App.colorHighlight[key.substr(10)])
                 .style("opacity", 0.3);
 
               // highlight the selected kiviat & the corresponding pca dot
 
+              // tell the imageSliceController which side is loaded
+              App.controllers.imageSlice.load(key);
+              
               // update imageSlice views
               App.views[key].update();
             })

@@ -216,10 +216,16 @@ let PcaView = function(targetID) {
                       d3.select(".selectedDot-" + key).remove();
                       d3.select("#" + d.mouse + "-" + d.activation)
                         .attr("class", "selectedDot-" + key)
-                        .style("stroke", App.colorHighlight[key])
-                        .style("stroke-width", 1);
+                        .style("stroke", App.colorHighlight[key.substr(10)])
+                        .style("stroke-width", 1)
+                        .select(function() {
+                          this.parentNode.appendChild(this);
+                        });
                       // d3.selectAll("#" + d.mouse).classed("selectedDot-" + key, false);
                       // d3.select("#" + d.mouse + "-" + d.activation).classed("selectedDot-" + key, true);
+
+                      // tell the imageSliceController which side is loaded
+                      App.controllers.imageSlice.load(key);
 
                       // update imageSlice views
                       App.views[key].update();
@@ -240,6 +246,7 @@ let PcaView = function(targetID) {
             })
             .attr("r", 2)
             .on("mouseover", function(d) {
+              this.parentNode.appendChild(this);
               App.controllers.activationSelector.highlight(d.mouse, d.activation);
             })
             .on("mouseout", function(d) {
@@ -379,7 +386,6 @@ let PcaView = function(targetID) {
           return self.yScale(projectedPoint[1]);
         })
         .attr("r", 2)
-        .style("z-index", 100)
         .style("stroke", "none")
         .each(function(d) {
           // right click a dot to load dynamic community data of that run
@@ -389,7 +395,7 @@ let PcaView = function(targetID) {
               // update activation selector
               App.controllers.activationSelector.update(d);
               let animalId = App.models.applicationState.getSelectedAnimalId();
-              console.log(mouse);  // mouse is the previous one not the current one
+              console.log(mouse); // mouse is the previous one not the current one
 
               // load data
               App.models.networkDynamics.loadNetworkDynamics(animalId, d)
@@ -398,8 +404,11 @@ let PcaView = function(targetID) {
                   // d3.select(".selectedDot-" + key).remove();
                   // d3.select("#singleActivation-" + d)
                   //   .attr("class", "selectedDot-" + key)
-                  //   .style("stroke", App.colorHighlight[key])
+                  //   .style("stroke", App.colorHighlight[key.substr(10)])
                   //   .style("stroke-width", 1);
+
+                  // tell the imageSliceController which side is loaded
+                  App.controllers.imageSlice.load(key);
 
                   // update imageSlice views
                   App.views[key].update();
@@ -423,10 +432,12 @@ let PcaView = function(targetID) {
       let toolTip = {};
       _.forEach(App.runs[id], function(value) {
         toolTip["mouse"] = id;
-        d3.select("#singleActivation-" + value).on("mouseover", function(d) {
+        d3.select("#singleActivation-" + value)
+          .on("mouseover", function(d) {
             // console.log(id, d);
             toolTip["activation"] = d;
             self.pcaRunDotTip.show(toolTip);
+            this.parentNode.appendChild(this);
             App.controllers.activationSelector.highlight(id, d);
           })
           .on("mouseout", function(d) {

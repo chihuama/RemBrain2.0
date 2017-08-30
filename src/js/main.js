@@ -56,8 +56,8 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
   ];
 
   App.colorHighlight = {
-    "imageSliceLeft": "#f1a340",
-    "imageSliceRight": "#998ec3"
+    "Left": "#8c510a",
+    "Right": "#01665e"
   }
 
   App.init = function() {
@@ -75,11 +75,12 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
 
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();
+    App.controllers.pcaAttrSelector = new PcaAttrSelectorController();
     App.controllers.animalSelector = new AnimalSelectorController();
     App.controllers.activationSelector = new ActivationSelectorController();
-    App.controllers.pcaAttrSelector = new PcaAttrSelectorController();
     App.controllers.timeSliderLeft = new TimeSliderController("#timeSliderLeft");
     App.controllers.timeSliderRight = new TimeSliderController("#timeSliderRight");
+    App.controllers.imageSlice = new ImageSliceController();
 
 
     // load network metrics from all runs
@@ -109,15 +110,6 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
       _.filter(Object.keys(activation), key => (key !== 'size' && App.pcaAttributes[key])),
       attr => activation[attr]
     );
-  }
-
-  //
-  App.timeOpt = function(value) {
-    console.log(value);
-    App.models.applicationState.setTimeSliderMode(value);
-
-    App.controllers.timeSliderLeft.update(value);
-    App.controllers.timeSliderRight.update(value);
   }
 
 })();

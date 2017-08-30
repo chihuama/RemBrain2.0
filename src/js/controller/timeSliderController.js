@@ -30,13 +30,13 @@ let TimeSliderController = function(targetID) {
       .style("background", "white");
 
     let boundary = self.targetSvg.append("rect")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", 200)
-      .attr("height", 30)
+      .attr("x", 1)
+      .attr("y", 1)
+      .attr("width", 198)
+      .attr("height", 28)
       .style("fill", "none")
-      .style("stroke", "black")
-      .style("stroke-width", 0.5);
+      .style("stroke", App.colorHighlight[targetID.substr(11)])
+      .style("stroke-width", 1);
 
     self.timeScale = d3.scaleLinear()
       .domain([0, 100])

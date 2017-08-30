@@ -12,6 +12,12 @@ let ImageSliceView = function(targetID) {
     activationId: null,
     networkDynamics: {},
 
+    overlayMode: {
+      "homeComm": 0,
+      "tempComm": 1,
+      "nodeDegree": 2
+    },
+
     currentTime: 50
   };
 
@@ -23,9 +29,18 @@ let ImageSliceView = function(targetID) {
     self.targetSvg = self.targetElement.append("svg")
       .attr("width", self.targetElement.node().clientWidth)
       .attr("height", self.targetElement.node().clientHeight)
-      .attr("viewBox", "0 0 172 130")
+      .attr("viewBox", "0 0 176 134")
       .attr("preserveAspectRatio", "xMidYMid")
       .style("background", "white");
+
+    self.targetSvg.append("rect")
+      .attr("x", 1)
+      .attr("y", 1)
+      .attr("width", 174)
+      .attr("height", 132)
+      .style("fill", "none")
+      .style("stroke", App.colorHighlight[targetID.substr(11)])
+      .style("stroke-width", 2);
   }
 
   function update() {
@@ -44,29 +59,32 @@ let ImageSliceView = function(targetID) {
     // load image
     let img = self.targetSvg.append("image")
       .attr("class", "image" + targetName)
-      .attr("x", 0)
-      .attr("y", 0)
+      .attr("x", 2)
+      .attr("y", 2)
       .attr("width", 172)
       .attr("height", 130)
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
 
     // dynamic community info for all active nodes
     let currentTime = App.models.applicationState.getTimeStart();
+    let mode = App.models.applicationState.getOverlayMode();
+
     self.targetSvg.selectAll("circle")
       .data(Object.keys(self.networkDynamics[currentTime]))
       .enter()
       .append("circle")
       .attr("class", "activeNodes" + targetName)
-      .attr("cx", (d) => d % 172)
-      .attr("cy", (d) => Math.floor(d / 172))
+      .attr("cx", (d) => d % 172 + 2)
+      .attr("cy", (d) => Math.floor(d / 172) + 2)
       .attr("r", 0.5)
-      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
+      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]]);
 
   }
 
   function updateOverlay() {
     let targetName = targetID.substr(1);
     let currentTime = App.models.applicationState.getTimeStart();
+    let mode = App.models.applicationState.getOverlayMode();
     console.log(currentTime);
 
     // let bind = self.targetSvg.selectAll(".activeNodes" + targetName)
@@ -86,16 +104,16 @@ let ImageSliceView = function(targetID) {
     //   .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
 
     d3.selectAll(".activeNodes" + targetName).remove();
-    
+
     self.targetSvg.selectAll("circle")
       .data(Object.keys(self.networkDynamics[currentTime]))
       .enter()
       .append("circle")
       .attr("class", "activeNodes" + targetName)
-      .attr("cx", (d) => d % 172)
-      .attr("cy", (d) => Math.floor(d / 172))
+      .attr("cx", (d) => d % 172 + 2)
+      .attr("cy", (d) => Math.floor(d / 172) + 2)
       .attr("r", 0.5)
-      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
+      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]]);
 
   }
 
