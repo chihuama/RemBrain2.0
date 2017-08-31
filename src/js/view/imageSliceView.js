@@ -20,7 +20,9 @@ let ImageSliceView = function(targetID) {
 
     noDegColorScale: null,
 
-    currentTime: 50
+    timeStart: 0,
+    timeSpan: 0,
+    currentTime: 0
   };
 
   init();
@@ -54,16 +56,17 @@ let ImageSliceView = function(targetID) {
     console.log("update " + targetID + " with " + self.animalId + "-" + self.activationId);
     console.log(self.networkDynamics);
 
-    // get the current time & current mode
+    // get the current overlay mode, current time, timeStart and timeSpan
     let targetName = targetID.substr(1);
-    let currentTime = App.models.applicationState.getTimeStart(targetID.substr(11));
     let mode = App.models.applicationState.getOverlayMode();
+    let currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
+
 
     // get the max node degree from both sides
     let maxNodeDegree = App.models.networkDynamics.getMaxNodeDegree();
     App.models.applicationState.setMaxNodeDegree(targetName, maxNodeDegree);
     let maxNodeDegreeBoth = App.models.applicationState.getMaxNodeDegree();
-    
+
     // color scale for node degrees
     self.noDegColorScale = d3.scaleLinear()
       .interpolate(d3.interpolateHcl)
@@ -104,10 +107,10 @@ let ImageSliceView = function(targetID) {
 
 
   function updateOverlay() {
-    // get the current time & current mode
+    // get the current overlay mode, current time, timeStart and timeSpan
     let targetName = targetID.substr(1);
-    let currentTime = App.models.applicationState.getTimeStart(targetID.substr(11));
-    let mode = App.models.applicationState.getOverlayMode(targetID.substr(11));
+    let mode = App.models.applicationState.getOverlayMode();
+    let currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
     console.log(currentTime);
 
     d3.selectAll(".activeNodes" + targetName).remove();

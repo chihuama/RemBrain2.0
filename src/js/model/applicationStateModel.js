@@ -26,6 +26,10 @@ let ApplicationStateModel = function() {
     timeSpan: {
       "Left": 10,
       "Right": 10
+    },
+    timeStep: {
+      "Left": 50,
+      "Right": 50
     }
 
     // timeStart: 20,
@@ -118,6 +122,14 @@ let ApplicationStateModel = function() {
     return self.timeSpan[side];
   }
 
+  function setTimeStep(side, timeStep) {
+    self.timeStep[side] = Math.round(timeStep);
+  }
+
+  function getTimeStep(side) {
+    return self.timeStep[side];
+  }
+
 
   return {
     setAttributesForPCA,
@@ -139,7 +151,9 @@ let ApplicationStateModel = function() {
     setTimeStart,
     getTimeStart,
     setTimeSpan,
-    getTimeSpan
+    getTimeSpan,
+    setTimeStep,
+    getTimeStep
   };
 
 }

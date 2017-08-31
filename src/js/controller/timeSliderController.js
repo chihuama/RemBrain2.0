@@ -10,11 +10,13 @@ let TimeSliderController = function(targetID) {
     handle: null,
 
     timeBrush: null,
+    timeSlider: null,
     timeScale: null,
     timeScale2: null,
 
-    timeStart: 20,
-    timeSpan: 10
+    timeStart: 0,
+    timeSpan: 0,
+    timeStep: 0
   };
 
   init();
@@ -38,13 +40,14 @@ let TimeSliderController = function(targetID) {
       .style("stroke", App.colorHighlight[targetID.substr(11)])
       .style("stroke-width", 1);
 
+
     self.timeScale = d3.scaleLinear()
       .domain([0, 100])
-      .range([0, 200]);
+      .range([1, 197]);
 
     self.timeScale2 = d3.scaleLinear()
       .domain([0, 100])
-      .range([0, 200]);
+      .range([1, 197]);
 
     self.timeBrush = d3.brushX()
       .extent([
@@ -55,79 +58,45 @@ let TimeSliderController = function(targetID) {
 
     self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
     self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
+    self.timeStep = App.models.applicationState.getTimeStep(targetID.substr(11));
 
-    // initialize the brush
+    // initialize the brush in the time duration mode
     self.targetSvg.append("g")
       .attr("class", "brush")
       .attr("class", "brush" + targetID.substr(1))
       .call(self.timeBrush)
       // .call(self.timeBrush.move, self.timeScale.range());
       .call(self.timeBrush.move, [self.timeScale(self.timeStart), self.timeScale(self.timeStart + self.timeSpan)]);
-    //
-    // let slider = self.targetSvg.append("g")
-    //   .attr("class", "slider")
-    //   .attr("class", "slider" + targetID.substr(1))
-    //   // .attr("transform", "translate(0, 15)")
-    //   .style("display", "none");
-    //
-    // slider.append("line")
-    //   .attr("class", "track")
-    //   .attr("x1", self.timeScale2.range()[0])
-    //   .attr("x2", self.timeScale2.range()[1])
-    //   .select(function() {
-    //     return this.parentNode.appendChild(this.cloneNode(true));
-    //   })
-    //   .attr("class", "track-inset")
-    //   .select(function() {
-    //     return this.parentNode.appendChild(this.cloneNode(true));
-    //   })
-    //   .attr("class", "track-overlay")
-    //   .call(d3.drag()
-    //     .on("start.interrupt", function() {
-    //       slider.interrupt();
-    //     })
-    //     .on("start drag", function() {
-    //       hue(d3.event.x);
-    //     }));
-    //
-    // self.handle = slider.insert("rect", ".track-overlay")
-    //   .attr("class", "handle")
-    //   .attr("class", "handle" + targetID.substr(1))
-    //   .attr("width", 3)
-    //   .attr("height", 30);
 
-    // self.handle = self.targetSvg.append("circle")
-    //   .attr("class", "handle" + targetID.substr(1))
-    //   .attr("cx", (d) => 0)
-    //   .attr("cy", (d) => 15)
-    //   .attr("r", 3)
-    //   .style("cursor", "ew-resize")
-    //   .call(d3.drag()
-    //     .on("start darg", dragmove)
-    //   );
+    // time slider in the time step mode
+    self.timeSlider = self.targetSvg.append("rect")
+      .attr("class", "slider" + targetID.substr(1))
+      .attr("x", self.timeScale2(self.timeStep))
+      .attr("y", 1)
+      .attr("width", 3)
+      .attr("height", 28)
+      .style("fill", "black")
+      .style("opacity", 0.3)
+      .call(d3.drag()
+        .on("start drag", drag)
+      )
+      .style("cursor", "crosshair")
+      .style("display", "none");
   }
 
 
-  function hue(h) {
-    console.log(h);
-    self.handle.attr("x", h);
-    // svg.style("background-color", d3.hsl(h, 0.8, 0.8));
+  function drag() {
+    d3.select(this).attr("x", d3.event.x);
+
+    self.timeStep = self.timeScale2.invert(d3.event.x);
+
+    //update the application state
+    App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
+
+    // update the image slice view
+    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
   }
 
-  function dragmove(d) {
-    // Get the updated X location computed by the drag behavior.
-    var x = d3.event.x;
-
-    // Constrain x to be between x1 and x2 (the ends of the line).
-    // x = x < x1 ? x1 : x > x2 ? x2 : x;
-
-    // This assignment is necessary for multiple drag gestures.
-    // It makes the drag.origin function yield the correct value.
-    d.x = x;
-
-    // Update the circle location.
-    circle.attr("cx", x);
-  }
 
   function brushed() {
     if (!d3.event.sourceEvent) return; // Only transition after input.
@@ -139,13 +108,12 @@ let TimeSliderController = function(targetID) {
     self.timeStart = self.timeScale.domain()[0];
     self.timeSpan = self.timeScale.domain()[1] - self.timeStart;
 
-    // update models
+    // update the application state
     App.models.applicationState.setTimeStart(targetID.substr(11), self.timeStart);
     App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
 
-    // update views
+    // update the image slice view
     App.views["imageSlice" + targetID.substr(11)].updateOverlay();
-
   }
 
 
@@ -157,12 +125,10 @@ let TimeSliderController = function(targetID) {
   function update(mode) {
     if (mode === "timeDuration") {
       d3.select(".brush" + targetID.substr(1)).style("display", "block");
-      // d3.select(".slider" + targetID.substr(1)).selectAll("*").style("display", "none");
-      d3.select(".handle" + targetID.substr(1)).style("display", "none");
+      d3.select(".slider" + targetID.substr(1)).style("display", "none");
     } else if (mode === "timeStep") {
       d3.select(".brush" + targetID.substr(1)).style("display", "none");
-      // d3.select(".slider" + targetID.substr(1)).style("display", "block");
-      d3.select(".handle" + targetID.substr(1)).style("display", "block");
+      d3.select(".slider" + targetID.substr(1)).style("display", "block");
     }
   }
 
