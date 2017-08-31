@@ -53,8 +53,8 @@ let TimeSliderController = function(targetID) {
       ])
       .on("end", brushed);
 
-    self.timeStart = App.models.applicationState.getTimeStart();
-    self.timeSpan = App.models.applicationState.getTimeSpan();
+    self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
+    self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
 
     // initialize the brush
     self.targetSvg.append("g")
@@ -107,17 +107,6 @@ let TimeSliderController = function(targetID) {
     //   );
   }
 
-  function update(mode) {
-    if (mode === "timeDuration") {
-      d3.select(".brush" + targetID.substr(1)).style("display", "block");
-      // d3.select(".slider" + targetID.substr(1)).selectAll("*").style("display", "none");
-      d3.select(".handle" + targetID.substr(1)).style("display", "none");
-    } else if (mode === "timeStep") {
-      d3.select(".brush" + targetID.substr(1)).style("display", "none");
-      // d3.select(".slider" + targetID.substr(1)).style("display", "block");
-      d3.select(".handle" + targetID.substr(1)).style("display", "block");
-    }
-  }
 
   function hue(h) {
     console.log(h);
@@ -145,14 +134,14 @@ let TimeSliderController = function(targetID) {
 
     let s = d3.event.selection || self.timeScale2.range();
     self.timeScale.domain(s.map(self.timeScale2.invert, self.timeScale2));
+    // console.log(self.timeScale.domain());
 
-    console.log(self.timeScale.domain());
     self.timeStart = self.timeScale.domain()[0];
     self.timeSpan = self.timeScale.domain()[1] - self.timeStart;
 
     // update models
-    App.models.applicationState.setTimeStart(self.timeStart);
-    App.models.applicationState.setTimeSpan(self.timeSpan);
+    App.models.applicationState.setTimeStart(targetID.substr(11), self.timeStart);
+    App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
 
     // update views
     App.views["imageSlice" + targetID.substr(11)].updateOverlay();
@@ -162,6 +151,19 @@ let TimeSliderController = function(targetID) {
 
   function checkSyncTime() {
 
+  }
+
+
+  function update(mode) {
+    if (mode === "timeDuration") {
+      d3.select(".brush" + targetID.substr(1)).style("display", "block");
+      // d3.select(".slider" + targetID.substr(1)).selectAll("*").style("display", "none");
+      d3.select(".handle" + targetID.substr(1)).style("display", "none");
+    } else if (mode === "timeStep") {
+      d3.select(".brush" + targetID.substr(1)).style("display", "none");
+      // d3.select(".slider" + targetID.substr(1)).style("display", "block");
+      d3.select(".handle" + targetID.substr(1)).style("display", "block");
+    }
   }
 
 

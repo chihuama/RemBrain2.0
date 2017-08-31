@@ -8,15 +8,28 @@ let ApplicationStateModel = function() {
     attributesForPCA: [],
     attributeForSorting: "animal.id", // default by name
 
-    selectedAnimal: null,  // objec includes all runs
-    selectedAnimalId: null,  // animal.id
-    selectedActivationId: null,  // activation.id
+    selectedAnimal: null, // objec includes all runs
+    selectedAnimalId: null, // animal.id
+    selectedActivationId: null, // activation.id
 
     overlayMode: "homeComm",
     timeSliderMode: "timeDuration",
 
-    timeStart: 20,
-    timeSpan: 10
+    maxNodeDegree: {
+      "imageSliceLeft": 0,
+      "imageSliceRight": 0
+    },
+    timeStart: {
+      "Left": 20,
+      "Right": 20
+    },
+    timeSpan: {
+      "Left": 10,
+      "Right": 10
+    }
+
+    // timeStart: 20,
+    // timeSpan: 10
   };
 
   function setAttributesForPCA(attrs) {
@@ -77,20 +90,32 @@ let ApplicationStateModel = function() {
     return self.timeSliderMode;
   }
 
-  function setTimeStart(timeStart) {
-    self.timeStart = Math.round(timeStart);
+  function setMaxNodeDegree(side, nodeDegree) {
+    self.maxNodeDegree[side] = nodeDegree;
   }
 
-  function getTimeStart() {
-    return self.timeStart;
+  function getMaxNodeDegree() {
+    if (self.maxNodeDegree["imageSliceLeft"] >= self.maxNodeDegree["imageSliceRight"]) {
+      return self.maxNodeDegree["imageSliceLeft"];
+    } else {
+      return self.maxNodeDegree["imageSliceRight"];
+    }
   }
 
-  function setTimeSpan(timeSpan) {
-    self.timeSpan = Math.round(timeSpan);
+  function setTimeStart(side, timeStart) {
+    self.timeStart[side] = Math.round(timeStart);
   }
 
-  function getTimeSpan() {
-    return self.timeSpan;
+  function getTimeStart(side) {
+    return self.timeStart[side];
+  }
+
+  function setTimeSpan(side, timeSpan) {
+    self.timeSpan[side] = Math.round(timeSpan);
+  }
+
+  function getTimeSpan(side) {
+    return self.timeSpan[side];
   }
 
 
@@ -109,6 +134,8 @@ let ApplicationStateModel = function() {
     getOverlayMode,
     setTimeSliderMode,
     getTimeSliderMode,
+    setMaxNodeDegree,
+    getMaxNodeDegree,
     setTimeStart,
     getTimeStart,
     setTimeSpan,

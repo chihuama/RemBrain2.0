@@ -18,6 +18,8 @@ let ImageSliceView = function(targetID) {
       "nodeDegree": 2
     },
 
+    noDegColorScale: null,
+
     currentTime: 50
   };
 
@@ -43,6 +45,7 @@ let ImageSliceView = function(targetID) {
       .style("stroke-width", 2);
   }
 
+
   function update() {
     self.animalId = App.models.applicationState.getSelectedAnimalId();
     self.activationId = App.models.applicationState.getSelectedActivationId();
@@ -51,7 +54,22 @@ let ImageSliceView = function(targetID) {
     console.log("update " + targetID + " with " + self.animalId + "-" + self.activationId);
     console.log(self.networkDynamics);
 
+    // get the current time & current mode
     let targetName = targetID.substr(1);
+    let currentTime = App.models.applicationState.getTimeStart(targetID.substr(11));
+    let mode = App.models.applicationState.getOverlayMode();
+
+    // get the max node degree from both sides
+    let maxNodeDegree = App.models.networkDynamics.getMaxNodeDegree();
+    App.models.applicationState.setMaxNodeDegree(targetName, maxNodeDegree);
+    let maxNodeDegreeBoth = App.models.applicationState.getMaxNodeDegree();
+    
+    // color scale for node degrees
+    self.noDegColorScale = d3.scaleLinear()
+      .interpolate(d3.interpolateHcl)
+      .domain([0, maxNodeDegreeBoth])
+      .range(["#deebf7", "#08306b"]);
+
 
     d3.select(".image" + targetName).remove();
     d3.selectAll(".activeNodes" + targetName).remove();
@@ -66,9 +84,6 @@ let ImageSliceView = function(targetID) {
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
 
     // dynamic community info for all active nodes
-    let currentTime = App.models.applicationState.getTimeStart();
-    let mode = App.models.applicationState.getOverlayMode();
-
     self.targetSvg.selectAll("circle")
       .data(Object.keys(self.networkDynamics[currentTime]))
       .enter()
@@ -77,31 +92,23 @@ let ImageSliceView = function(targetID) {
       .attr("cx", (d) => d % 172 + 2)
       .attr("cy", (d) => Math.floor(d / 172) + 2)
       .attr("r", 0.5)
-      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]]);
+      .style("fill", (d) => {
+        if (mode === "nodeDegree") {
+          return self.noDegColorScale(self.networkDynamics[currentTime][d][self.overlayMode[mode]]);
+        } else {
+          return App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]];
+        }
+      });
 
   }
 
-  function updateOverlay() {
-    let targetName = targetID.substr(1);
-    let currentTime = App.models.applicationState.getTimeStart();
-    let mode = App.models.applicationState.getOverlayMode();
-    console.log(currentTime);
 
-    // let bind = self.targetSvg.selectAll(".activeNodes" + targetName)
-    //   .data(Object.keys(self.networkDynamics[currentTime]));
-    //
-    // bind.exit().remove();
-    //
-    // self.targetSvg.selectAll(".activeNodes" + targetName)
-    //   .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
-    //
-    // bind.enter()
-    //   .append("circle")
-    //   .attr("class", "activeNodes" + targetName)
-    //   .attr("cx", (d) => d % 172)
-    //   .attr("cy", (d) => Math.floor(d / 172))
-    //   .attr("r", 0.5)
-    //   .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][1]]);
+  function updateOverlay() {
+    // get the current time & current mode
+    let targetName = targetID.substr(1);
+    let currentTime = App.models.applicationState.getTimeStart(targetID.substr(11));
+    let mode = App.models.applicationState.getOverlayMode(targetID.substr(11));
+    console.log(currentTime);
 
     d3.selectAll(".activeNodes" + targetName).remove();
 
@@ -113,7 +120,13 @@ let ImageSliceView = function(targetID) {
       .attr("cx", (d) => d % 172 + 2)
       .attr("cy", (d) => Math.floor(d / 172) + 2)
       .attr("r", 0.5)
-      .style("fill", (d) => App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]]);
+      .style("fill", (d) => {
+        if (mode === "nodeDegree") {
+          return self.noDegColorScale(self.networkDynamics[currentTime][d][self.overlayMode[mode]]);
+        } else {
+          return App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]];
+        }
+      });
 
   }
 

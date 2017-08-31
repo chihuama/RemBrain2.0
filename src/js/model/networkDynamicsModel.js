@@ -24,7 +24,7 @@ let NetworkDynamicsModel = function() {
 
         self.networkDynamics = data;
 
-        for(let time of Object.keys(self.networkDynamics)) {
+        for (let time of Object.keys(self.networkDynamics)) {
           delete self.networkDynamics[time].size;
         }
 
@@ -40,9 +40,25 @@ let NetworkDynamicsModel = function() {
   }
 
 
+  function getMaxNodeDegree() {
+    let nodeDegrees = [];
+    _.forEach(Object.values(self.networkDynamics), function(pixels, time) {
+      if (time <= 100) { // duration the entire time
+        _.forEach(pixels, function(value, key) {
+          // nodeDegrees.push(self.networkDynamics[time][key][2]);
+          nodeDegrees.push(pixels[key][2]);
+        });
+      }
+    });
+    // console.log(nodeDegrees);
+    return _.max(nodeDegrees);
+  }
+
+
   return {
     loadNetworkDynamics,
-    getNetworkDynamics
+    getNetworkDynamics,
+    getMaxNodeDegree
   };
 
 }
