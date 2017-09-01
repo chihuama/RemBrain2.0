@@ -66,7 +66,8 @@ let TimeSliderController = function(targetID) {
       .attr("class", "brush" + targetID.substr(1))
       .call(self.timeBrush)
       // .call(self.timeBrush.move, self.timeScale.range());
-      .call(self.timeBrush.move, [self.timeScale(self.timeStart), self.timeScale(self.timeStart + self.timeSpan)]);
+      .call(self.timeBrush.move, [self.timeScale(self.timeStart), self.timeScale(self.timeStart + self.timeSpan)])
+      .style("display", "none");
 
     // time slider in the time step mode
     self.timeSlider = self.targetSvg.append("rect")
@@ -81,7 +82,7 @@ let TimeSliderController = function(targetID) {
         .on("start drag", drag)
       )
       .style("cursor", "crosshair")
-      .style("display", "none");
+    // .style("display", "none");
   }
 
 
@@ -94,7 +95,9 @@ let TimeSliderController = function(targetID) {
     App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
 
     // update the image slice view
-    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+    updateViews();
+
+    checkSyncTime();
   }
 
 
@@ -113,12 +116,7 @@ let TimeSliderController = function(targetID) {
     App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
 
     // update the image slice view
-    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
-  }
-
-
-  function checkSyncTime() {
-
+    updateViews();
   }
 
 
@@ -130,11 +128,43 @@ let TimeSliderController = function(targetID) {
       d3.select(".brush" + targetID.substr(1)).style("display", "none");
       d3.select(".slider" + targetID.substr(1)).style("display", "block");
     }
+
+    // update the image slice view
+    updateViews();
+  }
+
+  function updateViews() {
+    if (App.models.applicationState.checkSliceSelected(targetID.substr(11))) {
+      App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+    }
+  }
+
+
+  function checkSyncTime() {
+    let timeSync = App.models.applicationState.getTimeSync();
+
+    if (timeSync) {
+      if (_.includes(targetID, "Left")) {
+        App.controllers.timeSliderRight.syncTime(self.timeStep, self.timeScale);
+      } else if (_.includes(targetID, "Right")) {
+        App.controllers.timeSliderLeft.syncTime(self.timeStep, self.timeScale);
+      }
+    }
+  }
+
+  function syncTime(timeStep, timeScale) {
+    self.timeStep = timeStep;
+    d3.select(".slider" + targetID.substr(1)).attr("x", self.timeScale2(self.timeStep));
+    
+    App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
+
+    updateViews();
   }
 
 
   return {
-    update
+    update,
+    syncTime
   };
 
 }

@@ -55,10 +55,16 @@ let NetworkDynamicsModel = function() {
   }
 
 
+  function getMostCommon_Dynamics(timeStart, timeSpan) {
+
+  }
+
+
   return {
     loadNetworkDynamics,
     getNetworkDynamics,
-    getMaxNodeDegree
+    getMaxNodeDegree,
+    getMostCommon_Dynamics
   };
 
 }

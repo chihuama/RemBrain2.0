@@ -48,7 +48,6 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
       App.pcaAttributes[attr] = true;
     }
   }
-  // console.log(App.pcaAttributes);
 
   // color scale
   App.colorScale = ["#cccccc", "#1f78b4", "#ff7f00", "#33a02c", "#e31a1c",
@@ -59,6 +58,7 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     "Left": "#8c510a",
     "Right": "#01665e"
   }
+  
 
   App.init = function() {
     // create models
@@ -90,8 +90,8 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
 
         // controllers
         App.controllers.kiviatSorting.attachToSelect(".attribute-dropdown");
-        App.controllers.timeSliderLeft.update(App.models.applicationState.getTimeSliderMode());
-        App.controllers.timeSliderRight.update(App.models.applicationState.getTimeSliderMode());
+        // App.controllers.timeSliderLeft.update(App.models.applicationState.getTimeSliderMode());
+        // App.controllers.timeSliderRight.update(App.models.applicationState.getTimeSliderMode());
 
         // views
         App.views.kiviatSummary.create(data);

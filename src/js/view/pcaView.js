@@ -225,7 +225,7 @@ let PcaView = function(targetID) {
                       // d3.select("#" + d.mouse + "-" + d.activation).classed("selectedDot-" + key, true);
 
                       // tell the imageSliceController which side is loaded
-                      App.controllers.imageSlice.load(key);
+                      App.models.applicationState.loadSliceSelected(key.substr(10));
 
                       // update imageSlice views
                       App.views[key].update();
@@ -408,7 +408,7 @@ let PcaView = function(targetID) {
                   //   .style("stroke-width", 1);
 
                   // tell the imageSliceController which side is loaded
-                  App.controllers.imageSlice.load(key);
+                  App.models.applicationState.loadSliceSelected(key.substr(10));
 
                   // update imageSlice views
                   App.views[key].update();

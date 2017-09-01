@@ -12,13 +12,8 @@ let ApplicationStateModel = function() {
     selectedAnimalId: null, // animal.id
     selectedActivationId: null, // activation.id
 
-    overlayMode: "homeComm",
+    timeSync: "true",
     timeSliderMode: "timeDuration",
-
-    maxNodeDegree: {
-      "imageSliceLeft": 0,
-      "imageSliceRight": 0
-    },
     timeStart: {
       "Left": 20,
       "Right": 20
@@ -30,11 +25,21 @@ let ApplicationStateModel = function() {
     timeStep: {
       "Left": 50,
       "Right": 50
+    },
+
+    overlayMode: "homeComm",
+    maxNodeDegree: {
+      "imageSliceLeft": 0,
+      "imageSliceRight": 0
+    },
+
+    sliceSelected: {
+      "Left": false,
+      "Right": false
     }
 
-    // timeStart: 20,
-    // timeSpan: 10
   };
+
 
   function setAttributesForPCA(attrs) {
     self.attributesForPCA = attrs;
@@ -52,6 +57,7 @@ let ApplicationStateModel = function() {
     return self.attributeForSorting;
   }
 
+  /**************************************************/
 
   function setSelectedAnimal(animal) {
     self.selectedAnimal = animal;
@@ -77,13 +83,14 @@ let ApplicationStateModel = function() {
     return self.selectedActivationId;
   }
 
+  /**************************************************/
 
-  function setOverlayMode(mode) {
-    self.overlayMode = mode;
+  function setTimeSync(check) {
+    self.timeSync = check;
   }
 
-  function getOverlayMode() {
-    return self.overlayMode;
+  function getTimeSync() {
+    return self.timeSync;
   }
 
   function setTimeSliderMode(mode) {
@@ -92,18 +99,6 @@ let ApplicationStateModel = function() {
 
   function getTimeSliderMode() {
     return self.timeSliderMode;
-  }
-
-  function setMaxNodeDegree(side, nodeDegree) {
-    self.maxNodeDegree[side] = nodeDegree;
-  }
-
-  function getMaxNodeDegree() {
-    if (self.maxNodeDegree["imageSliceLeft"] >= self.maxNodeDegree["imageSliceRight"]) {
-      return self.maxNodeDegree["imageSliceLeft"];
-    } else {
-      return self.maxNodeDegree["imageSliceRight"];
-    }
   }
 
   function setTimeStart(side, timeStart) {
@@ -130,6 +125,37 @@ let ApplicationStateModel = function() {
     return self.timeStep[side];
   }
 
+  /**************************************************/
+
+  function setOverlayMode(mode) {
+    self.overlayMode = mode;
+  }
+
+  function getOverlayMode() {
+    return self.overlayMode;
+  }
+
+  function setMaxNodeDegree(side, nodeDegree) {
+    self.maxNodeDegree[side] = nodeDegree;
+  }
+
+  function getMaxNodeDegree() {
+    if (self.maxNodeDegree["imageSliceLeft"] >= self.maxNodeDegree["imageSliceRight"]) {
+      return self.maxNodeDegree["imageSliceLeft"];
+    } else {
+      return self.maxNodeDegree["imageSliceRight"];
+    }
+  }
+
+
+  function loadSliceSelected(side) {
+    self.sliceSelected[side] = true;
+  }
+
+  function checkSliceSelected(side) {
+    return self.sliceSelected[side];
+  }
+
 
   return {
     setAttributesForPCA,
@@ -142,18 +168,22 @@ let ApplicationStateModel = function() {
     getSelectedAnimalId,
     setSelectedActivationId,
     getSelectedActivationId,
-    setOverlayMode,
-    getOverlayMode,
+    setTimeSync,
+    getTimeSync,
     setTimeSliderMode,
     getTimeSliderMode,
-    setMaxNodeDegree,
-    getMaxNodeDegree,
     setTimeStart,
     getTimeStart,
     setTimeSpan,
     getTimeSpan,
     setTimeStep,
-    getTimeStep
+    getTimeStep,
+    setOverlayMode,
+    getOverlayMode,
+    setMaxNodeDegree,
+    getMaxNodeDegree,
+    loadSliceSelected,
+    checkSliceSelected
   };
 
 }

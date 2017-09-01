@@ -453,8 +453,8 @@ let KiviatSummaryView = function(targetID) {
               // highlight the selected kiviat & the corresponding pca dot
 
               // tell the imageSliceController which side is loaded
-              App.controllers.imageSlice.load(key);
-              
+              App.models.applicationState.loadSliceSelected(key.substr(10));
+
               // update imageSlice views
               App.views[key].update();
             })

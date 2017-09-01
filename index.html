@@ -12,7 +12,6 @@
   <link rel="stylesheet/less" href="src/css/pca.less">
   <link rel="stylesheet/less" href="src/css/slice.less">
   <link rel="stylesheet/less" href="src/css/kiviatSummary.less">
-  <link rel="stylesheet/less" href="src/css/timeControl.less">
 
 
   <script src="lib/js/d3.v4.min.js" charset="utf-8"></script>
@@ -165,9 +164,9 @@
           </div>
           <div class="col-md-2 contentWrapper sliceDiv">
             <div class="row" id="sliceControl">
-              <input id="timeSync" type="checkbox" style="display:inline" checked> Sync Timelines</input> <br>
-              <input id="timeDuration" type="radio" name="timeline" value="timeDuration" checked onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input> <br>
-              <input id="timeStep" type="radio" name="timeline" value="timeStep" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Step</input> <br><br><br>
+              <input id="timeSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setTimeSync(this.checked)"> Sync Timelines</input> <br>
+              <input id="timeDuration" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input> <br>
+              <input id="timeStep" type="radio" name="timeline" value="timeStep" checked onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Step</input> <br><br><br>
               <input id="zoomSync" type="checkbox" style="display:inline" checked> Sync Zoom</input> <br><br>
 
               <input type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Home Community</input>

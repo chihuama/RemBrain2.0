@@ -3,16 +3,6 @@
 var App = App || {};
 
 let ImageSliceController = function() {
-  let self = {
-    sliceSelected: {
-      "imageSliceLeft": false,
-      "imageSliceRight": false
-    }
-  };
-
-  function load(side) {
-    self.sliceSelected[side] = true;
-  }
 
   function timeOpt(value) {
     console.log(value);
@@ -26,16 +16,15 @@ let ImageSliceController = function() {
     console.log(value);
     App.models.applicationState.setOverlayMode(value);
 
-    if (self.sliceSelected.imageSliceLeft) {
+    if (App.models.applicationState.checkSliceSelected("Left")) {
       App.views.imageSliceLeft.updateOverlay();
     }
-    if (self.sliceSelected.imageSliceRight) {
+    if (App.models.applicationState.checkSliceSelected("Right")) {
       App.views.imageSliceRight.updateOverlay();
     }
   }
 
   return {
-    load,
     timeOpt,
     overlayOpt
   };
