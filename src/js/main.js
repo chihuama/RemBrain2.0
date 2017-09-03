@@ -58,6 +58,11 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     "Left": "#8c510a",
     "Right": "#01665e"
   }
+
+  App.animationId = {
+    "imageSliceLeft": null,
+    "imageSliceRight": null
+  };
   
 
   App.init = function() {
@@ -90,8 +95,6 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
 
         // controllers
         App.controllers.kiviatSorting.attachToSelect(".attribute-dropdown");
-        // App.controllers.timeSliderLeft.update(App.models.applicationState.getTimeSliderMode());
-        // App.controllers.timeSliderRight.update(App.models.applicationState.getTimeSliderMode());
 
         // views
         App.views.kiviatSummary.create(data);

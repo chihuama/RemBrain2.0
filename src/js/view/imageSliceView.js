@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let ImageSliceView = function(targetID) {
+let ImageSliceView = function (targetID) {
 
   let self = {
     targetElement: null,
@@ -17,9 +17,11 @@ let ImageSliceView = function(targetID) {
       "tempComm": 1,
       "nodeDegree": 2
     },
+    modeOverlay: null,
 
     noDegColorScale: null,
 
+    timeMode: null,
     timeStart: 0,
     timeSpan: 0,
     currentTime: 0
@@ -57,15 +59,15 @@ let ImageSliceView = function(targetID) {
     console.log(self.networkDynamics);
 
     // get the current overlay mode, time mode, current time, timeStart and timeSpan
-    let targetName = targetID.substr(1);
-    let mode = App.models.applicationState.getOverlayMode();
-    let timeMode = App.models.applicationState.getTimeSliderMode();
-    let currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
-    let timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
-    let timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
+    self.timeMode = App.models.applicationState.getTimeSliderMode();
+    self.currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
+    self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
+    self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
+    self.modeOverlay = App.models.applicationState.getOverlayMode();
 
 
     // get the max node degree from both sides
+    let targetName = targetID.substr(1);
     let maxNodeDegree = App.models.networkDynamics.getMaxNodeDegree();
     App.models.applicationState.setMaxNodeDegree(targetName, maxNodeDegree);
     let maxNodeDegreeBoth = App.models.applicationState.getMaxNodeDegree();
@@ -90,39 +92,71 @@ let ImageSliceView = function(targetID) {
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
 
     // dynamic community info for all active nodes
-    self.targetSvg.selectAll("circle")
-      .data(Object.keys(self.networkDynamics[currentTime]))
-      .enter()
-      .append("circle")
-      .attr("class", "activeNodes" + targetName)
-      .attr("cx", (d) => d % 172 + 2)
-      .attr("cy", (d) => Math.floor(d / 172) + 2)
-      .attr("r", 0.5)
-      .style("fill", (d) => {
-        if (mode === "nodeDegree") {
-          return self.noDegColorScale(self.networkDynamics[currentTime][d][self.overlayMode[mode]]);
-        } else {
-          return App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]];
-        }
-      });
+    colorActiveNodes();
+    // self.targetSvg.selectAll("circle")
+    //   .data(Object.keys(self.networkDynamics[self.currentTime]))
+    //   .enter()
+    //   .append("circle")
+    //   .attr("class", "activeNodes" + targetName)
+    //   .attr("cx", (d) => d % 172 + 2)
+    //   .attr("cy", (d) => Math.floor(d / 172) + 2)
+    //   .attr("r", 0.5)
+    //   .style("fill", (d) => {
+    //     if (mode === "nodeDegree") {
+    //       return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
+    //     } else {
+    //       return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
+    //     }
+    //   });
 
   }
 
 
   function updateOverlay() {
     // get the current overlay mode, time mode, current time, timeStart and timeSpan
-    let targetName = targetID.substr(1);
-    let mode = App.models.applicationState.getOverlayMode();
-    let timeMode = App.models.applicationState.getTimeSliderMode();
-    let currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
-    let timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
-    let timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
-    // console.log(currentTime);
+    self.timeMode = App.models.applicationState.getTimeSliderMode();
+    self.currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
+    self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
+    self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
+    self.modeOverlay = App.models.applicationState.getOverlayMode();
 
+    let animationMode = App.models.applicationState.getAnimationMode();
+    console.log(self.currentTime);
+    
+    if (animationMode.play) { // play
+      console.log("play");      
+      App.animationId[targetID.substr(1)] = setInterval(frame, 5);
+
+      function frame() {
+        if (self.currentTime <= 100) {
+          colorActiveNodes();
+          self.currentTime++;
+          App.models.applicationState.setTimeStep("Left", self.currentTime);
+        } else {
+          clearInterval(App.animationId[targetID.substr(1)]);
+          App.controllers.imageSlice.stopAnimation();
+        }
+      }
+    } 
+    // else if (!animationMode.play && !animationMode.stop) { // pause
+    //   console.log("pause");
+    //   clearInterval(App.animationId);
+    //   colorActiveNodes();
+    // } 
+    else { // pause or stop
+      console.log("stop");
+      clearInterval(App.animationId[targetID.substr(1)]);
+      colorActiveNodes();
+    }
+  }
+
+
+  function colorActiveNodes() {
+    let targetName = targetID.substr(1);
     d3.selectAll(".activeNodes" + targetName).remove();
 
     self.targetSvg.selectAll("circle")
-      .data(Object.keys(self.networkDynamics[currentTime]))
+      .data(Object.keys(self.networkDynamics[self.currentTime]))
       .enter()
       .append("circle")
       .attr("class", "activeNodes" + targetName)
@@ -130,32 +164,12 @@ let ImageSliceView = function(targetID) {
       .attr("cy", (d) => Math.floor(d / 172) + 2)
       .attr("r", 0.5)
       .style("fill", (d) => {
-        if (mode === "nodeDegree") {
-          return self.noDegColorScale(self.networkDynamics[currentTime][d][self.overlayMode[mode]]);
+        if (self.modeOverlay === "nodeDegree") {
+          return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
         } else {
-          return App.colorScale[self.networkDynamics[currentTime][d][self.overlayMode[mode]]];
+          return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
         }
       });
-      // .style("fill", function(d) {
-      //   let overlayValue;
-      //
-      //   if (timeMode === "timeStep") {
-      //     overlayValue = self.networkDynamics[currentTime][d][self.overlayMode[mode]];
-      //   } else {
-      //     for (let i = timeStart; i < (timeStart + timeSpan); i++) {
-      //       overlayValue += self.networkDynamics[i][d][self.overlayMode[mode]];
-      //     }
-      //     overlayValue = Math.round(overlayValue / timeSpan);
-      //     console.log(overlayValue);
-      //   }
-      //
-      //   if (mode === "nodeDegree") {
-      //     return self.noDegColorScale(overlayValue);
-      //   } else {
-      //     return App.colorScale[overlayValue];
-      //   }
-      // });
-
   }
 
 

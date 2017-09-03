@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let ApplicationStateModel = function() {
+let ApplicationStateModel = function () {
 
   let self = {
     attributesForPCA: [],
@@ -13,7 +13,7 @@ let ApplicationStateModel = function() {
     selectedActivationId: null, // activation.id
 
     timeSync: "true",
-    timeSliderMode: "timeDuration",
+    timeSliderMode: "timeStep",
     timeStart: {
       "Left": 20,
       "Right": 20
@@ -25,6 +25,10 @@ let ApplicationStateModel = function() {
     timeStep: {
       "Left": 50,
       "Right": 50
+    },
+    animationMode: {
+      "play": false,
+      "stop": false
     },
 
     overlayMode: "homeComm",
@@ -125,6 +129,15 @@ let ApplicationStateModel = function() {
     return self.timeStep[side];
   }
 
+  function setAnimationMode(play, stop) {
+    self.animationMode.play = play;
+    self.animationMode.stop = stop;
+  }
+
+  function getAnimationMode() {
+    return self.animationMode;
+  }
+
   /**************************************************/
 
   function setOverlayMode(mode) {
@@ -178,6 +191,8 @@ let ApplicationStateModel = function() {
     getTimeSpan,
     setTimeStep,
     getTimeStep,
+    setAnimationMode,
+    getAnimationMode,
     setOverlayMode,
     getOverlayMode,
     setMaxNodeDegree,

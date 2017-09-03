@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let TimeSliderController = function(targetID) {
+let TimeSliderController = function (targetID) {
 
   let self = {
     targetElement: null,
@@ -10,9 +10,11 @@ let TimeSliderController = function(targetID) {
     handle: null,
 
     timeBrush: null,
-    timeSlider: null,
     timeScale: null,
     timeScale2: null,
+
+    timeSlider: null,
+    timeSliderScale: null,
 
     timeStart: 0,
     timeSpan: 0,
@@ -43,16 +45,20 @@ let TimeSliderController = function(targetID) {
 
     self.timeScale = d3.scaleLinear()
       .domain([0, 100])
-      .range([1, 197]);
+      .range([1, 198]);
 
     self.timeScale2 = d3.scaleLinear()
       .domain([0, 100])
-      .range([1, 197]);
+      .range([1, 198]);
+
+    self.timeSliderScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([1, 196]);
 
     self.timeBrush = d3.brushX()
       .extent([
-        [0, 0],
-        [200, 30]
+        [1, 0],
+        [198, 30]
       ])
       .on("end", brushed);
 
@@ -86,21 +92,6 @@ let TimeSliderController = function(targetID) {
   }
 
 
-  function drag() {
-    d3.select(this).attr("x", d3.event.x);
-
-    self.timeStep = self.timeScale2.invert(d3.event.x);
-
-    //update the application state
-    App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
-
-    // update the image slice view
-    updateViews();
-
-    checkSyncTime();
-  }
-
-
   function brushed() {
     if (!d3.event.sourceEvent) return; // Only transition after input.
 
@@ -120,6 +111,28 @@ let TimeSliderController = function(targetID) {
   }
 
 
+  function drag() {
+    let xPos = d3.event.x;
+    if (xPos < 1) {
+      xPos = 1;
+    } else if (xPos > 196) {
+      xPos = 196;
+    }
+
+    d3.select(this).attr("x", xPos);
+
+    self.timeStep = self.timeSliderScale.invert(xPos);
+
+    //update the application state
+    App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
+
+    // update the image slice view
+    updateViews();
+
+    checkSyncTime();
+  }
+
+
   function update(mode) {
     if (mode === "timeDuration") {
       d3.select(".brush" + targetID.substr(1)).style("display", "block");
@@ -130,7 +143,7 @@ let TimeSliderController = function(targetID) {
     }
 
     // update the image slice view
-    updateViews();
+    // updateViews();
   }
 
   function updateViews() {
@@ -154,8 +167,8 @@ let TimeSliderController = function(targetID) {
 
   function syncTime(timeStep, timeScale) {
     self.timeStep = timeStep;
-    d3.select(".slider" + targetID.substr(1)).attr("x", self.timeScale2(self.timeStep));
-    
+    d3.select(".slider" + targetID.substr(1)).attr("x", self.timeSliderScale(self.timeStep));
+
     App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
 
     updateViews();
