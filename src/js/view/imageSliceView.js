@@ -65,7 +65,6 @@ let ImageSliceView = function (targetID) {
     self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
     self.modeOverlay = App.models.applicationState.getOverlayMode();
 
-
     // get the max node degree from both sides
     let targetName = targetID.substr(1);
     let maxNodeDegree = App.models.networkDynamics.getMaxNodeDegree();
@@ -80,7 +79,6 @@ let ImageSliceView = function (targetID) {
 
 
     d3.select(".image" + targetName).remove();
-    d3.selectAll(".activeNodes" + targetName).remove();
 
     // load image
     let img = self.targetSvg.append("image")
@@ -93,22 +91,6 @@ let ImageSliceView = function (targetID) {
 
     // dynamic community info for all active nodes
     colorActiveNodes();
-    // self.targetSvg.selectAll("circle")
-    //   .data(Object.keys(self.networkDynamics[self.currentTime]))
-    //   .enter()
-    //   .append("circle")
-    //   .attr("class", "activeNodes" + targetName)
-    //   .attr("cx", (d) => d % 172 + 2)
-    //   .attr("cy", (d) => Math.floor(d / 172) + 2)
-    //   .attr("r", 0.5)
-    //   .style("fill", (d) => {
-    //     if (mode === "nodeDegree") {
-    //       return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
-    //     } else {
-    //       return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
-    //     }
-    //   });
-
   }
 
 
@@ -119,32 +101,27 @@ let ImageSliceView = function (targetID) {
     self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
     self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
     self.modeOverlay = App.models.applicationState.getOverlayMode();
-
+    // console.log(self.currentTime);
     let animationMode = App.models.applicationState.getAnimationMode();
-    console.log(self.currentTime);
     
     if (animationMode.play) { // play
-      console.log("play");      
-      App.animationId[targetID.substr(1)] = setInterval(frame, 5);
+      App.animationId[targetID.substr(1)] = setInterval(frame, 200);
 
       function frame() {
         if (self.currentTime <= 100) {
           colorActiveNodes();
           self.currentTime++;
           App.models.applicationState.setTimeStep("Left", self.currentTime);
+          App.models.applicationState.setTimeStep("Right", self.currentTime);
+
+          App.controllers.timeSliderLeft.animationOn();
+          App.controllers.timeSliderRight.animationOn();
         } else {
           clearInterval(App.animationId[targetID.substr(1)]);
           App.controllers.imageSlice.stopAnimation();
         }
       }
-    } 
-    // else if (!animationMode.play && !animationMode.stop) { // pause
-    //   console.log("pause");
-    //   clearInterval(App.animationId);
-    //   colorActiveNodes();
-    // } 
-    else { // pause or stop
-      console.log("stop");
+    } else { // pause or stop
       clearInterval(App.animationId[targetID.substr(1)]);
       colorActiveNodes();
     }

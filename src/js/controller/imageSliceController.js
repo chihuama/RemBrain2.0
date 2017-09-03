@@ -33,30 +33,27 @@ let ImageSliceController = function () {
         self.play = false;
         self.stop = true;
       }
-      console.log(self.play + "-" + self.stop);
 
       App.models.applicationState.setAnimationMode(self.play, self.stop);
 
+      // sync the time 
+      let leftTime = App.models.applicationState.getTimeStep("Left");
+      App.models.applicationState.setTimeStep("Right", leftTime);
+      
       if (self.play) { // play
         d3.select("#play").select("span").attr("class", "glyphicon glyphicon-pause");
-        self.currentTime = App.models.applicationState.getTimeStep("Left");
-
-        // reset to 0 from the last time step
-        if (self.currentTime == 101) {
-          self.currentTime = 0;
-          App.models.applicationState.setTimeStep("Left", self.currentTime);
-          App.models.applicationState.setTimeStep("Right", self.currentTime);          
-        }
       } else if (!self.play && !self.stop) { // pause
         d3.select("#play").select("span").attr("class", "glyphicon glyphicon-play");
-        // need to work on sync the time on both side
       } else { // stop
         d3.select("#play").select("span").attr("class", "glyphicon glyphicon-play");
 
         // rest the current time to 0
         self.currentTime = 0;
         App.models.applicationState.setTimeStep("Left", self.currentTime);
-        App.models.applicationState.setTimeStep("Right", self.currentTime);                  
+        App.models.applicationState.setTimeStep("Right", self.currentTime);
+
+        App.controllers.timeSliderLeft.animationOn();
+        App.controllers.timeSliderRight.animationOn()
       }
 
       updateViews();
@@ -67,6 +64,11 @@ let ImageSliceController = function () {
     self.play = false;
     self.stop = true;
     d3.select("#play").select("span").attr("class", "glyphicon glyphicon-play");
+
+    // reset to 0 from the last time step
+    self.currentTime = 0;
+    App.models.applicationState.setTimeStep("Left", self.currentTime);
+    App.models.applicationState.setTimeStep("Right", self.currentTime);
   }
 
 

@@ -141,9 +141,6 @@ let TimeSliderController = function (targetID) {
       d3.select(".brush" + targetID.substr(1)).style("display", "none");
       d3.select(".slider" + targetID.substr(1)).style("display", "block");
     }
-
-    // update the image slice view
-    // updateViews();
   }
 
   function updateViews() {
@@ -174,10 +171,16 @@ let TimeSliderController = function (targetID) {
     updateViews();
   }
 
+  function animationOn() {
+    self.timeStep = App.models.applicationState.getTimeStep(targetID.substr(11));
+    d3.select(".slider" + targetID.substr(1)).attr("x", self.timeSliderScale(self.timeStep));
+  }
+
 
   return {
     update,
-    syncTime
+    syncTime,
+    animationOn
   };
 
 }
