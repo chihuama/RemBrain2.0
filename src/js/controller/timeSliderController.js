@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let TimeSliderController = function (targetID) {
+let TimeSliderController = function(targetID) {
 
   let self = {
     targetElement: null,
@@ -42,7 +42,6 @@ let TimeSliderController = function (targetID) {
       .style("stroke", App.colorHighlight[targetID.substr(11)])
       .style("stroke-width", 1);
 
-
     self.timeScale = d3.scaleLinear()
       .domain([0, 100])
       .range([1, 198]);
@@ -65,6 +64,12 @@ let TimeSliderController = function (targetID) {
     self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
     self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
     self.timeStep = App.models.applicationState.getTimeStep(targetID.substr(11));
+
+    // loadViews();
+  }
+
+  function loadViews() {
+    stackedDyCommPlots();
 
     // initialize the brush in the time duration mode
     self.targetSvg.append("g")
@@ -89,6 +94,32 @@ let TimeSliderController = function (targetID) {
       )
       .style("cursor", "crosshair")
     // .style("display", "none");
+  }
+
+  function stackedDyCommPlots() {
+
+    let x = d3.scaleLinear().domain([0, 100]).range([1, 199]);
+    let y = d3.scaleLinear().domain([0, App.models.networkDynamics.getMaxActiveNodes()]).range([28, 2]);
+
+    let area = d3.area()
+      .x((d) => x(d.data.time))
+      .y0((d) => y(d[0]))
+      .y1((d) => y(d[1]));
+
+    let dyCommData = App.models.networkDynamics.getCommunity_distributions();
+    let keys = _.dropRight(Object.keys(dyCommData[0]));
+    let stack = d3.stack().keys(keys);
+
+    let layer = self.targetSvg.append("g").selectAll(".layer")
+      .data(stack(dyCommData))
+      .enter().append("g")
+      .attr("class", "layer");
+
+    layer.append("path")
+      .attr("class", "area")
+      .attr("d", area)
+      .style("fill", (d) => App.colorScale[d.key])
+      .style("opacity", 0.75);
   }
 
 
@@ -178,6 +209,7 @@ let TimeSliderController = function (targetID) {
 
 
   return {
+    loadViews,
     update,
     syncTime,
     animationOn

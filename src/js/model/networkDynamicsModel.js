@@ -34,11 +34,9 @@ let NetworkDynamicsModel = function() {
 
   }
 
-
   function getNetworkDynamics() {
     return self.networkDynamics;
   }
-
 
   function getMaxNodeDegree() {
     let nodeDegrees = [];
@@ -50,8 +48,38 @@ let NetworkDynamicsModel = function() {
         });
       }
     });
-    // console.log(nodeDegrees);
+
     return _.max(nodeDegrees);
+  }
+
+  function getMaxActiveNodes() {
+    console.log(Object.keys(self.networkDynamics[50]).length);
+    return Object.keys(self.networkDynamics[50]).length;
+  }
+
+
+  function getCommunity_distributions() {
+    let distributions = [];
+
+    _.forEach(Object.keys(self.networkDynamics), function(time) {
+      if (time >= 0 && time <= 100) {
+        let row = {};
+        row["time"] = time;
+        for (let i = 0; i <= 10; i++) {
+          row[i] = 0;
+        }
+
+        _.forEach(Object.keys(self.networkDynamics[time]), function(pixel) {
+          let groupId = self.networkDynamics[time][pixel][0];
+          row[groupId]++;
+        });
+
+        distributions.push(row);
+      }
+    });
+
+    console.log(distributions);
+    return distributions;
   }
 
 
@@ -64,6 +92,8 @@ let NetworkDynamicsModel = function() {
     loadNetworkDynamics,
     getNetworkDynamics,
     getMaxNodeDegree,
+    getMaxActiveNodes,
+    getCommunity_distributions,
     getMostCommon_Dynamics
   };
 

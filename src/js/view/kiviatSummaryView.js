@@ -455,6 +455,9 @@ let KiviatSummaryView = function(targetID) {
               // tell the imageSliceController which side is loaded
               App.models.applicationState.loadSliceSelected(key.substr(10));
 
+              // update time slider controllers
+              App.controllers["timeSlider" + key.substr(10)].loadViews();
+
               // update imageSlice views
               App.views[key].update();
             })
