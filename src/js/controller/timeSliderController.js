@@ -64,12 +64,13 @@ let TimeSliderController = function(targetID) {
     self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
     self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
     self.timeStep = App.models.applicationState.getTimeStep(targetID.substr(11));
-
-    // loadViews();
   }
 
   function loadViews() {
     stackedDyCommPlots();
+
+    d3.select(".brush" + targetID.substr(1)).remove();
+    d3.select(".slider" + targetID.substr(1)).remove();
 
     // initialize the brush in the time duration mode
     self.targetSvg.append("g")
@@ -77,8 +78,7 @@ let TimeSliderController = function(targetID) {
       .attr("class", "brush" + targetID.substr(1))
       .call(self.timeBrush)
       // .call(self.timeBrush.move, self.timeScale.range());
-      .call(self.timeBrush.move, [self.timeScale(self.timeStart), self.timeScale(self.timeStart + self.timeSpan)])
-      .style("display", "none");
+      .call(self.timeBrush.move, [self.timeScale2(self.timeStart), self.timeScale2(self.timeStart + self.timeSpan)]);
 
     // time slider in the time step mode
     self.timeSlider = self.targetSvg.append("rect")
@@ -92,8 +92,10 @@ let TimeSliderController = function(targetID) {
       .call(d3.drag()
         .on("start drag", drag)
       )
-      .style("cursor", "crosshair")
-    // .style("display", "none");
+      .style("cursor", "crosshair");
+
+    let timeMode = App.models.applicationState.getTimeSliderMode();
+    update(timeMode);
   }
 
   function stackedDyCommPlots() {
@@ -110,16 +112,19 @@ let TimeSliderController = function(targetID) {
     let keys = _.dropRight(Object.keys(dyCommData[0]));
     let stack = d3.stack().keys(keys);
 
-    let layer = self.targetSvg.append("g").selectAll(".layer")
+    d3.selectAll(".layer-" + targetID.substr(1)).remove();
+
+    let layer = self.targetSvg.append("g").selectAll(".layer-" + targetID.substr(1))
       .data(stack(dyCommData))
       .enter().append("g")
-      .attr("class", "layer");
+      .attr("class", "layer-" + targetID.substr(1));
 
     layer.append("path")
       .attr("class", "area")
       .attr("d", area)
       .style("fill", (d) => App.colorScale[d.key])
-      .style("opacity", 0.75);
+      .style("opacity", 0.7)
+      .style("pointer-events", "none");
   }
 
 
