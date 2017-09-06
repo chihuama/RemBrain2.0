@@ -35,6 +35,7 @@
   <script src="src/js/view/kiviatSummaryView.js" charset="utf-8"></script>
   <script src="src/js/view/imageSliceView.js" charset="utf-8"></script>
   <script src="src/js/view/controlLegendView.js" charset="utf-8"></script>
+  <script src="src/js/view/mosaicMatrixView.js" charset="utf-8"></script>
 
   <!-- controllers -->
   <script src="src/js/controller/kiviatSortingController.js" charset="utf-8"></script>
@@ -152,28 +153,39 @@
               <!-- mosaic-matrix views -->
               <div class="col-md-4 contentWrapper sliceDiv">
                 <div class="row mosaicMatrix">
-                  <div class="contentDiv">
+                  <div class="col-md-9" id="mosaicMatrixLeft-Up">
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-danger btn-sm" id="Left-Up" value="Up" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Left', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
                   </div>
                 </div>
                 <div class="row mosaicMatrix">
-                  <div class="contentDiv">
+                  <div class="col-md-9" id="mosaicMatrixLeft-Bottom">
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-primary btn-sm" id="Left-Bottom" value="Bottom" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Left', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
                   </div>
                 </div>
               </div>
+              <!-- done -->
+              <!-- <div class="col-md-1 contentWrapper sliceDiv">
+                <button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span></button>
+              </div> -->
             </div>
           </div>
+
           <div class="col-md-2 contentWrapper sliceDiv">
             <div class="row" id="sliceControl">
-              <input id="timeSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setTimeSync(this.checked)">              Sync Timelines</input> <br>
-              <input id="timeDuration" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)">              Time Duration</input> <br>
-              <input id="timeStep" type="radio" name="timeline" value="timeStep" checked onchange="App.controllers.imageSlice.timeOpt(this.value)">              Time Step</input>
+              <input id="timeSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setTimeSync(this.checked)"> Sync Timelines</input> <br>
+              <input id="timeDuration" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input> <br>
+              <input id="timeStep" type="radio" name="timeline" value="timeStep" checked onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Step</input>
               <button type="button" class="btn btn-default btn-sm" id="play" onclick="App.controllers.imageSlice.animationOpt(this.id)"><span class="glyphicon glyphicon-play"></span></button>
               <button type="button" class="btn btn-default btn-sm" id="stop" onclick="App.controllers.imageSlice.animationOpt(this.id)"><span class="glyphicon glyphicon-stop"></span></button> <br><br>
 
-              <input id="zoomSync" type="checkbox" style="display:inline" checked> Sync Zoom</input> <br><br>
+              <input id="zoomSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setZoomSync(this.checked)"> Sync Zoom</input> <br><br>
 
-              <input type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)">              Home Community</input>
-              <input type="radio" name="overlay" value="tempComm" onchange="App.controllers.imageSlice.overlayOpt(this.value)">              Temporary Community</input>
+              <input type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Home Community</input>
+              <input type="radio" name="overlay" value="tempComm" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Temporary Community</input>
               <div class="contentDiv" id="dynamicCommunity">
               </div>
               <!-- <input type="radio" name="overlay"> Homing </input>
@@ -181,11 +193,12 @@
               <input type="radio" name="overlay"> Switching </input>
               <div class="contentDiv" id="communityBehavior">
               </div> -->
-              <input type="radio" name="overlay" value="nodeDegree" onchange="App.controllers.imageSlice.overlayOpt(this.value)">              Node Degree</input>
+              <input type="radio" name="overlay" value="nodeDegree" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Node Degree</input>
               <div class="contentDiv" id="nodeDegree">
               </div>
             </div>
           </div>
+
           <div class="col-md-5 contentWrapper sliceDiv">
             <!-- time controller -->
             <div class="row timeDiv" id="timeSliderRight">
@@ -194,11 +207,17 @@
               <!-- mosaic-matrix views -->
               <div class="col-md-4 contentWrapper sliceDiv">
                 <div class="row mosaicMatrix">
-                  <div class="contentDiv">
+                  <div class="col-md-9" id="mosaicMatrixRight-Up">
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-danger btn-sm" id="Right-Up" value="Up" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Right', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
                   </div>
                 </div>
                 <div class="row mosaicMatrix">
-                  <div class="contentDiv">
+                  <div class="col-md-9" id="mosaicMatrixRight-Bottom">
+                  </div>
+                  <div class="col-md-3">
+                    <button type="button" class="btn btn-primary btn-sm" id="Right-Bottom" value="Bottom" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Right', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
                   </div>
                 </div>
               </div>

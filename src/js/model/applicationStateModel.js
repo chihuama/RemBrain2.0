@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let ApplicationStateModel = function () {
+let ApplicationStateModel = function() {
 
   let self = {
     attributesForPCA: [],
@@ -12,7 +12,7 @@ let ApplicationStateModel = function () {
     selectedAnimalId: null, // animal.id
     selectedActivationId: null, // activation.id
 
-    timeSync: "true",
+    timeSync: true,
     timeSliderMode: "timeStep",
     timeStart: {
       "Left": 20,
@@ -29,6 +29,18 @@ let ApplicationStateModel = function () {
     animationMode: {
       "play": false,
       "stop": false
+    },
+
+    zoomSync: true,
+    mosaicMatrixMode: {
+      "Left": {
+        "Up": false,
+        "Bottom": false
+      },
+      "Right": {
+        "Up": false,
+        "Bottom": false
+      }
     },
 
     overlayMode: "homeComm",
@@ -140,6 +152,36 @@ let ApplicationStateModel = function () {
 
   /**************************************************/
 
+  function setZoomSync(check) {
+    self.zoomSync = check;
+  }
+
+  function getZoomSync() {
+    return self.zoomSync;
+  }
+
+  function setMosaicMatrixMode(side, direction, check) {
+    self.mosaicMatrixMode[side][direction] = check;
+  }
+
+  function getMosaicMatrixMode(side, direction) {
+    return self.mosaicMatrixMode[side][direction];
+  }
+
+  function resetMosaicMatrixMode() {
+    self.mosaicMatrixMode.Left.Up = false;
+    self.mosaicMatrixMode.Left.Bottom = false;
+    self.mosaicMatrixMode.Right.Up = false;
+    self.mosaicMatrixMode.Right.Bottom = false;
+
+    d3.select("#Left-Up").select("span").attr("class", "glyphicon glyphicon-eye-close");
+    d3.select("#Left-Bottom").select("span").attr("class", "glyphicon glyphicon-eye-close");
+    d3.select("#Right-Up").select("span").attr("class", "glyphicon glyphicon-eye-close");
+    d3.select("#Right-Bottom").select("span").attr("class", "glyphicon glyphicon-eye-close");
+  }
+
+  /**************************************************/
+
   function setOverlayMode(mode) {
     self.overlayMode = mode;
   }
@@ -193,6 +235,11 @@ let ApplicationStateModel = function () {
     getTimeStep,
     setAnimationMode,
     getAnimationMode,
+    setZoomSync,
+    getZoomSync,
+    setMosaicMatrixMode,
+    getMosaicMatrixMode,
+    resetMosaicMatrixMode,
     setOverlayMode,
     getOverlayMode,
     setMaxNodeDegree,

@@ -78,6 +78,8 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
     App.views.imageSliceLeft = new ImageSliceView("#imageSliceLeft");
     App.views.imageSliceRight = new ImageSliceView("#imageSliceRight");
     App.views.controlLegend = new ControlLegendView();
+    App.views.mosaicMatrixLeft = new MosaicMatrixView("#mosaicMatrixLeft");
+    App.views.mosaicMatrixRight = new MosaicMatrixView("#mosaicMatrixRight");
 
     // create controllers
     App.controllers.kiviatSorting = new KiviatSortingController();

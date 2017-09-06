@@ -101,7 +101,8 @@ let TimeSliderController = function(targetID) {
   function stackedDyCommPlots() {
 
     let x = d3.scaleLinear().domain([0, 100]).range([1, 199]);
-    let y = d3.scaleLinear().domain([0, App.models.networkDynamics.getMaxActiveNodes()]).range([28, 2]);
+    // let y = d3.scaleLinear().domain([0, App.models.networkDynamics.getMaxActiveNodes()]).range([28, 2]);
+    let y = d3.scaleLinear().domain([0, 10000]).range([28, 2]);
 
     let area = d3.area()
       .x((d) => x(d.data.time))

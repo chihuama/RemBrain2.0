@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let ImageSliceController = function () {
+let ImageSliceController = function() {
 
   let self = {
     play: false,
@@ -36,10 +36,10 @@ let ImageSliceController = function () {
 
       App.models.applicationState.setAnimationMode(self.play, self.stop);
 
-      // sync the time 
+      // sync the time
       let leftTime = App.models.applicationState.getTimeStep("Left");
       App.models.applicationState.setTimeStep("Right", leftTime);
-      
+
       if (self.play) { // play
         d3.select("#play").select("span").attr("class", "glyphicon glyphicon-pause");
       } else if (!self.play && !self.stop) { // pause
@@ -88,12 +88,45 @@ let ImageSliceController = function () {
     }
   }
 
+  function mosaicMatrixOpt(side, value) {
+    console.log(side, value);
+    let preCheck = App.models.applicationState.getMosaicMatrixMode(side, value);
+    let zoomSync = App.models.applicationState.getZoomSync();
+
+    App.models.applicationState.resetMosaicMatrixMode();
+
+    if (zoomSync) {
+      App.models.applicationState.setMosaicMatrixMode("Left", value, !preCheck);
+      App.models.applicationState.setMosaicMatrixMode("Right", value, !preCheck);
+    } else {
+      App.models.applicationState.setMosaicMatrixMode(side, value, !preCheck);
+    }
+
+    let curCheck = App.models.applicationState.getMosaicMatrixMode(side, value);
+    if (curCheck) {
+      if (zoomSync) {
+        d3.select("#Left-" + value).select("span").attr("class", "glyphicon glyphicon-eye-open");
+        d3.select("#Right-" + value).select("span").attr("class", "glyphicon glyphicon-eye-open");
+      } else {
+        d3.select("#" + side + "-" + value).select("span").attr("class", "glyphicon glyphicon-eye-open");
+      }
+    } else {
+      if (zoomSync) {
+        d3.select("#Left-" + value).select("span").attr("class", "glyphicon glyphicon-eye-close");
+        d3.select("#Right-" + value).select("span").attr("class", "glyphicon glyphicon-eye-close");
+      } else {
+        d3.select("#" + side + "-" + value).select("span").attr("class", "glyphicon glyphicon-eye-close");
+      }
+    }
+  }
+
 
   return {
     timeOpt,
     animationOpt,
     stopAnimation,
-    overlayOpt
+    overlayOpt,
+    mosaicMatrixOpt
   };
 
 }
