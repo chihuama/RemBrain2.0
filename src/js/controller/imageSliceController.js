@@ -93,12 +93,14 @@ let ImageSliceController = function() {
     let preCheck = App.models.applicationState.getMosaicMatrixMode(side, value);
     let zoomSync = App.models.applicationState.getZoomSync();
 
-    App.models.applicationState.resetMosaicMatrixMode();
-
     if (zoomSync) {
+      App.models.applicationState.resetMosaicMatrixMode("Left");
+      App.models.applicationState.resetMosaicMatrixMode("Right");
+
       App.models.applicationState.setMosaicMatrixMode("Left", value, !preCheck);
       App.models.applicationState.setMosaicMatrixMode("Right", value, !preCheck);
     } else {
+      App.models.applicationState.resetMosaicMatrixMode(side);
       App.models.applicationState.setMosaicMatrixMode(side, value, !preCheck);
     }
 

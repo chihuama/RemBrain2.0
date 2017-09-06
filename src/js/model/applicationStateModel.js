@@ -168,16 +168,12 @@ let ApplicationStateModel = function() {
     return self.mosaicMatrixMode[side][direction];
   }
 
-  function resetMosaicMatrixMode() {
-    self.mosaicMatrixMode.Left.Up = false;
-    self.mosaicMatrixMode.Left.Bottom = false;
-    self.mosaicMatrixMode.Right.Up = false;
-    self.mosaicMatrixMode.Right.Bottom = false;
+  function resetMosaicMatrixMode(side) {
+    self.mosaicMatrixMode[side].Up = false;
+    self.mosaicMatrixMode[side].Bottom = false;
 
-    d3.select("#Left-Up").select("span").attr("class", "glyphicon glyphicon-eye-close");
-    d3.select("#Left-Bottom").select("span").attr("class", "glyphicon glyphicon-eye-close");
-    d3.select("#Right-Up").select("span").attr("class", "glyphicon glyphicon-eye-close");
-    d3.select("#Right-Bottom").select("span").attr("class", "glyphicon glyphicon-eye-close");
+    d3.select("#" + side + "-Up").select("span").attr("class", "glyphicon glyphicon-eye-close");
+    d3.select("#" + side + "-Bottom").select("span").attr("class", "glyphicon glyphicon-eye-close");
   }
 
   /**************************************************/
