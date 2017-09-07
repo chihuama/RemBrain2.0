@@ -177,17 +177,32 @@ let ImageSliceView = function(targetID) {
     let bottom = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom");
 
     if (up) {
-      highlightMosaicMatrix(d, 9, targetID.substr(11), "Up");
+      if (zoomSync) {
+        syncHighlight(d, "Up");
+      } else {
+        highlightMosaicMatrix(d, targetID.substr(11), "Up");
+      }
     } else if (bottom) {
-      highlightMosaicMatrix(d, 9, targetID.substr(11), "Bottom");
+      if (zoomSync) {
+        syncHighlight(d, "Bottom");
+      } else {
+        highlightMosaicMatrix(d, targetID.substr(11), "Bottom");
+      }
     }
   }
 
   function mouseoutCallBack() {
     let zoomSync = App.models.applicationState.getZoomSync();
 
-    d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Up").remove();
-    d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Bottom").remove();
+    if (zoomSync) {
+      d3.select(".highlightMosaicMatrix-Left-Up").remove();
+      d3.select(".highlightMosaicMatrix-Left-Bottom").remove();
+      d3.select(".highlightMosaicMatrix-Right-Up").remove();
+      d3.select(".highlightMosaicMatrix-Right-Bottom").remove();
+    } else {
+      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Up").remove();
+      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Bottom").remove();
+    }
   }
 
   function mouseclickCallBack(d) {
@@ -196,16 +211,42 @@ let ImageSliceView = function(targetID) {
     let bottom = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom");
 
     if (up) {
-      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Up").remove();
-      selectMosaicMatrix(d, 9, targetID.substr(11), "Up");
+      if (zoomSync) {
+        syncSelection(d, "Up");
+      } else {
+        selectMosaicMatrix(d, targetID.substr(11), "Up");
+      }
     } else if (bottom) {
-      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Bottom").remove();
-      selectMosaicMatrix(d, 9, targetID.substr(11), "Bottom");
+      if (zoomSync) {
+        syncSelection(d, "Bottom");
+      } else {
+        selectMosaicMatrix(d, targetID.substr(11), "Bottom");
+      }
     }
   }
 
-  function highlightMosaicMatrix(pixelId, size, side, direction, color) {
+  function syncHighlight(d, dir) {
+    if (App.models.applicationState.checkSliceSelected("Left")) {
+      App.views.imageSliceLeft.highlightMosaicMatrix(d, "Left", dir);
+    }
+    if (App.models.applicationState.checkSliceSelected("Right")) {
+      App.views.imageSliceRight.highlightMosaicMatrix(d, "Right", dir);
+    }
+  }
+
+  function syncSelection(d, dir) {
+    if (App.models.applicationState.checkSliceSelected("Left")) {
+      App.views.imageSliceLeft.selectMosaicMatrix(d, "Left", dir);
+    }
+    if (App.models.applicationState.checkSliceSelected("Right")) {
+      App.views.imageSliceRight.selectMosaicMatrix(d, "Right", dir);
+    }
+  }
+
+  function highlightMosaicMatrix(pixelId, side, direction) {
     d3.select(".highlightMosaicMatrix-" + side + "-" + direction).remove();
+
+    let size = App.models.applicationState.getZoomSize();
 
     self.targetSvg.append("rect")
       .attr("class", "highlightMosaicMatrix-" + side + "-" + direction)
@@ -218,8 +259,11 @@ let ImageSliceView = function(targetID) {
       .style("stroke-width", 1)
   }
 
-  function selectMosaicMatrix(pixelId, size, side, direction, color) {
+  function selectMosaicMatrix(pixelId, side, direction) {
+    d3.select(".highlightMosaicMatrix-" + side + "-" + direction).remove();
     d3.select(".selectMosaicMatrix-" + side + "-" + direction).remove();
+
+    let size = App.models.applicationState.getZoomSize();
 
     self.targetSvg.append("rect")
       .attr("class", "selectMosaicMatrix-" + side + "-" + direction)
@@ -227,9 +271,8 @@ let ImageSliceView = function(targetID) {
       .attr("y", Math.floor(pixelId / 172) + 2 - Math.floor(size / 2))
       .attr("width", size)
       .attr("height", size)
-      // .style("fill", "none")
       .style("fill", "black")
-      .style("opacity", 0.7)
+      .style("opacity", 0.65)
       .style("stroke", App.colorHighlight[direction])
       .style("stroke-width", 1);
   }
@@ -237,7 +280,9 @@ let ImageSliceView = function(targetID) {
 
   return {
     update,
-    updateOverlay
+    updateOverlay,
+    highlightMosaicMatrix,
+    selectMosaicMatrix
   };
 
 }
