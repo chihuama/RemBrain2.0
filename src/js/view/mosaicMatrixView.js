@@ -40,7 +40,7 @@ let MosaicMatrixView = function(targetID) {
       .attr("width", 98)
       .attr("height", 98)
       .style("fill", "none")
-      .style("stroke", "#b2182b")
+      .style("stroke", App.colorHighlight.Up)
       .style("stroke-width", 1);
 
     self.targetSvgBottom.append("rect")
@@ -49,7 +49,7 @@ let MosaicMatrixView = function(targetID) {
       .attr("width", 98)
       .attr("height", 98)
       .style("fill", "none")
-      .style("stroke", "#2166ac")
+      .style("stroke", App.colorHighlight.Bottom)
       .style("stroke-width", 1);
   }
 

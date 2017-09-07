@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let ImageSliceView = function (targetID) {
+let ImageSliceView = function(targetID) {
 
   let self = {
     targetElement: null,
@@ -103,7 +103,7 @@ let ImageSliceView = function (targetID) {
     self.modeOverlay = App.models.applicationState.getOverlayMode();
     // console.log(self.currentTime);
     let animationMode = App.models.applicationState.getAnimationMode();
-    
+
     if (animationMode.play) { // play
       App.animationId[targetID.substr(1)] = setInterval(frame, 200);
 
@@ -146,7 +146,92 @@ let ImageSliceView = function (targetID) {
         } else {
           return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
         }
+      })
+      .on("mouseover", function(d) {
+        mouseoverCallBack(d);
+      })
+      .on("mouseout", function() {
+        mouseoutCallBack();
+      })
+      .on("click", function(d) {
+        mouseclickCallBack(d);
       });
+
+    // always display the select rect on the top
+    let _thisUp = d3.select(".selectMosaicMatrix-" + targetID.substr(11) + "-Up")["_groups"][0][0];
+    let _thisBottom = d3.select(".selectMosaicMatrix-" + targetID.substr(11) + "-Bottom")["_groups"][0][0];
+
+    if (_thisUp && _thisBottom) {
+      _thisUp.parentNode.appendChild(_thisUp);
+      _thisBottom.parentNode.appendChild(_thisBottom);
+    } else if (_thisUp) {
+      _thisUp.parentNode.appendChild(_thisUp);
+    } else if (_thisBottom) {
+      _thisBottom.parentNode.appendChild(_thisBottom);
+    }
+  }
+
+  function mouseoverCallBack(d) {
+    let zoomSync = App.models.applicationState.getZoomSync();
+    let up = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Up");
+    let bottom = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom");
+
+    if (up) {
+      highlightMosaicMatrix(d, 9, targetID.substr(11), "Up");
+    } else if (bottom) {
+      highlightMosaicMatrix(d, 9, targetID.substr(11), "Bottom");
+    }
+  }
+
+  function mouseoutCallBack() {
+    let zoomSync = App.models.applicationState.getZoomSync();
+
+    d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Up").remove();
+    d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Bottom").remove();
+  }
+
+  function mouseclickCallBack(d) {
+    let zoomSync = App.models.applicationState.getZoomSync();
+    let up = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Up");
+    let bottom = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom");
+
+    if (up) {
+      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Up").remove();
+      selectMosaicMatrix(d, 9, targetID.substr(11), "Up");
+    } else if (bottom) {
+      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Bottom").remove();
+      selectMosaicMatrix(d, 9, targetID.substr(11), "Bottom");
+    }
+  }
+
+  function highlightMosaicMatrix(pixelId, size, side, direction, color) {
+    d3.select(".highlightMosaicMatrix-" + side + "-" + direction).remove();
+
+    self.targetSvg.append("rect")
+      .attr("class", "highlightMosaicMatrix-" + side + "-" + direction)
+      .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
+      .attr("y", Math.floor(pixelId / 172) + 2 - Math.floor(size / 2))
+      .attr("width", size)
+      .attr("height", size)
+      .style("fill", "none")
+      .style("stroke", App.colorHighlight[direction])
+      .style("stroke-width", 1)
+  }
+
+  function selectMosaicMatrix(pixelId, size, side, direction, color) {
+    d3.select(".selectMosaicMatrix-" + side + "-" + direction).remove();
+
+    self.targetSvg.append("rect")
+      .attr("class", "selectMosaicMatrix-" + side + "-" + direction)
+      .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
+      .attr("y", Math.floor(pixelId / 172) + 2 - Math.floor(size / 2))
+      .attr("width", size)
+      .attr("height", size)
+      // .style("fill", "none")
+      .style("fill", "black")
+      .style("opacity", 0.7)
+      .style("stroke", App.colorHighlight[direction])
+      .style("stroke-width", 1);
   }
 
 

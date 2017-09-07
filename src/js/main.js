@@ -50,15 +50,16 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
   }
 
   // color scale
-  // App.colorScale = ["#cccccc", "#1f78b4", "#ff7f00", "#33a02c", "#e31a1c",
-  //   "#6a3d9a", "#a6cee3", "#fdbf6f", "#b2df8a", "#fb9a99", "#cab2d6"
-  // ];
-  App.colorScale = ["#cccccc", "#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395"];
+  App.colorScale = ["#cccccc", "#1f78b4", "#ff7f00", "#33a02c", "#e31a1c",
+    "#6a3d9a", "#a6cee3", "#fdbf6f", "#b2df8a", "#fb9a99", "#cab2d6"];
+  // App.colorScale = ["#cccccc", "#3366cc", "#dc3912", "#ff9900", "#109618", "#990099", "#0099c6", "#dd4477", "#66aa00", "#b82e2e", "#316395"];
 
   App.colorHighlight = {
     "Left": "#8c510a",
-    "Right": "#01665e"
-  }
+    "Right": "#01665e",
+    "Up": "#b2182b",
+    "Bottom": "#2166ac"
+  };
 
   App.animationId = {
     "imageSliceLeft": null,
