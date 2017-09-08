@@ -133,7 +133,14 @@ let ImageSliceView = function(targetID) {
     d3.selectAll(".activeNodes" + targetName).remove();
 
     self.targetSvg.selectAll("circle")
-      .data(Object.keys(self.networkDynamics[self.currentTime]))
+      // .data(Object.keys(self.networkDynamics[self.currentTime]))
+      .data(function() {
+        if (self.timeMode === "timeStep") {
+          return Object.keys(self.networkDynamics[self.currentTime]);
+        } else {
+          return Object.keys(self.networkDynamics[self.timeStart]);
+        }
+      })
       .enter()
       .append("circle")
       .attr("class", "activeNodes" + targetName)
@@ -141,20 +148,32 @@ let ImageSliceView = function(targetID) {
       .attr("cy", (d) => Math.floor(d / 172) + 2)
       .attr("r", 0.5)
       .style("fill", (d) => {
-        if (self.modeOverlay === "nodeDegree") {
-          return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
-        } else {
-          return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
+        if (self.modeOverlay === "nodeDegree") { // Node Degree
+          if (self.timeMode === "timeStep") { // Time Step
+            return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
+          } else { // Time Duration
+            return self.noDegColorScale(self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]);
+          }
+        } else { // Home/Temporary Community
+          if (self.timeMode === "timeStep") { // Time Step
+            return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
+          } else { // Time Duration
+            return App.colorScale[self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]];
+          }
         }
       })
       .on("mouseover", function(d) {
-        mouseoverCallBack(d);
+        if (self.timeMode === "timeDuration") {
+          mouseoverCallBack(d);
+        }
       })
       .on("mouseout", function() {
         mouseoutCallBack();
       })
       .on("click", function(d) {
-        mouseclickCallBack(d);
+        if (self.timeMode === "timeDuration") {
+          mouseclickCallBack(d);
+        }
       });
 
     // always display the select rect on the top
