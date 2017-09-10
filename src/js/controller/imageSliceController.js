@@ -122,13 +122,18 @@ let ImageSliceController = function() {
     }
   }
 
+  function updateMosaicMatrix(side, direction) {
+    App.views["mosaicMatrix" + side].update(direction);
+  }
+
 
   return {
     timeOpt,
     animationOpt,
     stopAnimation,
     overlayOpt,
-    mosaicMatrixOpt
+    mosaicMatrixOpt,
+    updateMosaicMatrix
   };
 
 }

@@ -35,15 +35,15 @@ let ImageSliceView = function(targetID) {
     self.targetSvg = self.targetElement.append("svg")
       .attr("width", self.targetElement.node().clientWidth)
       .attr("height", self.targetElement.node().clientHeight)
-      .attr("viewBox", "0 0 176 134")
+      .attr("viewBox", "0 0 178 138")
       .attr("preserveAspectRatio", "xMidYMid")
       .style("background", "white");
 
     self.targetSvg.append("rect")
-      .attr("x", 1)
+      .attr("x", 0)
       .attr("y", 1)
-      .attr("width", 174)
-      .attr("height", 132)
+      .attr("width", 176)
+      .attr("height", 134)
       .style("fill", "none")
       .style("stroke", App.colorHighlight[targetID.substr(11)])
       .style("stroke-width", 2);
@@ -84,7 +84,7 @@ let ImageSliceView = function(targetID) {
     let img = self.targetSvg.append("image")
       .attr("class", "image" + targetName)
       .attr("x", 2)
-      .attr("y", 2)
+      .attr("y", 3)
       .attr("width", 172)
       .attr("height", 130)
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
@@ -144,8 +144,8 @@ let ImageSliceView = function(targetID) {
       .enter()
       .append("circle")
       .attr("class", "activeNodes" + targetName)
-      .attr("cx", (d) => d % 172 + 2)
-      .attr("cy", (d) => Math.floor(d / 172) + 2)
+      .attr("cx", (d) => d % 172 + 2.5)
+      .attr("cy", (d) => Math.floor(d / 172) + 3.5)
       .attr("r", 0.5)
       .style("fill", (d) => {
         if (self.modeOverlay === "nodeDegree") { // Node Degree
@@ -270,7 +270,7 @@ let ImageSliceView = function(targetID) {
     self.targetSvg.append("rect")
       .attr("class", "highlightMosaicMatrix-" + side + "-" + direction)
       .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
-      .attr("y", Math.floor(pixelId / 172) + 2 - Math.floor(size / 2))
+      .attr("y", Math.floor(pixelId / 172) + 3 - Math.floor(size / 2))
       .attr("width", size)
       .attr("height", size)
       .style("fill", "none")
@@ -287,13 +287,16 @@ let ImageSliceView = function(targetID) {
     self.targetSvg.append("rect")
       .attr("class", "selectMosaicMatrix-" + side + "-" + direction)
       .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
-      .attr("y", Math.floor(pixelId / 172) + 2 - Math.floor(size / 2))
+      .attr("y", Math.floor(pixelId / 172) + 3 - Math.floor(size / 2))
       .attr("width", size)
       .attr("height", size)
       .style("fill", "black")
       .style("opacity", 0.65)
       .style("stroke", App.colorHighlight[direction])
       .style("stroke-width", 1);
+
+    // update the mosaic matrix views through the image slice controller
+    App.controllers.imageSlice.updateMosaicMatrix(side, direction);
   }
 
 

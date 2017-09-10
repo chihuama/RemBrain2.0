@@ -141,11 +141,17 @@ let TimeSliderController = function(targetID) {
     App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
 
     // update the image slice view
-    updateViews();
+    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+
+    // update the mosaic matrix view
+    if (App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Up")) {
+      App.controllers.imageSlice.updateMosaicMatrix(targetID.substr(11), "Up");
+    } else if (App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom")) {
+      App.controllers.imageSlice.updateMosaicMatrix(targetID.substr(11), "Bottom");
+    }
 
     checkSyncTime();
   }
-
 
   function drag() {
     let xPos = d3.event.x;
@@ -163,7 +169,7 @@ let TimeSliderController = function(targetID) {
     App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
 
     // update the image slice view
-    updateViews();
+    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
 
     checkSyncTime();
   }
@@ -176,12 +182,6 @@ let TimeSliderController = function(targetID) {
     } else if (mode === "timeStep") {
       d3.select(".brush" + targetID.substr(1)).style("display", "none");
       d3.select(".slider" + targetID.substr(1)).style("display", "block");
-    }
-  }
-
-  function updateViews() {
-    if (App.models.applicationState.checkSliceSelected(targetID.substr(11))) {
-      App.views["imageSlice" + targetID.substr(11)].updateOverlay();
     }
   }
 
@@ -217,7 +217,10 @@ let TimeSliderController = function(targetID) {
     App.models.applicationState.setTimeStart(targetID.substr(11), self.timeStart);
     App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
 
-    updateViews();
+    // update the image slice view
+    if (App.models.applicationState.checkSliceSelected(targetID.substr(11))) {
+      App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+    }
   }
 
   function animationOn() {

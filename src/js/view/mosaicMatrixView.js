@@ -35,6 +35,7 @@ let MosaicMatrixView = function(targetID) {
 
     // boundary
     self.targetSvgUp.append("rect")
+      .attr("class", targetID.substr(1) + "-Up")
       .attr("x", 1)
       .attr("y", 1)
       .attr("width", 98)
@@ -44,6 +45,7 @@ let MosaicMatrixView = function(targetID) {
       .style("stroke-width", 1);
 
     self.targetSvgBottom.append("rect")
+      .attr("class", targetID.substr(1) + "-Bottom")
       .attr("x", 1)
       .attr("y", 1)
       .attr("width", 98)
@@ -53,8 +55,16 @@ let MosaicMatrixView = function(targetID) {
       .style("stroke-width", 1);
   }
 
-  return {
+  function update(direction) {
+    let timeStart = App.models.applicationState.getTimeStart(targetID.substr(13));
+    let timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(13));
 
+    console.log(direction, timeStart, timeSpan);
+  }
+
+
+  return {
+    update
   };
 
 }
