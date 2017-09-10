@@ -32,7 +32,8 @@ let ApplicationStateModel = function() {
     },
 
     zoomSync: true,
-    zoomSize: 9,
+    zoomSize: 3,
+    zoomCenter: 0,
     mosaicMatrixMode: {
       "Left": {
         "Up": false,
@@ -169,6 +170,14 @@ let ApplicationStateModel = function() {
     return self.zoomSize;
   }
 
+  function setZoomCenter(center) {
+    self.zoomCenter = center;
+  }
+
+  function getZoomCenter() {
+    return self.zoomCenter;
+  }
+
   function setMosaicMatrixMode(side, direction, check) {
     self.mosaicMatrixMode[side][direction] = check;
   }
@@ -244,6 +253,8 @@ let ApplicationStateModel = function() {
     getZoomSync,
     setZoomSize,
     getZoomSize,
+    setZoomCenter,
+    getZoomCenter,
     setMosaicMatrixMode,
     getMosaicMatrixMode,
     resetMosaicMatrixMode,

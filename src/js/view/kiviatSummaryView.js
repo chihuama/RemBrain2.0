@@ -447,29 +447,33 @@ let KiviatSummaryView = function(targetID) {
                 .attr("cx", 0)
                 .attr("cy", 0)
                 .attr("r", 35)
-                .style("fill", App.colorHighlight[key.substr(10)])
+                .style("fill", App.colorHighlight[key])
                 .style("opacity", 0.3);
 
               // highlight the selected kiviat & the corresponding pca dot
+              // ...
 
               // tell the imageSliceController which side is loaded
-              App.models.applicationState.loadSliceSelected(key.substr(10));
+              App.models.applicationState.loadSliceSelected(key);
 
-              // update time slider controllers
-              App.controllers["timeSlider" + key.substr(10)].loadViews();
+              // update the time slider controller
+              App.controllers["timeSlider" + key].loadViews();
 
-              // update imageSlice views
-              App.views[key].update();
+              // update the image slice view
+              App.views["imageSlice" + key].update();
+
+              // update the mosaic matrix view
+              App.views["mosaicMatrix" + key].load();
             })
             .catch(function(err) {
               console.log("Promise Error", err);
             });
         },
         items: {
-          "imageSliceLeft": {
+          "Left": {
             name: "Load Data on Left"
           },
-          "imageSliceRight": {
+          "Right": {
             name: "Load Data on Right"
           }
         }

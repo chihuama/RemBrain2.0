@@ -298,6 +298,9 @@ let ImageSliceView = function(targetID) {
       .style("stroke", App.colorHighlight[direction])
       .style("stroke-width", 1);
 
+    // update the application state
+    App.models.applicationState.setZoomCenter(pixelId);
+    
     // update the mosaic matrix views through the image slice controller
     App.controllers.imageSlice.updateMosaicMatrix(self.side, direction);
   }
