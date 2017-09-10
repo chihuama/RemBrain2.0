@@ -8,11 +8,12 @@ let MosaicMatrixView = function(targetID) {
     targetSvgUp: null,
     targetElementBottom: null,
     targetSvgBottom: null,
+    side: null
 
-    active: {
-      "Up": false,
-      "Bottom": false
-    }
+    // active: {
+    //   "Up": false,
+    //   "Bottom": false
+    // }
   };
 
   init();
@@ -32,6 +33,8 @@ let MosaicMatrixView = function(targetID) {
       .attr("height", self.targetElementBottom.node().clientHeight)
       .attr("viewBox", "0 0 100 100")
       .attr("preserveAspectRatio", "xMidYMid");
+
+    self.side = targetID.substr(13);
 
     // boundary
     self.targetSvgUp.append("rect")
@@ -56,8 +59,8 @@ let MosaicMatrixView = function(targetID) {
   }
 
   function update(direction) {
-    let timeStart = App.models.applicationState.getTimeStart(targetID.substr(13));
-    let timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(13));
+    let timeStart = App.models.applicationState.getTimeStart(self.side);
+    let timeSpan = App.models.applicationState.getTimeSpan(self.side);
 
     console.log(direction, timeStart, timeSpan);
   }

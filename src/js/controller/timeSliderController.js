@@ -7,7 +7,7 @@ let TimeSliderController = function(targetID) {
   let self = {
     targetElement: null,
     targetSvg: null,
-    handle: null,
+    side: null,
 
     timeBrush: null,
     timeScale: null,
@@ -32,6 +32,8 @@ let TimeSliderController = function(targetID) {
       .attr("viewBox", "0 0 200 30")
       .attr("preserveAspectRatio", "xMidYMin")
       .style("background", "white");
+
+    self.side = targetID.substr(11);
 
     let boundary = self.targetSvg.append("rect")
       .attr("x", 1)
@@ -61,9 +63,9 @@ let TimeSliderController = function(targetID) {
       ])
       .on("end", brushed);
 
-    self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
-    self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
-    self.timeStep = App.models.applicationState.getTimeStep(targetID.substr(11));
+    self.timeStart = App.models.applicationState.getTimeStart(self.side);
+    self.timeSpan = App.models.applicationState.getTimeSpan(self.side);
+    self.timeStep = App.models.applicationState.getTimeStep(self.side);
   }
 
   function loadViews() {
@@ -137,17 +139,17 @@ let TimeSliderController = function(targetID) {
     self.timeSpan = self.timeScale.domain()[1] - self.timeStart;
 
     // update the application state
-    App.models.applicationState.setTimeStart(targetID.substr(11), self.timeStart);
-    App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
+    App.models.applicationState.setTimeStart(self.side, self.timeStart);
+    App.models.applicationState.setTimeSpan(self.side, self.timeSpan);
 
     // update the image slice view
     App.views["imageSlice" + targetID.substr(11)].updateOverlay();
 
     // update the mosaic matrix view
-    if (App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Up")) {
-      App.controllers.imageSlice.updateMosaicMatrix(targetID.substr(11), "Up");
-    } else if (App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom")) {
-      App.controllers.imageSlice.updateMosaicMatrix(targetID.substr(11), "Bottom");
+    if (App.models.applicationState.getMosaicMatrixMode(self.side, "Up")) {
+      App.controllers.imageSlice.updateMosaicMatrix(self.side, "Up");
+    } else if (App.models.applicationState.getMosaicMatrixMode(self.side, "Bottom")) {
+      App.controllers.imageSlice.updateMosaicMatrix(self.side, "Bottom");
     }
 
     checkSyncTime();
@@ -166,10 +168,10 @@ let TimeSliderController = function(targetID) {
     self.timeStep = self.timeSliderScale.invert(xPos);
 
     //update the application state
-    App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
+    App.models.applicationState.setTimeStep(self.side, self.timeStep);
 
     // update the image slice view
-    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+    App.views["imageSlice" + self.side].updateOverlay();
 
     checkSyncTime();
   }
@@ -213,18 +215,18 @@ let TimeSliderController = function(targetID) {
       .call(self.timeBrush.move, [self.timeScale2(self.timeStart), self.timeScale2(self.timeStart + self.timeSpan)]);
 
     // update the application state
-    App.models.applicationState.setTimeStep(targetID.substr(11), self.timeStep);
-    App.models.applicationState.setTimeStart(targetID.substr(11), self.timeStart);
-    App.models.applicationState.setTimeSpan(targetID.substr(11), self.timeSpan);
+    App.models.applicationState.setTimeStep(self.side, self.timeStep);
+    App.models.applicationState.setTimeStart(self.side, self.timeStart);
+    App.models.applicationState.setTimeSpan(self.side, self.timeSpan);
 
     // update the image slice view
-    if (App.models.applicationState.checkSliceSelected(targetID.substr(11))) {
-      App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+    if (App.models.applicationState.checkSliceSelected(self.side)) {
+      App.views["imageSlice" + self.side].updateOverlay();
     }
   }
 
   function animationOn() {
-    self.timeStep = App.models.applicationState.getTimeStep(targetID.substr(11));
+    self.timeStep = App.models.applicationState.getTimeStep(self.side);
     d3.select(".slider" + targetID.substr(1)).attr("x", self.timeSliderScale(self.timeStep));
   }
 

@@ -7,6 +7,7 @@ let ImageSliceView = function(targetID) {
   let self = {
     targetElement: null,
     targetSvg: null,
+    side: null,
 
     animalId: null,
     activationId: null,
@@ -47,6 +48,8 @@ let ImageSliceView = function(targetID) {
       .style("fill", "none")
       .style("stroke", App.colorHighlight[targetID.substr(11)])
       .style("stroke-width", 2);
+
+    self.side = targetID.substr(11);
   }
 
 
@@ -60,9 +63,9 @@ let ImageSliceView = function(targetID) {
 
     // get the current overlay mode, time mode, current time, timeStart and timeSpan
     self.timeMode = App.models.applicationState.getTimeSliderMode();
-    self.currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
-    self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
-    self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
+    self.currentTime = App.models.applicationState.getTimeStep(self.side);
+    self.timeStart = App.models.applicationState.getTimeStart(self.side);
+    self.timeSpan = App.models.applicationState.getTimeSpan(self.side);
     self.modeOverlay = App.models.applicationState.getOverlayMode();
 
     // get the max node degree from both sides
@@ -97,9 +100,9 @@ let ImageSliceView = function(targetID) {
   function updateOverlay() {
     // get the current overlay mode, time mode, current time, timeStart and timeSpan
     self.timeMode = App.models.applicationState.getTimeSliderMode();
-    self.currentTime = App.models.applicationState.getTimeStep(targetID.substr(11));
-    self.timeStart = App.models.applicationState.getTimeStart(targetID.substr(11));
-    self.timeSpan = App.models.applicationState.getTimeSpan(targetID.substr(11));
+    self.currentTime = App.models.applicationState.getTimeStep(self.side);
+    self.timeStart = App.models.applicationState.getTimeStart(self.side);
+    self.timeSpan = App.models.applicationState.getTimeSpan(self.side);
     self.modeOverlay = App.models.applicationState.getOverlayMode();
     // console.log(self.currentTime);
     let animationMode = App.models.applicationState.getAnimationMode();
@@ -177,8 +180,8 @@ let ImageSliceView = function(targetID) {
       });
 
     // always display the select rect on the top
-    let _thisUp = d3.select(".selectMosaicMatrix-" + targetID.substr(11) + "-Up")["_groups"][0][0];
-    let _thisBottom = d3.select(".selectMosaicMatrix-" + targetID.substr(11) + "-Bottom")["_groups"][0][0];
+    let _thisUp = d3.select(".selectMosaicMatrix-" + self.side + "-Up")["_groups"][0][0];
+    let _thisBottom = d3.select(".selectMosaicMatrix-" + self.side + "-Bottom")["_groups"][0][0];
 
     if (_thisUp && _thisBottom) {
       _thisUp.parentNode.appendChild(_thisUp);
@@ -192,20 +195,20 @@ let ImageSliceView = function(targetID) {
 
   function mouseoverCallBack(d) {
     let zoomSync = App.models.applicationState.getZoomSync();
-    let up = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Up");
-    let bottom = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom");
+    let up = App.models.applicationState.getMosaicMatrixMode(self.side, "Up");
+    let bottom = App.models.applicationState.getMosaicMatrixMode(self.side, "Bottom");
 
     if (up) {
       if (zoomSync) {
         syncHighlight(d, "Up");
       } else {
-        highlightMosaicMatrix(d, targetID.substr(11), "Up");
+        highlightMosaicMatrix(d, "Up");
       }
     } else if (bottom) {
       if (zoomSync) {
         syncHighlight(d, "Bottom");
       } else {
-        highlightMosaicMatrix(d, targetID.substr(11), "Bottom");
+        highlightMosaicMatrix(d, "Bottom");
       }
     }
   }
@@ -219,56 +222,56 @@ let ImageSliceView = function(targetID) {
       d3.select(".highlightMosaicMatrix-Right-Up").remove();
       d3.select(".highlightMosaicMatrix-Right-Bottom").remove();
     } else {
-      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Up").remove();
-      d3.select(".highlightMosaicMatrix-" + targetID.substr(11) + "-Bottom").remove();
+      d3.select(".highlightMosaicMatrix-" + self.side + "-Up").remove();
+      d3.select(".highlightMosaicMatrix-" + self.side + "-Bottom").remove();
     }
   }
 
   function mouseclickCallBack(d) {
     let zoomSync = App.models.applicationState.getZoomSync();
-    let up = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Up");
-    let bottom = App.models.applicationState.getMosaicMatrixMode(targetID.substr(11), "Bottom");
+    let up = App.models.applicationState.getMosaicMatrixMode(self.side, "Up");
+    let bottom = App.models.applicationState.getMosaicMatrixMode(self.side, "Bottom");
 
     if (up) {
       if (zoomSync) {
         syncSelection(d, "Up");
       } else {
-        selectMosaicMatrix(d, targetID.substr(11), "Up");
+        selectMosaicMatrix(d, "Up");
       }
     } else if (bottom) {
       if (zoomSync) {
         syncSelection(d, "Bottom");
       } else {
-        selectMosaicMatrix(d, targetID.substr(11), "Bottom");
+        selectMosaicMatrix(d, "Bottom");
       }
     }
   }
 
   function syncHighlight(d, dir) {
     if (App.models.applicationState.checkSliceSelected("Left")) {
-      App.views.imageSliceLeft.highlightMosaicMatrix(d, "Left", dir);
+      App.views.imageSliceLeft.highlightMosaicMatrix(d, dir);
     }
     if (App.models.applicationState.checkSliceSelected("Right")) {
-      App.views.imageSliceRight.highlightMosaicMatrix(d, "Right", dir);
+      App.views.imageSliceRight.highlightMosaicMatrix(d, dir);
     }
   }
 
   function syncSelection(d, dir) {
     if (App.models.applicationState.checkSliceSelected("Left")) {
-      App.views.imageSliceLeft.selectMosaicMatrix(d, "Left", dir);
+      App.views.imageSliceLeft.selectMosaicMatrix(d, dir);
     }
     if (App.models.applicationState.checkSliceSelected("Right")) {
-      App.views.imageSliceRight.selectMosaicMatrix(d, "Right", dir);
+      App.views.imageSliceRight.selectMosaicMatrix(d, dir);
     }
   }
 
-  function highlightMosaicMatrix(pixelId, side, direction) {
-    d3.select(".highlightMosaicMatrix-" + side + "-" + direction).remove();
+  function highlightMosaicMatrix(pixelId, direction) {
+    d3.select(".highlightMosaicMatrix-" + self.side + "-" + direction).remove();
 
     let size = App.models.applicationState.getZoomSize();
 
     self.targetSvg.append("rect")
-      .attr("class", "highlightMosaicMatrix-" + side + "-" + direction)
+      .attr("class", "highlightMosaicMatrix-" + self.side + "-" + direction)
       .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
       .attr("y", Math.floor(pixelId / 172) + 3 - Math.floor(size / 2))
       .attr("width", size)
@@ -278,14 +281,14 @@ let ImageSliceView = function(targetID) {
       .style("stroke-width", 1)
   }
 
-  function selectMosaicMatrix(pixelId, side, direction) {
-    d3.select(".highlightMosaicMatrix-" + side + "-" + direction).remove();
-    d3.select(".selectMosaicMatrix-" + side + "-" + direction).remove();
+  function selectMosaicMatrix(pixelId, direction) {
+    d3.select(".highlightMosaicMatrix-" + self.side + "-" + direction).remove();
+    d3.select(".selectMosaicMatrix-" + self.side + "-" + direction).remove();
 
     let size = App.models.applicationState.getZoomSize();
 
     self.targetSvg.append("rect")
-      .attr("class", "selectMosaicMatrix-" + side + "-" + direction)
+      .attr("class", "selectMosaicMatrix-" + self.side + "-" + direction)
       .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
       .attr("y", Math.floor(pixelId / 172) + 3 - Math.floor(size / 2))
       .attr("width", size)
@@ -296,7 +299,7 @@ let ImageSliceView = function(targetID) {
       .style("stroke-width", 1);
 
     // update the mosaic matrix views through the image slice controller
-    App.controllers.imageSlice.updateMosaicMatrix(side, direction);
+    App.controllers.imageSlice.updateMosaicMatrix(self.side, direction);
   }
 
 
