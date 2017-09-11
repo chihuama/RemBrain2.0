@@ -78,13 +78,7 @@ let NetworkDynamicsModel = function() {
       }
     });
 
-    console.log(distributions);
     return distributions;
-  }
-
-
-  function getMostCommon_Dynamics(timeStart, timeSpan) {
-
   }
 
 
@@ -93,8 +87,7 @@ let NetworkDynamicsModel = function() {
     getNetworkDynamics,
     getMaxNodeDegree,
     getMaxActiveNodes,
-    getCommunity_distributions,
-    getMostCommon_Dynamics
+    getCommunity_distributions
   };
 
 }

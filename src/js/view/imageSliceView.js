@@ -12,6 +12,7 @@ let ImageSliceView = function(targetID) {
     animalId: null,
     activationId: null,
     networkDynamics: {},
+    mostCommonDynamics: {},
 
     overlayMode: {
       "homeComm": 0,
@@ -105,7 +106,7 @@ let ImageSliceView = function(targetID) {
     self.timeStart = App.models.applicationState.getTimeStart(self.side);
     self.timeSpan = App.models.applicationState.getTimeSpan(self.side);
     self.modeOverlay = App.models.applicationState.getOverlayMode();
-    // console.log(self.currentTime);
+
     let animationMode = App.models.applicationState.getAnimationMode();
 
     if (animationMode.play) { // play
@@ -128,6 +129,10 @@ let ImageSliceView = function(targetID) {
     } else { // pause or stop
       clearInterval(App.animationId[targetID.substr(1)]);
       colorActiveNodes();
+    }
+
+    if (self.timeMode === "timeDuration") {
+      calculateMostCommonDynamics();
     }
   }
 
@@ -193,6 +198,34 @@ let ImageSliceView = function(targetID) {
       _thisBottom.parentNode.appendChild(_thisBottom);
     }
   }
+
+  function calculateMostCommonDynamics() {
+    self.mostCommonDynamics = {};
+    let pixels = [];
+
+    for (let t = 0; t < self.timeSpan; t++) {
+      _.forEach(Object.keys(self.networkDynamics[self.timeStart + t]), function(pixel) {
+        if (!_.includes(pixels, pixel)) {
+          pixels.push(pixel);
+          self.mostCommonDynamics[pixel] = {};
+        }
+      });
+    }
+
+    _.forEach(pixels, function(pixel) {
+      for (let t = 0; t < self.timeSpan; t++) {
+        if (self.networkDynamics[self.timeStart + t][pixel]) {
+
+        } else {
+          
+        }
+      }
+    });
+
+    console.log(pixels);
+    console.log(self.mostCommonDynamics);
+  }
+
 
   function mouseoverCallBack(d) {
     let zoomSync = App.models.applicationState.getZoomSync();
