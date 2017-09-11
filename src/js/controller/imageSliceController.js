@@ -5,11 +5,100 @@ var App = App || {};
 let ImageSliceController = function() {
 
   let self = {
+    currentTime: 50,
     play: false,
     stop: false,
 
-    currentTime: 50
+    zoomSvg: null,
+    zoomSizeScale: null,
+    mosaicMatrix: {
+      "Left": ["Up", "Bottom"],
+      "Right": ["Up", "Bottom"]
+    }
   };
+
+  zoomSizeSlider();
+
+  function zoomSizeSlider() {
+    let zoomElement = d3.select("#zoomSize");
+
+    self.zoomSvg = zoomElement.append("svg")
+      .attr("width", zoomElement.node().clientWidth)
+      .attr("height", zoomElement.node().clientHeight)
+      .attr("viewBox", "0 0 100 15")
+      .attr("preserveAspectRatio", "xMidYMin");
+
+    self.zoomSizeScale = d3.scaleLinear()
+      .domain([2, 10])
+      .range([10, 90]);
+
+    self.zoomSvg.append("rect")
+      .attr("x", 10)
+      .attr("y", 4)
+      .attr("width", 80)
+      .attr("height", 3)
+      .attr("rx", 2)
+      .attr("ry", 2)
+      .style("fill", "#bdbdbd")
+      .style("stroke", "none");
+
+    // labels
+    for (let i = 2; i <= 10; i++) {
+      self.zoomSvg.append("text")
+        .attr("x", self.zoomSizeScale(i))
+        .attr("y", 14)
+        .style("fill", "black")
+        .style("text-anchor", "middle")
+        .style("font-size", "5px")
+        .text(i);
+    }
+
+    let zoomSize = App.models.applicationState.getZoomSize();
+
+    self.zoomSvg.append("circle")
+      .attr("cx", self.zoomSizeScale(zoomSize))
+      .attr("cy", 5.5)
+      .attr("r", 3)
+      .style("fill", "white")
+      .style("stroke", "#252525")
+      .style("stroke-width", 0.5)
+      .call(d3.drag()
+        .on("start drag", drag)
+      )
+      .style("cursor", "crosshair");
+  }
+
+  function drag() {
+    let xPos = d3.event.x;
+    if (xPos < 10) {
+      xPos = 10;
+    } else if (xPos > 90) {
+      xPos = 90;
+    }
+
+    // d3.select(this).attr("cx", xPos);
+
+    //update the application state
+    let zoomSize = Math.round(self.zoomSizeScale.invert(xPos));
+    App.models.applicationState.setZoomSize(zoomSize);
+
+    // update the xpos of the slider handle
+    d3.select(this).attr("cx", self.zoomSizeScale(zoomSize));
+
+    // update mosaic matrix views
+    _.forEach(Object.keys(self.mosaicMatrix), function(side) {
+      _.forEach(self.mosaicMatrix[side], function(dir) {
+        if (App.models.applicationState.getMosaicMatrixMode(side, dir) && App.models.applicationState.checkSliceSelected(side)) {
+          updateMosaicMatrix(side, dir);
+
+          // update the highlight rect in the image slice view
+          App.views["imageSlice" + side].updateMosaicMatrix(dir);
+        }
+      });
+    });
+
+  }
+
 
   function timeOpt(value) {
     console.log(value);
@@ -18,7 +107,12 @@ let ImageSliceController = function() {
     App.controllers.timeSliderLeft.update(value);
     App.controllers.timeSliderRight.update(value);
 
-    updateViews();
+    // update image slice views
+    _.forEach(Object.keys(self.mosaicMatrix), function(side) {
+      if (App.models.applicationState.checkSliceSelected(side)) {
+        updateImageSlice(side);
+      }
+    });
   }
 
   function animationOpt(value) {
@@ -56,7 +150,12 @@ let ImageSliceController = function() {
         App.controllers.timeSliderRight.animationOn()
       }
 
-      updateViews();
+      // update image slice views
+      _.forEach(Object.keys(self.mosaicMatrix), function(side) {
+        if (App.models.applicationState.checkSliceSelected(side)) {
+          updateImageSlice(side);
+        }
+      });
     }
   }
 
@@ -76,17 +175,20 @@ let ImageSliceController = function() {
     console.log(value);
     App.models.applicationState.setOverlayMode(value);
 
-    updateViews();
+    // update views
+    _.forEach(Object.keys(self.mosaicMatrix), function(side) {
+      if (App.models.applicationState.checkSliceSelected(side)) {
+        updateImageSlice(side);
+      }
+
+      _.forEach(self.mosaicMatrix[side], function(dir) {
+        if (App.models.applicationState.getMosaicMatrixMode(side, dir) && App.models.applicationState.checkSliceSelected(side)) {
+          updateMosaicMatrix(side, dir);
+        }
+      });
+    });
   }
 
-  function updateViews() {
-    if (App.models.applicationState.checkSliceSelected("Left")) {
-      App.views.imageSliceLeft.updateOverlay();
-    }
-    if (App.models.applicationState.checkSliceSelected("Right")) {
-      App.views.imageSliceRight.updateOverlay();
-    }
-  }
 
   function mosaicMatrixOpt(side, value) {
     console.log(side, value);
@@ -118,6 +220,11 @@ let ImageSliceController = function() {
         d3.select(".inactive-" + side + value).style("display", "none");
       }
     }
+  }
+
+
+  function updateImageSlice(side) {
+    App.views["imageSlice" + side].updateOverlay();
   }
 
   function updateMosaicMatrix(side, direction) {

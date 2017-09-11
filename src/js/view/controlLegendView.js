@@ -25,7 +25,7 @@ let ControlLegendView = function() {
     self.noDegSvg = self.noDegElement.append("svg")
       .attr("width", self.noDegElement.node().clientWidth)
       .attr("height", self.noDegElement.node().clientHeight)
-      .attr("viewBox", "0 0 100 20")
+      .attr("viewBox", "0 0 150 20")
       .attr("preserveAspectRatio", "xMidYMid");
 
     dyCommLegend();
@@ -74,7 +74,7 @@ let ControlLegendView = function() {
       .classed("noDegLegend-filled", true)
       .attr("x", 10)
       .attr("y", 0)
-      .attr("width", 80)
+      .attr("width", 130)
       .attr("height", 20)
       .style("opacity", 0.95);
   }

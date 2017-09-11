@@ -19,13 +19,14 @@ let ImageSliceView = function(targetID) {
       "nodeDegree": 2
     },
     modeOverlay: null,
-
     noDegColorScale: null,
 
     timeMode: null,
     timeStart: 0,
     timeSpan: 0,
-    currentTime: 0
+    currentTime: 0,
+
+    selectedZoomSize: 0
   };
 
   init();
@@ -285,14 +286,14 @@ let ImageSliceView = function(targetID) {
     d3.select(".highlightMosaicMatrix-" + self.side + "-" + direction).remove();
     d3.select(".selectMosaicMatrix-" + self.side + "-" + direction).remove();
 
-    let size = App.models.applicationState.getZoomSize();
+    self.selectedZoomSize = App.models.applicationState.getZoomSize();
 
     self.targetSvg.append("rect")
       .attr("class", "selectMosaicMatrix-" + self.side + "-" + direction)
-      .attr("x", pixelId % 172 + 2 - Math.floor(size / 2))
-      .attr("y", Math.floor(pixelId / 172) + 3 - Math.floor(size / 2))
-      .attr("width", size)
-      .attr("height", size)
+      .attr("x", pixelId % 172 + 2 - Math.floor(self.selectedZoomSize / 2))
+      .attr("y", Math.floor(pixelId / 172) + 3 - Math.floor(self.selectedZoomSize / 2))
+      .attr("width", self.selectedZoomSize)
+      .attr("height", self.selectedZoomSize)
       .style("fill", "black")
       .style("opacity", 0.65)
       .style("stroke", App.colorHighlight[direction])
@@ -300,9 +301,19 @@ let ImageSliceView = function(targetID) {
 
     // update the application state
     App.models.applicationState.setZoomCenter(pixelId);
-    
+
     // update the mosaic matrix views through the image slice controller
     App.controllers.imageSlice.updateMosaicMatrix(self.side, direction);
+  }
+
+  function updateMosaicMatrix(direction) {
+    let zoomSize = App.models.applicationState.getZoomSize();
+
+    d3.select(".selectMosaicMatrix-" + self.side + "-" + direction)
+      .attr("transform", "translate(" + (Math.floor(self.selectedZoomSize / 2) - Math.floor(zoomSize / 2)) + "," +
+        (Math.floor(self.selectedZoomSize / 2) - Math.floor(zoomSize / 2)) + ")")
+      .attr("width", zoomSize)
+      .attr("height", zoomSize);
   }
 
 
@@ -310,7 +321,8 @@ let ImageSliceView = function(targetID) {
     update,
     updateOverlay,
     highlightMosaicMatrix,
-    selectMosaicMatrix
+    selectMosaicMatrix,
+    updateMosaicMatrix
   };
 
 }

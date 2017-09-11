@@ -15,8 +15,8 @@ let ApplicationStateModel = function() {
     timeSync: true,
     timeSliderMode: "timeStep",
     timeStart: {
-      "Left": 20,
-      "Right": 20
+      "Left": 45,
+      "Right": 45
     },
     timeSpan: {
       "Left": 10,

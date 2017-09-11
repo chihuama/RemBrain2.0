@@ -10,7 +10,14 @@ let MosaicMatrixView = function(targetID) {
     targetSvgBottom: null,
 
     side: null,
-    networkDynamics: null
+    networkDynamics: null,
+
+    overlayMode: {
+      "homeComm": 0,
+      "tempComm": 1,
+      "nodeDegree": 2
+    }
+    // modeOverlay: null
 
     // active: {
     //   "Up": false,
@@ -69,6 +76,15 @@ let MosaicMatrixView = function(targetID) {
     let timeSpan = App.models.applicationState.getTimeSpan(self.side);
     let size = App.models.applicationState.getZoomSize();
     let centerPixelId = App.models.applicationState.getZoomCenter();
+    let mode = App.models.applicationState.getOverlayMode();
+    let maxNodeDegree = App.models.applicationState.getMaxNodeDegree();
+
+    // color scale for node degrees
+    let noDegColorScale = d3.scaleLinear()
+      .interpolate(d3.interpolateHcl)
+      .domain([0, maxNodeDegree])
+      .range(["#deebf7", "#08306b"]);
+
 
     let num_x, num_y;
     if (Math.sqrt(timeSpan) - Math.round(Math.sqrt(timeSpan)) >= 0) {
@@ -115,7 +131,12 @@ let MosaicMatrixView = function(targetID) {
             .attr("height", subCellSizeY)
             .style("fill", function() {
               if (self.networkDynamics[timeStart + t][pixelId]) { // check if the node is active
-                return App.colorScale[self.networkDynamics[timeStart + t][pixelId][0]];
+                // return App.colorScale[self.networkDynamics[timeStart + t][pixelId][0]];
+                if (mode === "nodeDegree") { // Node Degree
+                  return noDegColorScale(self.networkDynamics[timeStart + t][pixelId][self.overlayMode[mode]]);
+                } else { // Home/Temporary Community
+                  return App.colorScale[self.networkDynamics[timeStart + t][pixelId][self.overlayMode[mode]]];
+                }
               } else {
                 return "lightgray";
               }

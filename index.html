@@ -177,15 +177,18 @@
           <div class="col-md-2 contentWrapper sliceDiv">
             <div class="row" id="sliceControl">
               <input id="timeSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setTimeSync(this.checked)"> Sync Timelines</input> <br>
-              <input id="timeDuration" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input> <br>
-              <input id="timeStep" type="radio" name="timeline" value="timeStep" checked onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Step</input>
+              <input id="subSelection" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input> <br>
+              <input id="subSelection" type="radio" name="timeline" value="timeStep" checked onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Step</input>
               <button type="button" class="btn btn-default btn-sm" id="play" onclick="App.controllers.imageSlice.animationOpt(this.id)"><span class="glyphicon glyphicon-play"></span></button>
               <button type="button" class="btn btn-default btn-sm" id="stop" onclick="App.controllers.imageSlice.animationOpt(this.id)"><span class="glyphicon glyphicon-stop"></span></button> <br><br>
 
-              <input id="zoomSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setZoomSync(this.checked)"> Sync Zoom</input> <br><br>
+              <input id="zoomSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setZoomSync(this.checked)"> Sync Zoom</input>
+              <div class="contentDiv" id="zoomSize">
+              </div>
 
-              <input type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Home Community</input>
-              <input type="radio" name="overlay" value="tempComm" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Temporary Community</input>
+              <input type="checkbox" style="display:inline" checked> Display Network Attributes</input> <br>
+              <input id="subSelection" type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Home Community</input> <br>
+              <input id="subSelection" type="radio" name="overlay" value="tempComm" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Temporary Community</input>
               <div class="contentDiv" id="dynamicCommunity">
               </div>
               <!-- <input type="radio" name="overlay"> Homing </input>
@@ -193,7 +196,7 @@
               <input type="radio" name="overlay"> Switching </input>
               <div class="contentDiv" id="communityBehavior">
               </div> -->
-              <input type="radio" name="overlay" value="nodeDegree" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Node Degree</input>
+              <input id="subSelection" type="radio" name="overlay" value="nodeDegree" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Node Degree</input>
               <div class="contentDiv" id="nodeDegree">
               </div>
             </div>
