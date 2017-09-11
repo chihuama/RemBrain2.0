@@ -109,15 +109,13 @@ let ImageSliceController = function() {
       if (zoomSync) {
         d3.select("#Left-" + value).select("span").attr("class", "glyphicon glyphicon-eye-open");
         d3.select("#Right-" + value).select("span").attr("class", "glyphicon glyphicon-eye-open");
+
+        d3.select(".inactive-Left" + value).style("display", "none");
+        d3.select(".inactive-Right" + value).style("display", "none");
+
       } else {
         d3.select("#" + side + "-" + value).select("span").attr("class", "glyphicon glyphicon-eye-open");
-      }
-    } else {
-      if (zoomSync) {
-        d3.select("#Left-" + value).select("span").attr("class", "glyphicon glyphicon-eye-close");
-        d3.select("#Right-" + value).select("span").attr("class", "glyphicon glyphicon-eye-close");
-      } else {
-        d3.select("#" + side + "-" + value).select("span").attr("class", "glyphicon glyphicon-eye-close");
+        d3.select(".inactive-" + side + value).style("display", "none");
       }
     }
   }

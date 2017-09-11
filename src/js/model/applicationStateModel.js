@@ -192,6 +192,9 @@ let ApplicationStateModel = function() {
 
     d3.select("#" + side + "-Up").select("span").attr("class", "glyphicon glyphicon-eye-close");
     d3.select("#" + side + "-Bottom").select("span").attr("class", "glyphicon glyphicon-eye-close");
+
+    d3.select(".inactive-" + side + "Up").style("display", "block");
+    d3.select(".inactive-" + side + "Bottom").style("display", "block");
   }
 
   /**************************************************/

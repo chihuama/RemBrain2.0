@@ -83,7 +83,6 @@ let MosaicMatrixView = function(targetID) {
     let subCellSizeX = cellSize / num_x;
     let subCellSizeY = cellSize / num_y;
 
-    console.log(timeSpan, num_x, num_y);
 
     d3.selectAll(".singleNodeCell-" + self.side + direction).remove();
     d3.selectAll(".temporalSubCells-" + self.side + direction).remove();
@@ -126,6 +125,22 @@ let MosaicMatrixView = function(targetID) {
       }
     }
 
+    inactive(direction);
+  }
+
+  function inactive(direction) {
+    d3.select(".inactive-" + self.side + direction).remove();
+
+    self["targetSvg" + direction].append("rect")
+      .attr("class", "inactive-" + self.side + direction)
+      .attr("x", 1)
+      .attr("y", 2)
+      .attr("width", 96)
+      .attr("height", 96)
+      .style("fill", "black")
+      .style("opacity", 0.5)
+      .style("stroke", "none")
+      .style("display", "none");
   }
 
 
