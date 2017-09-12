@@ -94,6 +94,8 @@ let ImageSliceView = function(targetID) {
       .attr("height", 130)
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
 
+    calculateMostCommonDynamics();
+
     // dynamic community info for all active nodes
     colorActiveNodes();
   }
@@ -130,10 +132,6 @@ let ImageSliceView = function(targetID) {
       clearInterval(App.animationId[targetID.substr(1)]);
       colorActiveNodes();
     }
-
-    if (self.timeMode === "timeDuration") {
-      calculateMostCommonDynamics();
-    }
   }
 
 
@@ -147,7 +145,8 @@ let ImageSliceView = function(targetID) {
         if (self.timeMode === "timeStep") {
           return Object.keys(self.networkDynamics[self.currentTime]);
         } else {
-          return Object.keys(self.networkDynamics[self.timeStart]);
+          // return Object.keys(self.networkDynamics[self.timeStart]);
+          return Object.keys(self.mostCommonDynamics);
         }
       })
       .enter()
@@ -161,13 +160,15 @@ let ImageSliceView = function(targetID) {
           if (self.timeMode === "timeStep") { // Time Step
             return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
           } else { // Time Duration
-            return self.noDegColorScale(self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]);
+            // return self.noDegColorScale(self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]);
+            return self.noDegColorScale(self.mostCommonDynamics[d][self.modeOverlay]);
           }
         } else { // Home/Temporary Community
           if (self.timeMode === "timeStep") { // Time Step
             return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
           } else { // Time Duration
-            return App.colorScale[self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]];
+            // return App.colorScale[self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]];
+            return App.colorScale[self.mostCommonDynamics[d][self.modeOverlay]];
           }
         }
       })
@@ -200,6 +201,9 @@ let ImageSliceView = function(targetID) {
   }
 
   function calculateMostCommonDynamics() {
+    self.timeStart = App.models.applicationState.getTimeStart(self.side);
+    self.timeSpan = App.models.applicationState.getTimeSpan(self.side);
+
     self.mostCommonDynamics = {};
     let pixels = [];
 
@@ -213,17 +217,29 @@ let ImageSliceView = function(targetID) {
     }
 
     _.forEach(pixels, function(pixel) {
+      let homeComm_num = [];
+      let tempComm_num = [];
+      for (var i = 0; i <= 10; i++) {
+        homeComm_num[i] = 0;
+        tempComm_num[i] = 0;
+      }
+      let nodeDegree_num = 0;
+      let nodeDegree_sum = 0;
+
       for (let t = 0; t < self.timeSpan; t++) {
         if (self.networkDynamics[self.timeStart + t][pixel]) {
-
-        } else {
-          
+          homeComm_num[self.networkDynamics[self.timeStart + t][pixel][0]]++;
+          tempComm_num[self.networkDynamics[self.timeStart + t][pixel][1]]++;
+          nodeDegree_num++;
+          nodeDegree_sum += self.networkDynamics[self.timeStart + t][pixel][2];
         }
       }
+
+      self.mostCommonDynamics[pixel].homeComm = _.indexOf(homeComm_num, Math.max(...homeComm_num));
+      self.mostCommonDynamics[pixel].tempComm = _.indexOf(tempComm_num, Math.max(...tempComm_num));
+      self.mostCommonDynamics[pixel].nodeDegree = nodeDegree_sum / nodeDegree_num;
     });
 
-    console.log(pixels);
-    console.log(self.mostCommonDynamics);
   }
 
 
@@ -353,6 +369,7 @@ let ImageSliceView = function(targetID) {
   return {
     update,
     updateOverlay,
+    calculateMostCommonDynamics,
     highlightMosaicMatrix,
     selectMosaicMatrix,
     updateMosaicMatrix

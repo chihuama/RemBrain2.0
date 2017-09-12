@@ -41,7 +41,7 @@ let TimeSliderController = function(targetID) {
       .attr("width", 198)
       .attr("height", 28)
       .style("fill", "none")
-      .style("stroke", App.colorHighlight[targetID.substr(11)])
+      .style("stroke", App.colorHighlight[self.side])
       .style("stroke-width", 1);
 
     self.timeScale = d3.scaleLinear()
@@ -143,7 +143,8 @@ let TimeSliderController = function(targetID) {
     App.models.applicationState.setTimeSpan(self.side, self.timeSpan);
 
     // update the image slice view
-    App.views["imageSlice" + targetID.substr(11)].updateOverlay();
+    App.views["imageSlice" + self.side].calculateMostCommonDynamics();
+    App.views["imageSlice" + self.side].updateOverlay();
 
     // update the mosaic matrix view
     if (App.models.applicationState.getMosaicMatrixMode(self.side, "Up")) {
