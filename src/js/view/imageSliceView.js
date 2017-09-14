@@ -205,31 +205,24 @@ let ImageSliceView = function(targetID) {
     self.timeSpan = App.models.applicationState.getTimeSpan(self.side);
 
     self.mostCommonDynamics = {};
-    let pixels = [];
 
-    for (let t = 0; t < self.timeSpan; t++) {
-      _.forEach(Object.keys(self.networkDynamics[self.timeStart + t]), function(pixel) {
-        if (!_.includes(pixels, pixel)) {
-          pixels.push(pixel);
-          self.mostCommonDynamics[pixel] = {};
-        }
-      });
-    }
+    let time = d3.range(0, self.timeSpan);
+    let pixelsPerTime = _.map(time, (t) => Object.keys(self.networkDynamics[self.timeStart + t]));
+    let pixels = _.union(...pixelsPerTime);
 
-    _.forEach(pixels, function(pixel) {
-      let homeComm_num = [];
-      let tempComm_num = [];
-      for (var i = 0; i <= 10; i++) {
-        homeComm_num[i] = 0;
-        tempComm_num[i] = 0;
-      }
+    _.forEach(pixels, (pixel) => {
+      let homeComm_num = new Array(11).fill(0);
+      let tempComm_num = new Array(11).fill(0);
       let nodeDegree_num = 0;
       let nodeDegree_sum = 0;
+
+      self.mostCommonDynamics[pixel] = {};
 
       for (let t = 0; t < self.timeSpan; t++) {
         if (self.networkDynamics[self.timeStart + t][pixel]) {
           homeComm_num[self.networkDynamics[self.timeStart + t][pixel][0]]++;
           tempComm_num[self.networkDynamics[self.timeStart + t][pixel][1]]++;
+
           nodeDegree_num++;
           nodeDegree_sum += self.networkDynamics[self.timeStart + t][pixel][2];
         }
@@ -239,7 +232,6 @@ let ImageSliceView = function(targetID) {
       self.mostCommonDynamics[pixel].tempComm = _.indexOf(tempComm_num, Math.max(...tempComm_num));
       self.mostCommonDynamics[pixel].nodeDegree = nodeDegree_sum / nodeDegree_num;
     });
-
   }
 
 
