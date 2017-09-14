@@ -94,6 +94,7 @@ let ImageSliceView = function(targetID) {
       .attr("height", 130)
       .attr("xlink:href", "data/" + self.animalId + "/" + self.activationId + "/imageSlice.jpg");
 
+    // calculate the most common community and average node degrees duting the timeSpan
     calculateMostCommonDynamics();
 
     // dynamic community info for all active nodes
@@ -140,12 +141,10 @@ let ImageSliceView = function(targetID) {
     d3.selectAll(".activeNodes" + targetName).remove();
 
     self.targetSvg.selectAll("circle")
-      // .data(Object.keys(self.networkDynamics[self.currentTime]))
       .data(function() {
         if (self.timeMode === "timeStep") {
           return Object.keys(self.networkDynamics[self.currentTime]);
         } else {
-          // return Object.keys(self.networkDynamics[self.timeStart]);
           return Object.keys(self.mostCommonDynamics);
         }
       })
@@ -160,14 +159,12 @@ let ImageSliceView = function(targetID) {
           if (self.timeMode === "timeStep") { // Time Step
             return self.noDegColorScale(self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]);
           } else { // Time Duration
-            // return self.noDegColorScale(self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]);
             return self.noDegColorScale(self.mostCommonDynamics[d][self.modeOverlay]);
           }
         } else { // Home/Temporary Community
           if (self.timeMode === "timeStep") { // Time Step
             return App.colorScale[self.networkDynamics[self.currentTime][d][self.overlayMode[self.modeOverlay]]];
           } else { // Time Duration
-            // return App.colorScale[self.networkDynamics[self.timeStart][d][self.overlayMode[self.modeOverlay]]];
             return App.colorScale[self.mostCommonDynamics[d][self.modeOverlay]];
           }
         }

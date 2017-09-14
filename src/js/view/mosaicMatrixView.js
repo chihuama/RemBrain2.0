@@ -69,6 +69,14 @@ let MosaicMatrixView = function(targetID) {
 
   function load() {
     self.networkDynamics = App.models.networkDynamics.getNetworkDynamics();
+
+    // reset
+    d3.selectAll(".singleNodeCell-" + self.side + "Up").remove();
+    d3.selectAll(".singleNodeCell-" + self.side + "Bottom").remove();
+    d3.selectAll(".temporalSubCells-" + self.side + "Up").remove();
+    d3.selectAll(".temporalSubCells-" + self.side + "Bottom").remove();
+    d3.select(".inactive-" + self.side + "Up").remove();
+    d3.select(".inactive-" + self.side + "Bottom").remove();
   }
 
   function update(direction) {
