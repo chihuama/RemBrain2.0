@@ -22,7 +22,19 @@ let KiviatSummaryView = function(targetID) {
     animalSortInd: {},
     activationSortInd: {},
 
-    mode: "avg" // or "all"
+    mode: "avg", // or "all"
+
+    loadingOn: {
+      "Left": {
+        "mouse": null,
+        "activation": null
+      },
+      "Right": {
+        "mouse": null,
+        "activation": null
+      }
+    }
+
   };
 
   init();
@@ -341,12 +353,20 @@ let KiviatSummaryView = function(targetID) {
             self.selection[key] = false;
           }
         });
+
+        _.forEach(Object.keys(self.loadingOn), function(side) {
+          if (self.loadingOn[side].mouse == animalId) {
+            highlightLoadedActivation(side);
+          }
+        });
+
       } else {
         // reset to origianl views
         self.mode = "avg";
         sortAvgKiviats();
       }
     }, 0)
+
   }
 
 
@@ -429,27 +449,23 @@ let KiviatSummaryView = function(targetID) {
       $.contextMenu({
         selector: "#kiviatAll-" + runs[runInd],
         callback: function(key) {
-
           let animalId = App.models.applicationState.getSelectedAnimalId();
-          // console.log("right click-" + animalId + "-" + App.runs[animalId][runInd]);
+
           // update activation selector
           App.controllers.activationSelector.update(runs[runInd]);
+
+          // update the data info loaded on the [key] side
+          self.loadingOn[key].mouse = animalId;
+          self.loadingOn[key].activation = runs[runInd];
+          console.log(self.loadingOn[key]);
+
+          // highlight the selected kiviat
+          highlightLoadedActivation(key);
 
           // load data
           App.models.networkDynamics.loadNetworkDynamics(animalId, runs[runInd])
             .then(function(data) {
               // console.log("dynamics: ", data);
-              // highlight the selected kiviat
-              d3.select(".selectedRun-" + key).remove();
-              d3.select("#kiviatAll-" + runs[runInd]).append("g")
-                .attr("class", "selectedRun-" + key)
-                .append("circle")
-                .attr("cx", 0)
-                .attr("cy", 0)
-                .attr("r", 35)
-                .style("fill", App.colorHighlight[key])
-                .style("opacity", 0.3);
-
               // highlight the selected kiviat & the corresponding pca dot
               // ...
 
@@ -503,6 +519,33 @@ let KiviatSummaryView = function(targetID) {
     let attrInd = self.attributes.indexOf(attr);
 
     d3.selectAll("#attributeInd-" + attrInd).style("fill", "red");
+  }
+
+  /* highlight the kiviat of mouse-activation loaded in the brain slice view */
+  function highlightLoadedActivation(side) {
+    d3.select(".selectedRun-" + side).remove();
+    d3.select("#kiviatAll-" + self.loadingOn[side].activation).append("g")
+      .attr("class", "selectedRun-" + side)
+      .append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 35)
+      .style("fill", App.colorHighlight[side])
+      .style("opacity", 0.3);
+
+    highlightLoadedMouse(side);
+  }
+
+  function highlightLoadedMouse(side) {
+    d3.select(".selectedAnimal" + side).remove();
+    d3.select("#kiviatAvg-" + self.loadingOn[side].mouse).append("g")
+      .attr("class", "selectedAnimal-" + side)
+      .append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 35)
+      .style("fill", App.colorHighlight[side])
+      .style("opacity", 0.3);
   }
 
 
