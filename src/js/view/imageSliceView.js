@@ -54,7 +54,7 @@ let ImageSliceView = function(targetID) {
     self.side = targetID.substr(11);
   }
 
-
+  // called when loading a new activation
   function update() {
     self.animalId = App.models.applicationState.getSelectedAnimalId();
     self.activationId = App.models.applicationState.getSelectedActivationId();
@@ -83,9 +83,8 @@ let ImageSliceView = function(targetID) {
       .range(["#deebf7", "#08306b"]);
 
 
-    d3.select(".image" + targetName).remove();
-
     // load image
+    d3.select(".image" + targetName).remove();
     let img = self.targetSvg.append("image")
       .attr("class", "image" + targetName)
       .attr("x", 2)
@@ -101,7 +100,7 @@ let ImageSliceView = function(targetID) {
     colorActiveNodes();
   }
 
-
+  // called when chaging network attributes or draging time slider/brush or playing animation
   function updateOverlay() {
     // get the current overlay mode, time mode, current time, timeStart and timeSpan
     self.timeMode = App.models.applicationState.getTimeSliderMode();
@@ -338,7 +337,7 @@ let ImageSliceView = function(targetID) {
       .style("stroke-width", 1);
 
     // update the application state
-    App.models.applicationState.setZoomCenter(pixelId);
+    App.models.applicationState.setZoomCenter(self.side, pixelId);
 
     // update the mosaic matrix views through the image slice controller
     App.controllers.imageSlice.updateMosaicMatrix(self.side, direction);

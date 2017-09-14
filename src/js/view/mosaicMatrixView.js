@@ -4,10 +4,14 @@ var App = App || {};
 
 let MosaicMatrixView = function(targetID) {
   let self = {
-    targetElementUp: null,
-    targetSvgUp: null,
-    targetElementBottom: null,
-    targetSvgBottom: null,
+    targetElement: {
+      "Up": null,
+      "Bottom": null
+    },
+    targetSvg: {
+      "Up": null,
+      "Bottom": null
+    },
 
     side: null,
     networkDynamics: null,
@@ -17,73 +21,59 @@ let MosaicMatrixView = function(targetID) {
       "tempComm": 1,
       "nodeDegree": 2
     }
-    // modeOverlay: null
 
-    // active: {
-    //   "Up": false,
-    //   "Bottom": false
-    // }
   };
 
   init();
 
   function init() {
-    self.targetElementUp = d3.select(targetID + "-Up");
-    self.targetElementBottom = d3.select(targetID + "-Bottom");
-
-    self.targetSvgUp = self.targetElementUp.append("svg")
-      .attr("width", self.targetElementUp.node().clientWidth)
-      .attr("height", self.targetElementUp.node().clientHeight)
-      .attr("viewBox", "0 0 100 100")
-      .attr("preserveAspectRatio", "xMidYMid");
-
-    self.targetSvgBottom = self.targetElementBottom.append("svg")
-      .attr("width", self.targetElementBottom.node().clientWidth)
-      .attr("height", self.targetElementBottom.node().clientHeight)
-      .attr("viewBox", "0 0 100 100")
-      .attr("preserveAspectRatio", "xMidYMid");
-
     self.side = targetID.substr(13);
 
-    // boundary
-    self.targetSvgUp.append("rect")
-      .attr("class", targetID.substr(1) + "-Up")
-      .attr("x", 0)
-      .attr("y", 1)
-      .attr("width", 98)
-      .attr("height", 98)
-      .style("fill", "none")
-      .style("stroke", App.colorHighlight.Up)
-      .style("stroke-width", 1);
+    _.forEach(Object.keys(self.targetElement), function(dir) {
+      self.targetElement[dir] = d3.select(targetID + "-" + dir);
 
-    self.targetSvgBottom.append("rect")
-      .attr("class", targetID.substr(1) + "-Bottom")
-      .attr("x", 0)
-      .attr("y", 1)
-      .attr("width", 98)
-      .attr("height", 98)
-      .style("fill", "none")
-      .style("stroke", App.colorHighlight.Bottom)
-      .style("stroke-width", 1);
+      self.targetSvg[dir] = self.targetElement[dir].append("svg")
+        .attr("width", self.targetElement[dir].node().clientWidth)
+        .attr("height", self.targetElement[dir].node().clientHeight)
+        .attr("viewBox", "0 0 100 100")
+        .attr("preserveAspectRatio", "xMidYMid");
+
+      // boundary
+      self.targetSvg[dir].append("rect")
+        .attr("class", targetID.substr(1) + "-" + dir)
+        .attr("x", 0)
+        .attr("y", 1)
+        .attr("width", 98)
+        .attr("height", 98)
+        .style("fill", "none")
+        .style("stroke", App.colorHighlight[dir])
+        .style("stroke-width", 1);
+    });
+
   }
 
   function load() {
     self.networkDynamics = App.models.networkDynamics.getNetworkDynamics();
 
     // reset
-    d3.selectAll(".singleNodeCell-" + self.side + "Up").remove();
-    d3.selectAll(".singleNodeCell-" + self.side + "Bottom").remove();
-    d3.selectAll(".temporalSubCells-" + self.side + "Up").remove();
-    d3.selectAll(".temporalSubCells-" + self.side + "Bottom").remove();
-    d3.select(".inactive-" + self.side + "Up").remove();
-    d3.select(".inactive-" + self.side + "Bottom").remove();
+    _.forEach(Object.keys(self.targetElement), function(dir) {
+      d3.selectAll(".singleNodeCell-" + self.side + dir).remove();
+      d3.selectAll(".temporalSubCells-" + self.side + dir).remove();
+      d3.select(".inactive-" + self.side + dir).remove();
+
+      update(dir);
+
+      if (!App.models.applicationState.getMosaicMatrixMode(self.side, dir)) {
+        d3.select(".inactive-" + self.side + dir).style("display", "block");
+      }
+    });
   }
 
   function update(direction) {
     let timeStart = App.models.applicationState.getTimeStart(self.side);
     let timeSpan = App.models.applicationState.getTimeSpan(self.side);
     let size = App.models.applicationState.getZoomSize();
-    let centerPixelId = App.models.applicationState.getZoomCenter();
+    let centerPixelId = App.models.applicationState.getZoomCenter(self.side);
     let mode = App.models.applicationState.getOverlayMode();
     let maxNodeDegree = App.models.applicationState.getMaxNodeDegree();
 
@@ -119,7 +109,7 @@ let MosaicMatrixView = function(targetID) {
         let pixelId = pixelId_y * 172 + pixelId_x;
 
         // draw cells for individual nodes
-        let cell = self["targetSvg" + direction].append("rect")
+        let cell = self.targetSvg[direction].append("rect")
           .attr("class", "singleNodeCell-" + self.side + direction)
           .attr("x", 2 + i * cellSize)
           .attr("y", 3 + j * cellSize)
@@ -131,7 +121,7 @@ let MosaicMatrixView = function(targetID) {
 
         // draw sub-cells to show temporal features
         for (let t = 0; t < timeSpan; t++) {
-          self["targetSvg" + direction].append("rect")
+          self.targetSvg[direction].append("rect")
             .attr("class", "temporalSubCells-" + self.side + direction)
             .attr("x", 2 + i * cellSize + (t % num_x) * subCellSizeX)
             .attr("y", 3 + j * cellSize + Math.floor(t / num_x) * subCellSizeY)
@@ -139,7 +129,6 @@ let MosaicMatrixView = function(targetID) {
             .attr("height", subCellSizeY)
             .style("fill", function() {
               if (self.networkDynamics[timeStart + t][pixelId]) { // check if the node is active
-                // return App.colorScale[self.networkDynamics[timeStart + t][pixelId][0]];
                 if (mode === "nodeDegree") { // Node Degree
                   return noDegColorScale(self.networkDynamics[timeStart + t][pixelId][self.overlayMode[mode]]);
                 } else { // Home/Temporary Community
@@ -160,7 +149,7 @@ let MosaicMatrixView = function(targetID) {
   function inactive(direction) {
     d3.select(".inactive-" + self.side + direction).remove();
 
-    self["targetSvg" + direction].append("rect")
+    self.targetSvg[direction].append("rect")
       .attr("class", "inactive-" + self.side + direction)
       .attr("x", 1)
       .attr("y", 2)

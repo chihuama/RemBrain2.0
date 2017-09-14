@@ -76,8 +76,6 @@ let ImageSliceController = function() {
       xPos = 90;
     }
 
-    // d3.select(this).attr("cx", xPos);
-
     //update the application state
     let zoomSize = Math.round(self.zoomSizeScale.invert(xPos));
     App.models.applicationState.setZoomSize(zoomSize);
