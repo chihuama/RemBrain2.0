@@ -537,7 +537,7 @@ let KiviatSummaryView = function(targetID) {
   }
 
   function highlightLoadedMouse(side) {
-    d3.select(".selectedAnimal" + side).remove();
+    d3.select(".selectedAnimal-" + side).remove();
     d3.select("#kiviatAvg-" + self.loadingOn[side].mouse).append("g")
       .attr("class", "selectedAnimal-" + side)
       .append("circle")

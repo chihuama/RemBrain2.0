@@ -19,7 +19,19 @@ let PcaView = function(targetID) {
     projector: null,
 
     xScale: null,
-    yScale: null
+    yScale: null,
+
+    loadingOn: {
+      "Left": {
+        "mouse": null,
+        "activation": null
+      },
+      "Right": {
+        "mouse": null,
+        "activation": null
+      }
+    }
+
   };
 
   init();
@@ -205,43 +217,32 @@ let PcaView = function(targetID) {
                 selector: "#" + d.mouse + "-" + d.activation,
                 callback: function(key) {
                   // update activation selector
-                  // App.controllers.animalSelector.update(d.mouse);
                   App.controllers.activationSelector.update(d.activation);
                   App.models.applicationState.setSelectedAnimalId(d.mouse);
+
+                  // update the data info loaded on the [key] side
+                  self.loadingOn[key].mouse = d.mouse;
+                  self.loadingOn[key].activation = d.activation;
+                  console.log(self.loadingOn[key]);
+
+                  // highlightLoadedByRun(key);
 
                   // load data
                   App.models.networkDynamics.loadNetworkDynamics(d.mouse, d.activation)
                     .then(function(data) {
                       // highlight the selected pca dot & the corresponding kiviat diagram
-                      d3.select(".selectedDot-" + key).remove();
-                      d3.select("#" + d.mouse + "-" + d.activation)
-                        .attr("class", "selectedDot-" + key)
-                        .style("stroke", App.colorHighlight[key.substr(10)])
-                        .style("stroke-width", 1)
-                        .select(function() {
-                          this.parentNode.appendChild(this);
-                        });
-                      // d3.selectAll("#" + d.mouse).classed("selectedDot-" + key, false);
-                      // d3.select("#" + d.mouse + "-" + d.activation).classed("selectedDot-" + key, true);
-
-                      // tell the imageSliceController which side is loaded
-                      App.models.applicationState.loadSliceSelected(key.substr(10));
-
-                      // update time slider controllers
-                      App.controllers["timeSlider" + key.substr(10)].loadViews();
-
-                      // update imageSlice views
-                      App.views[key].update();
+                      // ...
+                      loadDetailViews(key);
                     })
                     .catch(function(err) {
                       console.log("Promise Error", err);
                     });
                 },
                 items: {
-                  "imageSliceLeft": {
+                  "Left": {
                     name: "Load Data on Left"
                   },
-                  "imageSliceRight": {
+                  "Right": {
                     name: "Load Data on Right"
                   }
                 }
@@ -400,34 +401,29 @@ let PcaView = function(targetID) {
               let animalId = App.models.applicationState.getSelectedAnimalId();
               console.log(mouse); // mouse is the previous one not the current one
 
+              // update the data info loaded on the [key] side
+              self.loadingOn[key].mouse = animalId;
+              self.loadingOn[key].activation = d;
+              console.log(self.loadingOn[key]);
+
+              // highlightLoadedByAnimal(key);
+
               // load data
               App.models.networkDynamics.loadNetworkDynamics(animalId, d)
                 .then(function(data) {
                   // highlight the selected pca dot & the corresponding kiviat diagram
-                  // d3.select(".selectedDot-" + key).remove();
-                  // d3.select("#singleActivation-" + d)
-                  //   .attr("class", "selectedDot-" + key)
-                  //   .style("stroke", App.colorHighlight[key.substr(10)])
-                  //   .style("stroke-width", 1);
-
-                  // tell the imageSliceController which side is loaded
-                  App.models.applicationState.loadSliceSelected(key.substr(10));
-
-                  // update time slider controllers
-                  App.controllers["timeSlider" + key.substr(10)].loadViews();
-
-                  // update imageSlice views
-                  App.views[key].update();
+                  // ...
+                  loadDetailViews(key);
                 })
                 .catch(function(err) {
                   console.log("Promise Error", err);
                 });
             },
             items: {
-              "imageSliceLeft": {
+              "Left": {
                 name: "Load Data on Left"
               },
-              "imageSliceRight": {
+              "Right": {
                 name: "Load Data on Right"
               }
             }
@@ -603,6 +599,39 @@ let PcaView = function(targetID) {
       .style("z-index", -1);
   }
   /**************************************************/
+
+  function loadDetailViews(key) {
+    // tell the imageSliceController which side is loaded
+    App.models.applicationState.loadSliceSelected(key);
+
+    // update time slider controllers
+    App.controllers["timeSlider" + key].loadViews();
+
+    // update the image slice view
+    App.views["imageSlice" + key].update();
+
+    // update the mosaic matrix view
+    App.views["mosaicMatrix" + key].load();
+  }
+
+  function highlightLoadedByRun(side) {
+    d3.select(".selectedDot-" + side).remove();
+    d3.select("#" + self.loadingOn[side].mouse + "-" + self.loadingOn[side].activation)
+      .attr("class", "selectedDot-" + side)
+      .style("stroke", App.colorHighlight[side])
+      .style("stroke-width", 1)
+      .select(function() {
+        this.parentNode.appendChild(this);
+      });
+  }
+
+  function highlightLoadedByAnimal(side) {
+    d3.select(".selectedDot-" + side).remove();
+    d3.select("#singleActivation-" + self.loadingOn[side].activation)
+      .attr("class", "selectedDot-" + side)
+      .style("stroke", App.colorHighlight[side])
+      .style("stroke-width", 1);
+  }
 
 
   return {
