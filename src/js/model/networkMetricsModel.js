@@ -152,7 +152,7 @@ let NetworkMetricsModel = function() {
     let sizeValues = [];
 
     _.forEach(Object.values(self.networkMetrics), function(value, key) {
-      _.forEach(Object.values(value), function(d) {
+      _.forEach(Object.values(value.activations), function(d) {
         sizeValues.push(d.size);
       });
     });
@@ -160,20 +160,19 @@ let NetworkMetricsModel = function() {
     return d3.extent(sizeValues);
   }
 
-  /* get the sortInd for runAvg based on the selected attribute */
-  function getAvgSortInd() {
+  /* get the sortInd for animals (runAvg) based on the selected attribute */
+  function getAnimalSortInd() {
     // get the current selected attribute for sorting kiviats
     let attr = App.models.applicationState.getAttributeForSorting();
 
-    calculateAvgSortIndBy(attr);
+    calculateAnimalSortIndBy(attr);
 
     return self.avgSortInd;
   }
 
-  /* calculate the sortInd for runAvg based on the selected attribute */
-  function calculateAvgSortIndBy(attr) {
-    let oldNetworkMetrics = {};
-    let youngNetworkMetrics = {};
+  /* calculate the sortInd for animals (runAvg) based on the selected attribute */
+  function calculateAnimalSortIndBy(attr) {
+    let networkMetricsAvg = {};
 
     for (let animal of Object.keys(App.runs).sort()) {
       let animalInd = Object.keys(App.runs).sort().indexOf(animal);
@@ -181,51 +180,36 @@ let NetworkMetricsModel = function() {
       if (attr === "animal.id") {
         self.avgSortInd[animal] = animalInd;
       } else {
-        if (animalInd < 5) {
-          oldNetworkMetrics[animal] = self.networkMetrics[animal].average;
-          oldNetworkMetrics[animal].animalId = animal;
-        } else {
-          youngNetworkMetrics[animal] = self.networkMetrics[animal].average;
-          youngNetworkMetrics[animal].animalId = animal;
-        }
+        networkMetricsAvg[animal] = self.networkMetrics[animal].average;
+        networkMetricsAvg[animal].animalId = animal;
       }
     }
 
-    let sortedOldNetworks = _.reverse(_.sortBy(oldNetworkMetrics, function(o) {
-      return o[attr];
-    }));
-    let sortedYoungNetworks = _.reverse(_.sortBy(youngNetworkMetrics, function(o) {
+    let sortedNetworks = _.reverse(_.sortBy(networkMetricsAvg, function(o) {
       return o[attr];
     }));
 
-    _.forEach(sortedOldNetworks, function(value, i) {
+    _.forEach(sortedNetworks, function(value, i) {
       self.avgSortInd[value.animalId] = i;
-    });
-
-    _.forEach(sortedYoungNetworks, function(value, i) {
-      self.avgSortInd[value.animalId] = i + 5;
     });
 
   }
 
-  /* calculate the sortInd for current animal based on the selected attribute */
-  function getAnimalSortInd() {
+  /* calculate the sortInd for activations of the current animal based on the selected attribute */
+  function getActivationSortInd() {
     // get the current selected attribute and animal for sorting kiviats
     let attr = App.models.applicationState.getAttributeForSorting();
     let animal = App.models.applicationState.getSelectedAnimal();
 
-    calculateAnimalSortIndBy(attr, animal);
+    calculateActivationSortIndBy(attr, animal);
 
     return self.animalSortInd;
   }
 
-  function calculateAnimalSortIndBy(attr, animal) {
+  function calculateActivationSortIndBy(attr, animal) {
     self.animalSortInd = {};
     let animalNetworkMetrics = {};
 
-    // let runs = _.filter(Object.keys(animal), function(o) {
-    //   return (o != "runAvg" && o != "runMin" && o != "runMax");
-    // });
     let runs = Object.keys(animal.activations);
 
     for (let run of runs) {
@@ -256,8 +240,8 @@ let NetworkMetricsModel = function() {
     getMetricsAttributes,
     getAttributesRange,
     getNetworksSizeRange,
-    getAvgSortInd,
-    getAnimalSortInd
+    getAnimalSortInd,
+    getActivationSortInd
   };
 
 }

@@ -54,7 +54,6 @@ let KiviatSummaryView = function(targetID) {
       .attr("height", self.legendElement.node().clientHeight)
       .attr("viewBox", "0 0 600 60")
       .attr("preserveAspectRatio", "xMaxYMid");
-    // .style("background", "pink");
   }
 
   function create(networkMetrics) {
@@ -75,6 +74,7 @@ let KiviatSummaryView = function(targetID) {
 
     // get the range of networks size
     let extent = App.models.networkMetrics.getNetworksSizeRange();
+    console.log(extent);
 
     self.colorScale = d3.scaleLinear()
       .interpolate(d3.interpolateHcl)
@@ -230,6 +230,18 @@ let KiviatSummaryView = function(targetID) {
       .style("opacity", 0.75);
 
     // run name
+    if (mode === "kiviatAvg") {
+      translateGroup.append("rect")
+        .attr("x", -50)
+        .attr("y", -48)
+        .attr("width", animalId.length * 4)
+        .attr("height", 9)
+        .style("fill", function() {
+          return _.includes(animalId, "Old") ? "pink" : "lightblue";
+        })
+        .style("stroke", "none");
+    }
+
     translateGroup.append("text")
       .attr("class", "networkInd")
       .attr("x", -48)

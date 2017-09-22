@@ -37,10 +37,10 @@ let KiviatSortingController = function() {
     App.models.applicationState.setAttributeForSorting(self.currentAttribute);
 
     // get sortInd from networkMetrics models
-    let animalSortInd = App.models.networkMetrics.getAvgSortInd();
+    let animalSortInd = App.models.networkMetrics.getAnimalSortInd();
     let activationSortInd = null;
     if (App.models.applicationState.getSelectedAnimal()) {
-      activationSortInd = App.models.networkMetrics.getAnimalSortInd();
+      activationSortInd = App.models.networkMetrics.getActivationSortInd();
     }
 
     // update views
