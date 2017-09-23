@@ -264,6 +264,21 @@ let KiviatSummaryView = function(targetID) {
         .on("click", function() {
           App.controllers.animalSelector.update(animalId);
         });
+
+      // right click a kiviat to select an animal as the target
+      $.contextMenu({
+        selector: "#kiviatAvg-" + animalId,
+        callback: function(key) {
+          if (App.models.applicationState.getSimilarityMode()) {
+            App.controllers.kiviatSorting.sortAccordingTo(animalId);
+          }
+        },
+        items: {
+          "similarityTarget": {
+            name: "Select"
+          }
+        }
+      });
     }
   }
 
@@ -560,13 +575,31 @@ let KiviatSummaryView = function(targetID) {
       .style("opacity", 0.3);
   }
 
+  /* highlight the selected mouse to sort the rest mice based on their similarity scores */
+  function highlightSelectedMouse(mode, Id) {
+    d3.select(".select-" + mode).remove();
+    d3.select("#" + mode + "-" + Id).append("g")
+      .attr("class", "select-" + mode)
+      .append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", 35)
+      .style("opacity", 0.3)
+      .style("pointer-events", "none");
+
+    _.forEach(self.attributes, function(value, i) {
+      d3.selectAll("#attributeInd-" + i).style("fill", "lightgray");
+    });
+  }
+
 
   return {
     create,
     selectAnimal,
     updateSortInd,
     highlightAxis,
-    highlightKiviat
+    highlightKiviat,
+    highlightSelectedMouse
   };
 
 }

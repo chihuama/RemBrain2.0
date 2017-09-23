@@ -57,7 +57,9 @@ let ApplicationStateModel = function() {
     sliceSelected: {
       "Left": false,
       "Right": false
-    }
+    },
+
+    similarityMode: false
 
   };
 
@@ -232,6 +234,15 @@ let ApplicationStateModel = function() {
   }
 
 
+  function setSimilarityMode(mode) {
+    self.similarityMode = mode;
+  }
+
+  function getSimilarityMode() {
+    return self.similarityMode;
+  }
+
+
   return {
     setAttributesForPCA,
     getAttributesForPCA,
@@ -269,7 +280,9 @@ let ApplicationStateModel = function() {
     setMaxNodeDegree,
     getMaxNodeDegree,
     loadSliceSelected,
-    checkSliceSelected
+    checkSliceSelected,
+    setSimilarityMode,
+    getSimilarityMode
   };
 
 }

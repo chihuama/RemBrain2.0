@@ -51,27 +51,32 @@ let KiviatSortingController = function() {
 
   /* sort animals according to the selected one */
   function sortAccordingTo(animal) {
-    App.models.networkMetrics.getSimilaritySortInd(animal);
+    // get sortInd from networkMetrics models
+    let animalSortInd = App.models.networkMetrics.getSimilaritySortInd(animal);
+
+    // update views
+    App.views.kiviatSummary.updateSortInd(animalSortInd, null);
+    App.views.kiviatSummary.highlightSelectedMouse("kiviatAvg", animal);
   }
 
   /* check if it is the mode for selecting an animal and sorting the rest by their similarity scores */
   function similarityMode(value) {
-    console.log(value);
-
+    // console.log(value);
     if (value) {
       self.attributeDropDown.attr("disabled", true);
+      App.models.applicationState.setSimilarityMode(true);
 
-      // reset to sort by animalId
-      self.currentAttribute = "animal.id";
-      self.attributeDropDown.node().value = self.currentAttribute;
-      updateSelectedAttribute();
-      sortAccordingTo("Old36");
+      let animalSortInd = App.models.networkMetrics.getAnimalSortInd();
+
+      let animalAtInd0 = _.findKey(animalSortInd, function(o) {
+        return o == 0;
+      });
+      sortAccordingTo(animalAtInd0);
     } else {
       self.attributeDropDown.attr("disabled", null);
+      App.models.applicationState.setSimilarityMode(false);
 
-      // reset to sort by animalId
-      self.currentAttribute = "animal.id";
-      self.attributeDropDown.node().value = self.currentAttribute;
+      d3.select(".select-kiviatAvg").remove();
       updateSelectedAttribute();
     }
   }
@@ -79,8 +84,8 @@ let KiviatSortingController = function() {
 
   return {
     attachToSelect,
-    populateAttributeDropDown,
     updateSelectedAttribute,
+    sortAccordingTo,
     similarityMode
   };
 

@@ -236,6 +236,7 @@ let NetworkMetricsModel = function() {
   /* calculate the sortInd for animals based on their similarity scores to the selected animal */
   function getSimilaritySortInd(selectedAnimal) {
     let sd = {};
+    let similaritySortInd = {};
 
     _.forEach(Object.keys(self.networkMetrics), function(animal) {
       let x2 = 0;
@@ -247,7 +248,16 @@ let NetworkMetricsModel = function() {
       sd[animal] = Math.sqrt(x2 / (self.attributes.length - 1));
     });
 
-    console.log(sd);
+    let sortedSD = _.sortBy(sd, function(o) {
+      return o;
+    });
+
+    _.forEach(Object.keys(self.networkMetrics), function(animal) {
+      similaritySortInd[animal] = _.indexOf(sortedSD, sd[animal]);
+    });
+
+    // console.log(similaritySortInd);
+    return similaritySortInd;
   }
 
 
