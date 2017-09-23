@@ -233,6 +233,23 @@ let NetworkMetricsModel = function() {
 
   }
 
+  /* calculate the sortInd for animals based on their similarity scores to the selected animal */
+  function getSimilaritySortInd(selectedAnimal) {
+    let sd = {};
+
+    _.forEach(Object.keys(self.networkMetrics), function(animal) {
+      let x2 = 0;
+      _.forEach(Object.values(self.attributes), function(attr) {
+        let x = self.networkMetrics[animal].average[attr] - self.networkMetrics[selectedAnimal].average[attr];
+        x2 += Math.pow(x, 2);
+      });
+
+      sd[animal] = Math.sqrt(x2 / (self.attributes.length - 1));
+    });
+
+    console.log(sd);
+  }
+
 
   return {
     loadNetworkMetrics,
@@ -241,7 +258,8 @@ let NetworkMetricsModel = function() {
     getAttributesRange,
     getNetworksSizeRange,
     getAnimalSortInd,
-    getActivationSortInd
+    getActivationSortInd,
+    getSimilaritySortInd
   };
 
 }

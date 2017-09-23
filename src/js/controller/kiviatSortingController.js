@@ -49,10 +49,39 @@ let KiviatSortingController = function() {
   }
 
 
+  /* sort animals according to the selected one */
+  function sortAccordingTo(animal) {
+    App.models.networkMetrics.getSimilaritySortInd(animal);
+  }
+
+  /* check if it is the mode for selecting an animal and sorting the rest by their similarity scores */
+  function similarityMode(value) {
+    console.log(value);
+
+    if (value) {
+      self.attributeDropDown.attr("disabled", true);
+
+      // reset to sort by animalId
+      self.currentAttribute = "animal.id";
+      self.attributeDropDown.node().value = self.currentAttribute;
+      updateSelectedAttribute();
+      sortAccordingTo("Old36");
+    } else {
+      self.attributeDropDown.attr("disabled", null);
+
+      // reset to sort by animalId
+      self.currentAttribute = "animal.id";
+      self.attributeDropDown.node().value = self.currentAttribute;
+      updateSelectedAttribute();
+    }
+  }
+
+
   return {
     attachToSelect,
     populateAttributeDropDown,
-    updateSelectedAttribute
+    updateSelectedAttribute,
+    similarityMode
   };
 
 }
