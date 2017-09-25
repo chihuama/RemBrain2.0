@@ -262,7 +262,7 @@ let KiviatSummaryView = function(targetID) {
           App.controllers.animalSelector.reset(animalId);
         })
         .on("click", function() {
-          App.controllers.animalSelector.update(animalId);
+          App.controllers.animalSelector.update(animalId); // to call selectAnimal();
         });
 
       // right click a kiviat to select an animal as the target
@@ -372,7 +372,12 @@ let KiviatSummaryView = function(targetID) {
         updateAnimal(networkMetrics[animalId]);
 
         // update controllers
-        App.controllers.kiviatSorting.updateSelectedAttribute();
+        // App.controllers.kiviatSorting.updateSelectedAttribute();
+        if (App.models.applicationState.getSimilarityMode()) {
+          App.controllers.kiviatSorting.sortAccordingTo(animalId);
+        } else {
+          App.controllers.kiviatSorting.updateSelectedAttribute();
+        }
 
         // set rest selections to false
         _.forEach(self.selection, function(value, key) {

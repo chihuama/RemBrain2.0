@@ -234,7 +234,7 @@ let NetworkMetricsModel = function() {
   }
 
   /* calculate the sortInd for animals based on their similarity scores to the selected animal */
-  function getSimilaritySortInd(selectedAnimal) {
+  function getAnimalSimSortInd(selectedAnimal) {
     let sd = {};
     let similaritySortInd = {};
 
@@ -260,6 +260,31 @@ let NetworkMetricsModel = function() {
     return similaritySortInd;
   }
 
+  function getActivationSimSortInd(animalId) {
+    let sd = {};
+    let similaritySortInd = {};
+
+    _.forEach(Object.keys(self.networkMetrics[animalId].activations), function(activation) {
+      let x2 = 0;
+      _.forEach(Object.values(self.attributes), function(attr) {
+        let x = self.networkMetrics[animalId].activations[activation][attr] - self.networkMetrics[animalId].average[attr];
+        x2 += Math.pow(x, 2);
+      });
+
+      sd[activation] = Math.sqrt(x2 / (self.attributes.length - 1));
+    });
+
+    let sortedSD = _.sortBy(sd, function(o) {
+      return o;
+    });
+
+    _.forEach(Object.keys(self.networkMetrics[animalId].activations), function(activation) {
+      similaritySortInd[activation] = _.indexOf(sortedSD, sd[activation]);
+    });
+
+    return similaritySortInd;
+  }
+
 
   return {
     loadNetworkMetrics,
@@ -269,7 +294,8 @@ let NetworkMetricsModel = function() {
     getNetworksSizeRange,
     getAnimalSortInd,
     getActivationSortInd,
-    getSimilaritySortInd
+    getAnimalSimSortInd,
+    getActivationSimSortInd
   };
 
 }

@@ -52,10 +52,14 @@ let KiviatSortingController = function() {
   /* sort animals according to the selected one */
   function sortAccordingTo(animal) {
     // get sortInd from networkMetrics models
-    let animalSortInd = App.models.networkMetrics.getSimilaritySortInd(animal);
+    let animalSortInd = App.models.networkMetrics.getAnimalSimSortInd(animal);
+    let activationSortInd = null;
+    if (App.models.applicationState.getSelectedAnimal()) {
+      activationSortInd = App.models.networkMetrics.getActivationSimSortInd(animal);
+    }
 
     // update views
-    App.views.kiviatSummary.updateSortInd(animalSortInd, null);
+    App.views.kiviatSummary.updateSortInd(animalSortInd, activationSortInd);
     App.views.kiviatSummary.highlightSelectedMouse("kiviatAvg", animal);
   }
 
