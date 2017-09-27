@@ -238,10 +238,14 @@ let NetworkMetricsModel = function() {
     let sd = {};
     let similaritySortInd = {};
 
+    let attributeExtents = App.models.networkMetrics.getAttributesRange();
+
     _.forEach(Object.keys(self.networkMetrics), function(animal) {
       let x2 = 0;
       _.forEach(Object.values(self.attributes), function(attr) {
-        let x = self.networkMetrics[animal].average[attr] - self.networkMetrics[selectedAnimal].average[attr];
+        // let x = self.networkMetrics[animal].average[attr] - self.networkMetrics[selectedAnimal].average[attr];
+        let x = (self.networkMetrics[animal].average[attr] - self.networkMetrics[selectedAnimal].average[attr]) / (attributeExtents[attr][1] - attributeExtents[attr][0]);
+
         x2 += Math.pow(x, 2);
       });
 
@@ -264,10 +268,14 @@ let NetworkMetricsModel = function() {
     let sd = {};
     let similaritySortInd = {};
 
+    let attributeExtents = App.models.networkMetrics.getAttributesRange();
+
     _.forEach(Object.keys(self.networkMetrics[animalId].activations), function(activation) {
       let x2 = 0;
       _.forEach(Object.values(self.attributes), function(attr) {
-        let x = self.networkMetrics[animalId].activations[activation][attr] - self.networkMetrics[animalId].average[attr];
+        // let x = self.networkMetrics[animalId].activations[activation][attr] - self.networkMetrics[animalId].average[attr];
+        let x = (self.networkMetrics[animalId].activations[activation][attr] - self.networkMetrics[animalId].average[attr]) / (attributeExtents[attr][1] - attributeExtents[attr][0]);
+
         x2 += Math.pow(x, 2);
       });
 
@@ -281,7 +289,7 @@ let NetworkMetricsModel = function() {
     _.forEach(Object.keys(self.networkMetrics[animalId].activations), function(activation) {
       similaritySortInd[activation] = _.indexOf(sortedSD, sd[activation]);
     });
-
+    console.log(similaritySortInd);
     return similaritySortInd;
   }
 

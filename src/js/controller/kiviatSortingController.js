@@ -70,11 +70,15 @@ let KiviatSortingController = function() {
       self.attributeDropDown.attr("disabled", true);
       App.models.applicationState.setSimilarityMode(true);
 
-      let animalSortInd = App.models.networkMetrics.getAnimalSortInd();
+      let animalAtInd0 = App.models.applicationState.getSelectedAnimalId();
 
-      let animalAtInd0 = _.findKey(animalSortInd, function(o) {
-        return o == 0;
-      });
+      if (!animalAtInd0) {
+        let animalSortInd = App.models.networkMetrics.getAnimalSortInd();
+        animalAtInd0 = _.findKey(animalSortInd, function(o) {
+          return o == 0;
+        });
+      }
+
       sortAccordingTo(animalAtInd0);
     } else {
       self.attributeDropDown.attr("disabled", null);
