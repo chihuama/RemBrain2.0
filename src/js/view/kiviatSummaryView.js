@@ -270,7 +270,12 @@ let KiviatSummaryView = function(targetID) {
         selector: "#kiviatAvg-" + animalId,
         callback: function(key) {
           if (App.models.applicationState.getSimilarityMode()) {
-            App.controllers.kiviatSorting.sortAccordingTo(animalId);
+            // update the sorting
+            if (self.mode == "all") {
+              App.controllers.animalSelector.update(animalId); // to call selectAnimal();
+            } else {
+              App.controllers.kiviatSorting.sortAccordingTo(animalId);
+            }
           }
         },
         items: {
@@ -365,14 +370,10 @@ let KiviatSummaryView = function(targetID) {
           .style("opacity", 0.4)
           .style("pointer-events", "none");
 
-        // shink the 10 kiviats to the left side
-        shrinkAvgKiviats();
-
         // update the kiviat summary view
         updateAnimal(networkMetrics[animalId]);
 
         // update controllers
-        // App.controllers.kiviatSorting.updateSelectedAttribute();
         if (App.models.applicationState.getSimilarityMode()) {
           App.controllers.kiviatSorting.sortAccordingTo(animalId);
         } else {

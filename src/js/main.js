@@ -23,24 +23,6 @@ Promise.all([bodyLoadPromise, less.pageLoadFinished]).then(function() {
   App.views = {};
   App.controllers = {};
 
-  // hard code the folder name according to the activation runs
-  App.runs = {
-    "Old36": ["a1", "a2"],
-    "Old37": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"],
-    "Old38": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"],
-    "Old41": ["a1", "a2", "a3"],
-    "Old42": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8"],
-    "Young33": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9", "a10", "a11", "a12", "a13", "a14"],
-    "Young34": ["a1", "a2", "a3", "a4", "a5", "a6"],
-    "Young35": ["a1", "a2", "a4", "a6", "a7", "a8", "a9"],
-    "Young39": ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"],
-    "Young40": ["a1", "a2", "a3", "a4"],
-  }
-
-  App.sortingAttributes = ["animal.id", "observed", "time.span", "switching",
-    "absence", "visiting", "homing", "avg.group.size", "avg.comm.size", "avg.stay", "max.stay"
-  ];
-
   // initialize the attributes for computing PCA (all as default)
   App.pcaAttributes = {};
   for (let attr of App.sortingAttributes) {
