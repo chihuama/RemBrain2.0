@@ -30,7 +30,9 @@ let PcaView = function(targetID) {
         "mouse": null,
         "activation": null
       }
-    }
+    },
+
+    helpInfo: false
 
   };
 
@@ -633,6 +635,26 @@ let PcaView = function(targetID) {
       .style("stroke-width", 1);
   }
 
+  function helpInfo() {
+    self.helpInfo = !self.helpInfo;
+    if (self.helpInfo) {
+      d3.select("#pca-help").select("span").attr("class", "glyphicon glyphicon-remove");
+
+      self.targetSvg.append("rect")
+        .attr("class", "pca-helpInfo")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 180)
+        .attr("height", 130)
+        .style("fill", "black")
+        .style("opacity", 0.75);
+
+    } else {
+      d3.select("#pca-help").select("span").attr("class", "glyphicon glyphicon-question-sign");
+      d3.select(".pca-helpInfo").remove();
+    }
+  }
+
 
   return {
     pcaPlot,
@@ -640,7 +662,8 @@ let PcaView = function(targetID) {
     highlightAnimalOf,
     resetHighlightAnimal,
     highlightActivationOf,
-    resetHighlightActivationOf
+    resetHighlightActivationOf,
+    helpInfo
   };
 
 }

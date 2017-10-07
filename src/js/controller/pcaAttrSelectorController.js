@@ -10,7 +10,9 @@ let PcaAttrSelectorController = function() {
     selectedAttrInds: [],
 
     toggleButtons: null,
-    mode: "averagePCA"
+    mode: "averagePCA",
+
+    attrTip: null
   };
 
   init();
@@ -33,6 +35,9 @@ let PcaAttrSelectorController = function() {
   function attachToList(listID) {
     self.list = d3.select(listID);
 
+    // creatToolTips();
+    // self.list.call(self.attrTip);
+
     self.list.selectAll(".checkbox-li")
       .data(self.attributes)
       .enter().append("li")
@@ -51,7 +56,12 @@ let PcaAttrSelectorController = function() {
 
         div.append("label")
           .attr("for", "pcaAttrCheck-" + i)
-          .text(d);
+          .text(d)
+          // .datum({
+          //   "descriptor": App.attrDescriptor[d]
+          // })
+          // .on('mouseover', self.attrTip.show)
+          // .on('mouseout', self.attrTip.hide);
       });
 
     // select all
@@ -144,6 +154,15 @@ let PcaAttrSelectorController = function() {
       App.views.pca.selectAnimal(animalId);
     }
   }
+
+  // function creatToolTips() {
+  //   self.attrTip = d3.tip()
+  //     .attr("class", "d3-tip")
+  //     .direction("e")
+  //     .html(function(d) {
+  //       return d.descriptor;
+  //     });
+  // }
 
   function getMode() {
     return self.mode;
