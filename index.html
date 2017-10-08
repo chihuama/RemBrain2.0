@@ -61,11 +61,11 @@
 
           <ul class="nav navbar-nav navbar-right">
             <button class="btn btn-link  navbar-btn" data-toggle="modal" data-target="#aboutModal">
-                            <span class="glyphicon glyphicon-info-sign"></span> About
-                            </button>
+              <span class="glyphicon glyphicon-info-sign"></span> About
+            </button>
             <button class="btn btn-link navbar-btn">
-                              <span class="glyphicon glyphicon-question-sign"></span> Help
-                            </button>
+              <span class="glyphicon glyphicon-question-sign"></span> Help
+            </button>
           </ul>
         </div>
       </nav>
@@ -85,7 +85,8 @@
                 <div class="dropdown col-md-4">
                   <div class="col-md-12">
                     <button class="btn btn-primary btn-block dropdown-toggle" type="button" data-toggle="dropdown">Attributes
-  <span class="caret"></span></button>
+                      <span class="caret"></span>
+                    </button>
                     <ul class="dropdown-menu col-sm-12" id="pcaAttributesSelector">
                       <!-- populating list in controller -->
                     </ul>
@@ -108,9 +109,10 @@
               </div>
               <div class="col-md-1" id="pca-help">
                 <!-- <button type="button" class="btn btn-default btn-sm"> -->
-                  <span class="glyphicon glyphicon-question-sign" onclick="App.views.pca.helpInfo()"></span>
+                <span class="glyphicon glyphicon-question-sign" onclick="App.views.pca.helpInfo()"></span>
                 <!-- </button> -->
               </div>
+              <div class="col-md-11" id="pca-helpInfo"></div>
             </div>
           </div>
         </div>
@@ -128,11 +130,14 @@
                   <div class="form-group">
                     <label for="kiviatSorting">Sort By:</label>
                     <select class="attribute-dropdown form-control input-sm" id="kiviatSorting">
-                                  </select>
+                    </select>
                   </div>
                 </div>
                 <div class="col-md-4" id="kiviatSimilarity">
-                  <label id="similarityLabel"><input type="checkbox" style="display:inline" onchange="App.controllers.kiviatSorting.similarityMode(this.checked)"> Sort By Similarity</input></label> <br>
+                  <label id="similarityLabel">
+                    <input type="checkbox" style="display:inline" onchange="App.controllers.kiviatSorting.similarityMode(this.checked)"> Sort By Similarity</input>
+                  </label>
+                  <br>
                 </div>
               </div>
             </div>
@@ -166,14 +171,18 @@
                   <div class="col-md-9" id="mosaicMatrixLeft-Up">
                   </div>
                   <div class="col-md-3">
-                    <button type="button" class="btn btn-danger btn-sm" id="Left-Up" value="Up" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Left', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
+                    <button type="button" class="btn btn-danger btn-sm" id="Left-Up" value="Up" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Left', this.value)">
+                      <span class="glyphicon glyphicon-eye-close"></span>
+                    </button>
                   </div>
                 </div>
                 <div class="row mosaicMatrix">
                   <div class="col-md-9" id="mosaicMatrixLeft-Bottom">
                   </div>
                   <div class="col-md-3">
-                    <button type="button" class="btn btn-primary btn-sm" id="Left-Bottom" value="Bottom" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Left', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
+                    <button type="button" class="btn btn-primary btn-sm" id="Left-Bottom" value="Bottom" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Left', this.value)">
+                      <span class="glyphicon glyphicon-eye-close"></span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -186,18 +195,27 @@
 
           <div class="col-md-2 contentWrapper sliceDiv">
             <div class="row" id="sliceControl">
-              <input id="timeSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setTimeSync(this.checked)"> Sync Timelines</input> <br>
-              <input id="subSelection" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input> <br>
+              <input id="timeSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setTimeSync(this.checked)"> Sync Timelines</input>
+              <br>
+              <input id="subSelection" type="radio" name="timeline" value="timeDuration" onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Duration</input>
+              <br>
               <input id="subSelection" type="radio" name="timeline" value="timeStep" checked onchange="App.controllers.imageSlice.timeOpt(this.value)"> Time Step</input>
-              <button type="button" class="btn btn-default btn-sm" id="play" onclick="App.controllers.imageSlice.animationOpt(this.id)"><span class="glyphicon glyphicon-play"></span></button>
-              <button type="button" class="btn btn-default btn-sm" id="stop" onclick="App.controllers.imageSlice.animationOpt(this.id)"><span class="glyphicon glyphicon-stop"></span></button> <br>
+              <button type="button" class="btn btn-default btn-sm" id="play" onclick="App.controllers.imageSlice.animationOpt(this.id)">
+                <span class="glyphicon glyphicon-play"></span>
+              </button>
+              <button type="button" class="btn btn-default btn-sm" id="stop" onclick="App.controllers.imageSlice.animationOpt(this.id)">
+                <span class="glyphicon glyphicon-stop"></span>
+              </button>
+              <br>
 
               <input id="zoomSync" type="checkbox" style="display:inline" checked onchange="App.models.applicationState.setZoomSync(this.checked)"> Sync Zoom</input>
               <div class="contentDiv" id="zoomSize">
               </div>
 
-              Network Attributes <br>
-              <input id="subSelection" type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Home Community</input> <br>
+              Network Attributes
+              <br>
+              <input id="subSelection" type="radio" name="overlay" value="homeComm" checked onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Home Community</input>
+              <br>
               <input id="subSelection" type="radio" name="overlay" value="tempComm" onchange="App.controllers.imageSlice.overlayOpt(this.value)"> Temporary Community</input>
               <div class="contentDiv" id="dynamicCommunity">
               </div>
@@ -223,14 +241,18 @@
                   <div class="col-md-9" id="mosaicMatrixRight-Up">
                   </div>
                   <div class="col-md-3">
-                    <button type="button" class="btn btn-danger btn-sm" id="Right-Up" value="Up" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Right', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
+                    <button type="button" class="btn btn-danger btn-sm" id="Right-Up" value="Up" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Right', this.value)">
+                      <span class="glyphicon glyphicon-eye-close"></span>
+                    </button>
                   </div>
                 </div>
                 <div class="row mosaicMatrix">
                   <div class="col-md-9" id="mosaicMatrixRight-Bottom">
                   </div>
                   <div class="col-md-3">
-                    <button type="button" class="btn btn-primary btn-sm" id="Right-Bottom" value="Bottom" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Right', this.value)"><span class="glyphicon glyphicon-eye-close"></span></button>
+                    <button type="button" class="btn btn-primary btn-sm" id="Right-Bottom" value="Bottom" onclick="App.controllers.imageSlice.mosaicMatrixOpt('Right', this.value)">
+                      <span class="glyphicon glyphicon-eye-close"></span>
+                    </button>
                   </div>
                 </div>
               </div>

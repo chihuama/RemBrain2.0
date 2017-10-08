@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let PcaView = function(targetID) {
+let PcaView = function (targetID) {
 
   let self = {
     targetElement: null,
@@ -55,6 +55,12 @@ let PcaView = function(targetID) {
       .attr("preserveAspectRatio", "xMaxYMid");
 
     drawLegend();
+   
+    // helpInfo
+    _.forEach(Object.keys(App.attrDescriptor), function (key) {
+      d3.select("#pca-helpInfo").append("p").text(key + " - " + App.attrDescriptor[key]);
+    });
+    d3.select("#pca-helpInfo").style("visibility", "hidden");
   }
 
   function drawLegend() {
@@ -188,10 +194,10 @@ let PcaView = function(targetID) {
         .append("g")
         .attr("class", "allMouse")
         .attr("id", (d) => d)
-        .style("fill", function(d) {
+        .style("fill", function (d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
         })
-        .each(function(mouse) {
+        .each(function (mouse) {
           d3.select(this).selectAll(".allActivation")
             .data(Object.keys(data[mouse].activations))
             .enter()
@@ -206,7 +212,7 @@ let PcaView = function(targetID) {
             .attr("class", "allActivation")
             .attr("value", (d) => d)
             .attr("id", (d, i) => d.mouse + "-" + d.activation)
-            .each(function(d) {
+            .each(function (d) {
               // project point from data into the PCA space
               let projectedPoint = self.projector(App.activationPropertiesToVector(d.values));
 
@@ -217,7 +223,7 @@ let PcaView = function(targetID) {
               // right click a dot to load dynamic community data of that run
               $.contextMenu({
                 selector: "#" + d.mouse + "-" + d.activation,
-                callback: function(key) {
+                callback: function (key) {
                   // update activation selector
                   App.controllers.activationSelector.update(d.activation);
                   App.models.applicationState.setSelectedAnimalId(d.mouse);
@@ -231,12 +237,12 @@ let PcaView = function(targetID) {
 
                   // load data
                   App.models.networkDynamics.loadNetworkDynamics(d.mouse, d.activation)
-                    .then(function(data) {
+                    .then(function (data) {
                       // highlight the selected pca dot & the corresponding kiviat diagram
                       // ...
                       loadDetailViews(key);
                     })
-                    .catch(function(err) {
+                    .catch(function (err) {
                       console.log("Promise Error", err);
                     });
                 },
@@ -251,11 +257,11 @@ let PcaView = function(targetID) {
               }); //
             })
             .attr("r", 2)
-            .on("mouseover", function(d) {
+            .on("mouseover", function (d) {
               this.parentNode.appendChild(this);
               App.controllers.activationSelector.highlight(d.mouse, d.activation);
             })
-            .on("mouseout", function(d) {
+            .on("mouseout", function (d) {
               App.controllers.activationSelector.reset();
             })
             .on("click", d => {
@@ -275,7 +281,7 @@ let PcaView = function(targetID) {
         .append("circle")
         .attr("class", "avgActivation")
         .attr("id", (d) => d)
-        .each(function(d) {
+        .each(function (d) {
           // project point from data into the PCA space
           let projectedPoint = self.projector(App.activationPropertiesToVector(data[d].average));
 
@@ -284,20 +290,20 @@ let PcaView = function(targetID) {
             .attr("cy", () => self.yScale(projectedPoint[1]));
         })
         .attr("r", 4)
-        .style("fill", function(d) {
+        .style("fill", function (d) {
           return _.includes(d, "Old") ? "pink" : "lightblue";
         })
         // .on("mouseover", self.pcaAnimalDotTip.show)
         // .on("mouseout", self.pcaAnimalDotTip.hide)
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
           self.pcaAnimalDotTip.show(d);
           App.controllers.animalSelector.highlight(d);
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
           self.pcaAnimalDotTip.hide(d);
           App.controllers.animalSelector.reset(d);
         })
-        .on("click", function(mouse) {
+        .on("click", function (mouse) {
           App.controllers.animalSelector.update(mouse);
         });
     }
@@ -376,7 +382,7 @@ let PcaView = function(targetID) {
       self.targetSvg.selectAll(".singleActivation")
         .data(Object.keys(self.data[mouse].activations))
         .enter()
-        .select(function() {
+        .select(function () {
           // return _this.parentNode.appendChild(_this.cloneNode(true));
           return d3.select("#" + id)["_groups"][0][0].parentNode.appendChild(d3.select("#" + id)["_groups"][0][0].cloneNode(true));
         })
@@ -393,11 +399,11 @@ let PcaView = function(targetID) {
         })
         .attr("r", 2)
         .style("stroke", "none")
-        .each(function(d) {
+        .each(function (d) {
           // right click a dot to load dynamic community data of that run
           $.contextMenu({
             selector: "#singleActivation-" + d,
-            callback: function(key) {
+            callback: function (key) {
               // update activation selector
               App.controllers.activationSelector.update(d);
               let animalId = App.models.applicationState.getSelectedAnimalId();
@@ -412,12 +418,12 @@ let PcaView = function(targetID) {
 
               // load data
               App.models.networkDynamics.loadNetworkDynamics(animalId, d)
-                .then(function(data) {
+                .then(function (data) {
                   // highlight the selected pca dot & the corresponding kiviat diagram
                   // ...
                   loadDetailViews(key);
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                   console.log("Promise Error", err);
                 });
             },
@@ -434,17 +440,17 @@ let PcaView = function(targetID) {
 
       // toolTip
       let toolTip = {};
-      _.forEach(App.runs[id], function(value) {
+      _.forEach(App.runs[id], function (value) {
         toolTip["mouse"] = id;
         d3.select("#singleActivation-" + value)
-          .on("mouseover", function(d) {
+          .on("mouseover", function (d) {
             // console.log(id, d);
             toolTip["activation"] = d;
             self.pcaRunDotTip.show(toolTip);
             this.parentNode.appendChild(this);
             App.controllers.activationSelector.highlight(id, d);
           })
-          .on("mouseout", function(d) {
+          .on("mouseout", function (d) {
             self.pcaRunDotTip.hide(toolTip);
             App.controllers.activationSelector.reset(d);
           });
@@ -548,21 +554,21 @@ let PcaView = function(targetID) {
     self.pcaAnimalDotTip = d3.tip()
       .attr("class", "d3-tip")
       .direction("n")
-      .html(function(d, i) {
+      .html(function (d, i) {
         return d;
       });
 
     self.pcaRunDotTip = d3.tip()
       .attr("class", "d3-tip")
       .direction("n")
-      .html(function(d) {
+      .html(function (d) {
         return (d.mouse + ": " + d.activation);
       });
 
     self.pcaAxesLabelTip = d3.tip()
       .attr("class", "d3-tip")
       .direction("n")
-      .html(function(d, i) {
+      .html(function (d, i) {
         let selectedAttrInds = App.controllers.pcaAttrSelector.getSelectedAttrInds();
         return App.sortingAttributes[selectedAttrInds[i] + 1];
       });
@@ -577,7 +583,7 @@ let PcaView = function(targetID) {
   }
 
   function resetHighlightAnimal() {
-    _.forEach(Object.keys(App.runs), function(value) {
+    _.forEach(Object.keys(App.runs), function (value) {
       d3.selectAll("#" + value)
         .style("fill", _.includes(value, "Old") ? "pink" : "lightblue")
         .style("opacity", 1);
@@ -622,7 +628,7 @@ let PcaView = function(targetID) {
       .attr("class", "selectedDot-" + side)
       .style("stroke", App.colorHighlight[side])
       .style("stroke-width", 1)
-      .select(function() {
+      .select(function () {
         this.parentNode.appendChild(this);
       });
   }
@@ -639,19 +645,10 @@ let PcaView = function(targetID) {
     self.helpInfo = !self.helpInfo;
     if (self.helpInfo) {
       d3.select("#pca-help").select("span").attr("class", "glyphicon glyphicon-remove");
-
-      self.targetSvg.append("rect")
-        .attr("class", "pca-helpInfo")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 180)
-        .attr("height", 130)
-        .style("fill", "black")
-        .style("opacity", 0.75);
-
+      d3.select("#pca-helpInfo").style("visibility", "visible");
     } else {
       d3.select("#pca-help").select("span").attr("class", "glyphicon glyphicon-question-sign");
-      d3.select(".pca-helpInfo").remove();
+      d3.select("#pca-helpInfo").style("visibility", "hidden");
     }
   }
 
