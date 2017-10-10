@@ -7,6 +7,7 @@ let ProjectionModel = function(data) {
 
   let self = {
     Ureduced: null,
+    variance: [],
     k: 2 // number of dimensions to project into
   };
 
@@ -24,11 +25,25 @@ let ProjectionModel = function(data) {
 
 
     // an eigendecomposition on the covariance matrix
-    let eig = numeric.eig(covariance(data));
+    let cov_mat = covariance(data);
+    let eig = numeric.eig(cov_mat);
+
+    let diagonal_sum = 0;
+    for (let i = 0; i < cov_mat.length; i++) {
+      diagonal_sum += cov_mat[i][i];
+    }
+
+    // console.log(cov_mat);
+    // console.log(diagonal_sum);
+    // console.log(eig.lambda.x);
     // console.log(eig.E.x);
 
+    self.variance.push((eig.lambda.x[0] * 100 / diagonal_sum).toFixed(1) + "%");
+    self.variance.push((eig.lambda.x[1] * 100 / diagonal_sum).toFixed(1) + "%");
+    console.log(self.variance);
+
     self.Ureduced = pcaReduce(eig.E.x, self.k);
-    // console.log(self.Ureduced);
+    console.log(self.Ureduced);
   }
 
   /* return a matrix of all principle components as column vectors */
@@ -66,7 +81,6 @@ let ProjectionModel = function(data) {
     });
 
     cov_mat = numeric.div(cov_mat, X.length - 1);
-    // console.log(cov_mat);
 
     return cov_mat;
   }
@@ -87,8 +101,14 @@ let ProjectionModel = function(data) {
     return numeric.dot(X, self.Ureduced);
   } // X = m x n, Ureduce = n x 2, => m x 2
 
+  function getVariance() {
+    return self.variance;
+  }
+
+
   return {
-    pcaProject
+    pcaProject,
+    getVariance
   };
 
 }

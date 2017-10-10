@@ -17,6 +17,7 @@ let PcaView = function (targetID) {
 
     data: null,
     projector: null,
+    variance: [],
 
     xScale: null,
     yScale: null,
@@ -55,7 +56,7 @@ let PcaView = function (targetID) {
       .attr("preserveAspectRatio", "xMaxYMid");
 
     drawLegend();
-   
+
     // helpInfo
     _.forEach(Object.keys(App.attrDescriptor), function (key) {
       d3.select("#pca-helpInfo").append("p").text(key + " - " + App.attrDescriptor[key]);
@@ -115,6 +116,7 @@ let PcaView = function (targetID) {
 
     // set a projecction mode for averate or all points
     self.projector = App.models[projectionMode].pcaProject;
+    self.variance = App.models[projectionMode].getVariance();
 
     let allProjectedPoints;
     if (projectionMode === "allPCA") { // by run
@@ -519,7 +521,7 @@ let PcaView = function (targetID) {
       .style("fill", "black")
       .style("text-anchor", "middle")
       .style("font-size", "6px")
-      .text("PC1");
+      .text("PC1 (" + self.variance[0] + " explained var.)");
 
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
@@ -541,12 +543,11 @@ let PcaView = function (targetID) {
 
     self.targetSvg.append("text")
       .attr("class", "pcaAxislabel")
-      .attr("x", 8)
-      .attr("y", 65)
+      .attr("transform", "translate(8, 65) rotate(270)")
       .style("fill", "black")
-      .style("text-anchor", "end")
+      .style("text-anchor", "middle")
       .style("font-size", "6px")
-      .text("PC2");
+      .text("PC2 (" + self.variance[1] + " explained var.)");
   }
 
 
